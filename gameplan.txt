@@ -11,6 +11,6 @@ Tokenising:
 	- setting flags for parsing
 
 Parser:
-	- quote removal
+	- quote removal (include empty strings ("" and ''))
 	- var expansion
 
