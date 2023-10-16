@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/15 16:52:16 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/16 15:36:35 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static const char	*ms_skip_quoted(const char *end)
 	end++;
 	end = ft_strchr(end, quote);
 	if (!end)
-		exit(1);
+		exit(2);
 // error: unclosed quote
 	return (end);
 }
@@ -37,13 +37,15 @@ static void	ms_add_token(const char *start, const char *end, t_darray *tokens)
 	if (!new.string)
 		exit(1);
 // error: malloc failed
+// try comparing memory addresses with clear ft
+// printf("new string %p\n", new.string);
 	ft_strlcpy(new.string, start, end - start + 1);
 	if (ft_darray_append(tokens, &new) == -1)
 		exit(1);
 // error: malloc failed
 }
 
-static const char	*ms_handle_symbol(char *end, t_darray *tokens)
+static const char	*ms_handle_symbol(const char *end, t_darray *tokens)
 {
 	const char	*start;
 
@@ -60,6 +62,7 @@ static const char	*ms_handle_symbol(char *end, t_darray *tokens)
 }
 
 // frees all malloced token strings and calls ft_darray_delete
+// we can try NOT doing this,,,?
 void	ms_clear_tokens(t_darray *tokens)
 {
 	int	i;
@@ -67,7 +70,8 @@ void	ms_clear_tokens(t_darray *tokens)
 	i = 0;
 	while (i < tokens->size)
 	{
-		free(((t_token)((unsigned char *) tokens->contents)[i * tokens->type_size]).string);
+// printf("clearing string %p\n", (((t_token *)(tokens->contents + i * tokens->type_size))->string));
+		free(((t_token *)(tokens->contents + i * tokens->type_size))->string);
 		i++;
 	}
 	ft_darray_delete(tokens);
@@ -84,11 +88,44 @@ void	ms_tokeniser(const char *input, t_darray *tokens)
 		start = end;
 		while (*end && !ft_strchr(RESERVED_SYMBOLS, *end))
 		{
-			end++;
 			if (*end == '"' || *end == '\'')
 				end = ms_skip_quoted(end);
+			end++;
 		}
 		ms_add_token(start, end, tokens);
 		end = ms_handle_symbol(end, tokens);
 	}
+}
+
+/* TEST MAIN AND PRINT FOR TOKENS RIGHT HERE */
+
+void	ms_print_tokens(t_darray *tokens)
+{
+	int	i;
+
+	i = 0;
+	printf("TOKENS: {");
+	while (i < tokens->size)
+	{
+		printf("%s", ((t_token *)(tokens->contents + i * tokens->type_size))->string);
+		i++;
+		if (i < tokens->size)
+			printf(", ");
+	}
+	printf("}\n");
+}
+
+int	main(int ac, char *av[])
+{
+	t_darray	tokens;
+
+	if (ac != 2)
+		return (1);
+	printf("INPUT: \"%s\"\n", av[1]);
+	if (ft_darray_init(&tokens, sizeof(t_token), 20) == -1)
+		return (1);
+	ms_tokeniser(av[1], &tokens);
+	ms_print_tokens(&tokens);
+	ms_clear_tokens(&tokens);
+	return (0);
 }

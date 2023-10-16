@@ -6,14 +6,14 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/15 16:47:14 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/16 14:51:40 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_TOKENS_H
 # define MINISHELL_TOKENS_H
 
-# include "../src/libft/libft.h"
+# include "minishell.h"
 
 # define RESERVED_SYMBOLS "|<> "
 # define SKIP_SYMBOLS " "
@@ -23,5 +23,8 @@ typedef struct s_token
 {
 	char	*string;
 }			t_token;
+
+void	ms_tokeniser(const char *input, t_darray *tokens);
+void	ms_clear_tokens(t_darray *tokens);
 
 #endif
