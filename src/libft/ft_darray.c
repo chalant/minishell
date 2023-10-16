@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_darray.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/10/16 18:05:29 by bvercaem          #+#    #+#             */
+/*   Updated: 2023/10/16 18:05:33 by bvercaem         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 #include "unistd.h"
 
@@ -21,10 +33,22 @@ int	ft_darray_reset(t_darray *darray)
 	return (0);
 }
 
-int	ft_darray_delete(t_darray *darray)
+// if del_content == NULL that step is skipped.
+int	ft_darray_delete(t_darray *darray, void del_content(void *))
 {
+	int	i;
+
 	if (!darray)
 		return (0);
+	if (del_content)
+	{
+		i = 0;
+		while (i < darray->size)
+		{
+			del_content(darray->contents + i * darray->type_size);
+			i++;
+		}
+	}
 	free(darray->contents);
 	return (0);
 }

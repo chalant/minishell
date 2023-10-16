@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/16 17:17:45 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/16 18:15:34 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,18 +59,10 @@ static const char	*ms_handle_symbol(const char *end, t_darray *tokens)
 	return (end);
 }
 
-// frees all malloced token strings and calls ft_darray_delete
-void	ms_clear_tokens(t_darray *tokens)
+// for use in ft_darray_delete
+void	ms_clear_token(void *token)
 {
-	int	i;
-
-	i = 0;
-	while (i < tokens->size)
-	{
-		free(((t_token *)(tokens->contents + i * tokens->type_size))->string);
-		i++;
-	}
-	ft_darray_delete(tokens);
+	free(((t_token *)token)->string);
 }
 
 // for now just 'exit()' on early exits (malloc and unclosed quotes)
@@ -125,6 +117,6 @@ int	main(int ac, char *av[])
 		return (1);
 	ms_tokeniser(av[1], &tokens);
 	ms_print_tokens(&tokens);
-	ms_clear_tokens(&tokens);
+	ft_darray_delete(&tokens, ms_clear_token);
 	return (0);
 }

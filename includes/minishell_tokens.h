@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/16 17:05:34 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/16 18:14:21 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,6 @@ typedef struct s_token
 }			t_token;
 
 void	ms_tokeniser(const char *input, t_darray *tokens);
-void	ms_clear_tokens(t_darray *tokens);
+void	ms_clear_token(void *token);
 
 #endif
