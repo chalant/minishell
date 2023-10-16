@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
+#    Updated: 2023/10/16 17:36:19 by bvercaem         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 INCLUDES_DIR = ./includes
 SRC_DIR = ./src
 OBJ_DIR = ./obj
@@ -6,9 +18,9 @@ INCLUDES_FILES = minishell.h \
 				 minishell_tokens.h \
 				 #minishell_parsing.h \
 
-SRC_FILES = minishell.c \
-			minishell_tokens.c \
+SRC_FILES = minishell_tokens.c \
 			#minishell_parser.c \
+			minishell.c \
 			minishell_recogniser.c \
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))

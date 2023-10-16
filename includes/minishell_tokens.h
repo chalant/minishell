@@ -6,14 +6,12 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/16 14:51:40 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/16 17:05:34 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_TOKENS_H
 # define MINISHELL_TOKENS_H
-
-# include "minishell.h"
 
 # define RESERVED_SYMBOLS "|<> "
 # define SKIP_SYMBOLS " "

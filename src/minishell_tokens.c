@@ -6,11 +6,11 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/16 15:36:35 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/16 17:17:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell_tokens.h"
+#include "minishell.h"
 
 // returns the next instance of *end
 static const char	*ms_skip_quoted(const char *end)
@@ -37,8 +37,6 @@ static void	ms_add_token(const char *start, const char *end, t_darray *tokens)
 	if (!new.string)
 		exit(1);
 // error: malloc failed
-// try comparing memory addresses with clear ft
-// printf("new string %p\n", new.string);
 	ft_strlcpy(new.string, start, end - start + 1);
 	if (ft_darray_append(tokens, &new) == -1)
 		exit(1);
@@ -62,7 +60,6 @@ static const char	*ms_handle_symbol(const char *end, t_darray *tokens)
 }
 
 // frees all malloced token strings and calls ft_darray_delete
-// we can try NOT doing this,,,?
 void	ms_clear_tokens(t_darray *tokens)
 {
 	int	i;
@@ -70,13 +67,14 @@ void	ms_clear_tokens(t_darray *tokens)
 	i = 0;
 	while (i < tokens->size)
 	{
-// printf("clearing string %p\n", (((t_token *)(tokens->contents + i * tokens->type_size))->string));
 		free(((t_token *)(tokens->contents + i * tokens->type_size))->string);
 		i++;
 	}
 	ft_darray_delete(tokens);
 }
 
+// for now just 'exit()' on early exits (malloc and unclosed quotes)
+// it's possible to put an add_flag ft in the while loop if needed
 void	ms_tokeniser(const char *input, t_darray *tokens)
 {
 	const char	*start;
@@ -99,6 +97,7 @@ void	ms_tokeniser(const char *input, t_darray *tokens)
 
 /* TEST MAIN AND PRINT FOR TOKENS RIGHT HERE */
 
+// prints all tokens in {t, t} format
 void	ms_print_tokens(t_darray *tokens)
 {
 	int	i;
