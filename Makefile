@@ -2,12 +2,12 @@ INCLUDES_DIR = ./includes
 SRC_DIR = ./src
 OBJ_DIR = ./obj
 
-INCLUDES_FILES = minishell_parsing.h \
-				 minishell.h
+INCLUDES_FILES = minishell.h \
+				 #minishell_parsing.h
 
 SRC_FILES = minishell.c \
 			minishell_recogniser.c \
-			minishell_parser.c
+			#minishell_parser.c
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
