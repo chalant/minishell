@@ -3,22 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 13:35:42 by ychalant          #+#    #+#             */
-/*   Updated: 2023/04/11 13:35:42 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/10/18 15:18:41 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "libft.h"
 
-static inline char	**clear_lst(char **s, int from)
+char	**ft_clear_ds(char **s)
 {
-	while (from > -1)
+	char	**bin;
+
+	if (!s)
+		return (NULL);
+	bin = s;
+	while (*bin)
 	{
-		free(s[from]);
-		from--;
+		free(*bin);
+		bin++;
 	}
 	free(s);
 	return (NULL);
@@ -68,7 +73,7 @@ static inline char	**fill(char **str, char const *s, int count, char c)
 		len = len_word(s, j, c);
 		str[i] = ft_substr(s, j, len);
 		if (!str[i])
-			return (clear_lst(str, i - 1));
+			return (ft_clear_ds(str));
 		j += len;
 		i++;
 	}

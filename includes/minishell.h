@@ -7,4 +7,6 @@
 # include "minishell_parsing.h"
 # include "libft.h"
 
+int	ms_envcpy(void);
+
 #endif

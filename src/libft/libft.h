@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 13:35:42 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/17 13:45:56 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/18 15:18:48 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ char				*ft_itoa(int n);
 char				*ft_substr(char const *s, unsigned int start, size_t len);
 
 char				**ft_split(char const *s, char c);
+char				**ft_clear_ds(char **s);
 
 size_t				ft_strlcat(char *dst, const char *src, size_t size);
 size_t				ft_strlcpy(char *dst, const char *src, size_t size);
