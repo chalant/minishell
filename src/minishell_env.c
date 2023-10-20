@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:32:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/18 17:32:24 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/20 18:51:14 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ int	ms_envcpy(void)
 	return (0);
 }
 
-// mallocs size of ptr + addon, copies content of ptr over and clears it
-// returns new ptr or NULL if malloc failed (then ptr remains uncleared)
+// mallocs size of 'ptr' + 'addon', copies content of 'ptr' over and clears it
+// returns new 'ptr' or NULL if malloc failed (always clears 'ptr')
 char	**ms_realloc(char **ptr, int addon)
 {
 	size_t	i;
@@ -76,6 +76,7 @@ char	**ms_realloc(char **ptr, int addon)
 		if (!new[i])
 		{
 			ft_clear_ds(new);
+			ft_clear_ds(ptr);
 			return (NULL);
 // malloc failed
 		}
@@ -92,10 +93,9 @@ char	**ms_realloc(char **ptr, int addon)
 // {
 // 	extern char	**environ;
 
-// 	// new = ms_realloc(environ, 1);
-// 	// if (!new)
+// 	// environ = ms_realloc(environ, 1);
+// 	// if (!environ)
 // 	// 	return (1);
-// 	// environ = new;
 // 	// i = 0;
 // 	// while (environ[i])
 // 	// 	i++;

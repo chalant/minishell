@@ -5,9 +5,10 @@ OBJ_DIR = ./obj
 INCLUDES_FILES = minishell.h \
 				 #minishell_parsing.h
 
-SRC_FILES = minishell_echo.c \
-			#minishell_export.c \
+SRC_FILES = minishell_variable_util.c \
+			minishell_export.c \
 			minishell_env.c \
+			#minishell_echo.c \
 			#minishell_recogniser.c \
 			minishel.c \
 			minishell_parser.c
