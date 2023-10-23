@@ -311,5 +311,18 @@ int	main(int ac, char **av, char **env)
 	ms_build_parse_tree(&tree, &data);
 	print_parse_tree(&tree, 0);
 	printf("\n");
+
+	// t_darray	tokens;
+
+	// if (ac != 2)
+	// 	return (1);
+	// printf("INPUT: \"%s\"\n", av[1]);
+	// if (ft_darray_init(&tokens, sizeof(t_token), 20) == -1)
+	// 	return (1);
+	// ms_tokeniser(av[1], &tokens);
+	// ms_print_tokens(&tokens);
+	// ft_darray_delete(&tokens, ms_clear_token);
+	// return (0);
+
 	return (0);
 }

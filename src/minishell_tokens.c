@@ -105,18 +105,3 @@ void	ms_print_tokens(t_darray *tokens)
 	}
 	printf("}\n");
 }
-
-int	main(int ac, char *av[])
-{
-	t_darray	tokens;
-
-	if (ac != 2)
-		return (1);
-	printf("INPUT: \"%s\"\n", av[1]);
-	if (ft_darray_init(&tokens, sizeof(t_token), 20) == -1)
-		return (1);
-	ms_tokeniser(av[1], &tokens);
-	ms_print_tokens(&tokens);
-	ft_darray_delete(&tokens, ms_clear_token);
-	return (0);
-}

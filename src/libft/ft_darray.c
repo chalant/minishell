@@ -15,7 +15,7 @@
 
 int	ft_darray_init(t_darray *darray, int type_size, int size)
 {
-	darray->contents = ft_malloc(type_size * size);
+	darray->contents = malloc(type_size * size);
 	if (!darray->contents)
 		return (-1);
 	ft_bzero(darray->contents, type_size * size);
