@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 13:35:42 by ychalant          #+#    #+#             */
-/*   Updated: 2023/04/11 13:35:42 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/10/17 13:45:56 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,6 @@ void				*ft_darray_get(t_darray *darray, int index);
 int					ft_darray_init(t_darray *darray, int type_size, int size);
 int					ft_darray_set(t_darray *darray, void *element, int index);
 int					ft_darray_append(t_darray *darray, void *element);
-int					ft_darray_delete(t_darray *darray);
+int					ft_darray_delete(t_darray *darray, void del_content(void *));
 
 #endif
