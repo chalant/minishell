@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_recogniser.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/10/23 13:49:34 by ychalant          #+#    #+#             */
+/*   Updated: 2023/10/23 13:50:03 by ychalant         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 t_ms_symbol	*ms_next_symbol(t_ms_grammar *grammar, t_earley_item *item)

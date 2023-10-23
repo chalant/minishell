@@ -1,5 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_graph.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/10/23 13:49:29 by ychalant          #+#    #+#             */
+/*   Updated: 2023/10/23 13:54:27 by ychalant         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell_graph.h"
-#include "stdio.h"
 
 int	init_graph(t_graph *graph, int num_vertices, int type_size)
 {
@@ -36,7 +47,7 @@ int	delete_graph(t_graph *graph)
 	i = -1;
 	while (++i < graph->num_vertices)
 	{
-		ft_darray_delete(graph->adjacency_list[i]);
+		ft_darray_delete(graph->adjacency_list[i], NULL);
 		free(graph->adjacency_list);
 	}
 	return (1);
