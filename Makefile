@@ -1,12 +1,26 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
+#    Updated: 2023/10/23 13:43:13 by bvercaem         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 INCLUDES_DIR = ./includes
 SRC_DIR = ./src
 OBJ_DIR = ./obj
 
-INCLUDES_FILES = minishell_parsing.h \
-				 minishell.h \
-				 minishell_graph.h
+INCLUDES_FILES = minishell.h \
+				 minishell_tokens.h \
+				 minishell_graph.h \
+				 minishell_parsing.h \
 
-SRC_FILES = minishell.c \
+SRC_FILES = minishell_tokens.c \
+			minishell.c \
 			minishell_recogniser.c \
 			minishell_parser.c \
 			minishell_graph.c

@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/11 13:35:42 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/17 13:45:56 by bvercaem         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/10/23 13:46:51 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef LIBFT_H
 # define LIBFT_H
