@@ -6,10 +6,10 @@
 #define MS_NULL_SYMBOL 2
 
 # include "libft.h"
+# include "minishell_graph.h"
 
 typedef struct	s_earley_item
 {
-	int		rule_group;
 	int		rule;
 	int		start;
 	int		next;
@@ -53,14 +53,41 @@ typedef struct	s_ms_edge
 	int	rule;
 }				t_ms_edge;
 
-typedef struct	s_ms_parser
+typedef	struct	s_ms_chart
+{
+	int			size;
+	t_darray	*edges;
+}				t_ms_chart;
+
+typedef struct	s_parsing_data
 {
 	t_ms_grammar	*grammar;
-	t_earley_set	**chart;
+	t_graph			*chart;
+	char			**input;
+	int				input_length;
 	int				chart_size;
-}				t_ms_parser;
+}				t_parsing_data;
+
+typedef struct	s_parser_state
+{
+	int				depth;
+	int				node;
+	int				end;
+	t_ms_rule		*rule;
+	t_darray		*substate;
+}				t_parser_state;
+
+typedef struct	s_parse_tree
+{
+	char		*rule_name;
+	int			rule;
+	int			terminal;
+	int			start;
+	int			end;
+	t_darray	*children;
+}				t_parse_tree;
 
 int	build_earley_items(t_earley_set **sets, t_ms_grammar *grammar, int n_sets, char **input);
-int	ms_parse_tree();
+int	ms_build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
 
 #endif

@@ -11,16 +11,11 @@
 							  "number:<'0123456789'\n"
 
 #ifndef MINISHELL_GRAMMAR
-# define MINISHELL_GRAMMAR "alpha:<'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'\n"\
-						   "digit:<'0123456789'\n"\
-						   "number:digit\n"\
-						   "number:number digit\n"\
-						   "word:alpha\n"\
-						   "word:word alpha\n"\
-						   "word:word ='_'\n"\
-						   "word-list:word\n"\
-						   "word-list:word-list word\n"\
-						   "assignment-word:word ='=' word\n"\
+# define MINISHELL_GRAMMAR "word:%'string'\n"\
+						   "assignment-word:%'='\n"\
+						   "number:%'integer'\n"\
+						   "word_list:word\n"\
+						   "word_list:word_list word\n"\
 						   "redirection:='>' word\n"\
 						   "redirection:='<' word\n"\
 						   "redirection:number ='>' word\n"\
@@ -28,6 +23,41 @@
 						   "redirection:='>>' word\n"\
 						   "redirection:number ='>>' word\n"\
 						   "redirection:='<<' word\n"\
-						   "redirection:number ='<<' word\n"
+						   "redirection:number ='<<' word\n"\
+						   "simple_command_element:word\n"\
+						   "simple_command_element:assignment-word\n"\
+						   "simple_command_element:redirection\n"\
+						   "redirection_list:redirection\n"\
+						   "redirection_list:redirection_list redirection\n"\
+						   "simple_command:simple_command_element\n"\
+						   "simple_command:simple_command simple_command_element\n"\
+						   "command:simple_command\n"\
+						   "command:shell_command\n"\
+						   "command:shell_command redirection_list\n"\
+						   "shell_command:subshell\n"\
+						   "subshell:'(' compound_list ')'\n"\
+						   "compound_list:newline_list list0\n"\
+						   "list0:list1 %'NL' newline_list\n"\
+						   "list0:list1 ='&' newline_list\n"\
+						   "list0:list1 =';' newline_list\n"\
+						   "list1:list1 ='&&' newline_list list1\n"\
+						   "list1:list1 ='||' newline_list list1\n"\
+						   "list1:list1 ='&' newline_list list1\n"\
+						   "list1:list1 =';' newline_list list1\n"\
+						   "list1:list1 %'NL' newline_list list1\n"\
+						   "list1:pipeline_command\n"\
+						   "newline_list:newline_list %'NL'\n"\
+						   "simple_list:simple_list1\n"\
+						   "simple_list:simple_list1 ='&'\n"\
+						   "simple_list:simple_list1 =';'\n"\
+						   "simple_list1:simple_list1 ='&&' newline_list simple_list1\n"\
+						   "simple_list1:simple_list1 ='||' newline_list simple_list1\n"\
+						   "simple_list1:simple_list1 ='&' simple_list1\n"\
+						   "simple_list1:simple_list1 =';' simple_list1\n"\
+						   "simple_list1:pipeline_command\n"\
+						   "pipeline_command:pipeline\n"\
+						   "pipeline:pipeline ='|' newline_list pipeline\n"\
+						   "pipeline:pipeline ='|&' newline_list pipeline\n"\
+						   "pipeline:command\n"
 #endif
 #endif

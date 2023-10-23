@@ -1,6 +1,15 @@
 # include "minishell.h"
 
-int ms_match_subset(t_ms_symbol *symbol, char *input)
+static const char	g_minishell_grammar[163] = "sum:sum <'+-' product\n"\
+	"sum:product\n"\
+	"product:product <'*/' factor\n"\
+	"product:factor\n"\
+	"factor:='(' sum =')'\n"\
+	"factor:number\n"\
+	"number:<'0123456789' number\n"\
+	"number:<'0123456789'\n";
+
+int	ms_match_subset(t_ms_symbol *symbol, char *input)
 {
 	int	i;
 

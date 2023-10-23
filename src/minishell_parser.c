@@ -2,132 +2,119 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
-#define MAX_VERTICES 100
-
-struct Node {
-    int data;
-    struct Node* next;
-};
-
-struct Graph {
-    int numVertices;
-    struct Node* adjacencyList[MAX_VERTICES];
-};
-
-struct Node* createNode(int data) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = data;
-    newNode->next = NULL;
-    return newNode;
-}
-
-struct Graph* createGraph(int numVertices) {
-    struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
-    graph->numVertices = numVertices;
-    for (int i = 0; i < numVertices; i++) {
-        graph->adjacencyList[i] = NULL;
-    }
-    return graph;
-}
-
-void addEdge(struct Graph* graph, int src, int dest) {
-    struct Node* newNode = createNode(dest);
-    newNode->next = graph->adjacencyList[src];
-    graph->adjacencyList[src] = newNode;
-}
-
-void DFSWithPaths(struct Graph* graph, int vertex, int dest, int visited[], int path[], int pathIndex) {
-    visited[vertex] = 1;
-    path[pathIndex] = vertex;
-    pathIndex++;
-
-    if (vertex == dest) {
-        printf("Path: ");
-        for (int i = 0; i < pathIndex; i++) {
-            printf("%d ", path[i]);
-        }
-        printf("\n");
-    } else {
-        struct Node* temp = graph->adjacencyList[vertex];
-        while (temp != NULL) {
-            int adjVertex = temp->data;
-            if (!visited[adjVertex]) {
-                DFSWithPaths(graph, adjVertex, dest, visited, path, pathIndex);
-            }
-            temp = temp->next;
-        }
-    }
-
-    visited[vertex] = 0;
-}
-
-void findPaths(struct Graph* graph, int start, int dest) {
-    int visited[MAX_VERTICES] = {0};
-    int path[MAX_VERTICES];
-    int pathIndex = 0;
-
-    printf("Paths from vertex %d to vertex %d:\n", start, dest);
-    DFSWithPaths(graph, start, dest, visited, path, pathIndex);
-}
-
-int main() {
-    int 			numVertices = 6;
-    struct Graph*	graph = createGraph(numVertices);
-
-    addEdge(graph, 0, 1);
-    addEdge(graph, 0, 2);
-    addEdge(graph, 1, 3);
-    addEdge(graph, 1, 4);
-    addEdge(graph, 2, 4);
-    addEdge(graph, 3, 5);
-    addEdge(graph, 4, 5);
-
-    findPaths(graph, 0, 4);
-
-    return 0;
-}
-
-int	ms_edges(t_darray *edges, t_ms_rule *rule, int depth, int node)
+int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state state)
 {
-	int	i;
+	int				i;
+	t_parser_state	nstate;
+	t_ms_symbol		*symbol;
+	t_ms_edge		*item;
+	t_parse_tree	subtree;
 
-	if (depth >= rule->length)
-		return (0);
-	rule->symbols[depth];
-	return (1);
-}
-
-int	ms_search_core(t_darray *path, t_ms_rule *rule, int end, int depth, int node)
-{
-	int			i;
-	int			j;
-	t_darray	edges;
-	t_ms_edge	*c_edge;
-
-	if (ft_darray_init(&edges, sizeof(t_ms_edge), 10) < 0)
-		return (-1);
-	if (depth == rule->length && node == end)
-		return (0);
-	ms_edges(&edges, rule, depth, node);
-	i = -1;
-	//todo: check if the path is well formatted, might get errors here.
-	while (++i < edges.size)
+	if (state.depth >= state.rule->length - 1)
+		return (1);
+	symbol = state.rule->symbols[state.depth];
+	subtree.terminal = 0;
+	if (symbol->symbol_type == MS_TERMINAL_SYMBOL)
 	{
-		c_edge = (t_ms_edge *)(edges.contents + i);
-		ft_darray_append(path, c_edge);
-		ms_search_core(&subpaths, rule, end, depth + 1, c_edge->finish);
-		j = -1;
-		while (++j < subpaths.size)
-			subpaths
+		if (state.node >= data->input_length)
+			return (0);
+		else if (symbol->match(symbol, data->input[state.node]))
+		{
+			printf("Success! 1 %s %s %d\n", data->input[state.node], symbol->name, state.node);
+			subtree.rule_name = (char *)data->input[state.node];
+			subtree.terminal = 1;
+			subtree.start = state.node - 1;
+			subtree.end = state.node;
+			ft_darray_set(tree->children, &subtree, state.depth);
+			//ft_darray_append(tree->children, &subtree);
+			nstate.depth = state.depth + 1;
+			nstate.end = state.end;
+			nstate.rule = state.rule;
+			nstate.node = state.node + 1;
+			if (state.node < data->input_length)
+				ms_search_core(tree, data, nstate);
+			return (1);
+		}
+		return (0);
 	}
-	ft_darray_delete(&edges);
+	else if (symbol->symbol_type == MS_NON_TERMINAL_SYMBOL)
+	{
+		item = (t_ms_edge *)data->chart->adjacency_list[state.node]->contents;
+		i = -1;
+		while (++i < data->chart->adjacency_list[state.node]->size)
+		{
+			if (strcmp(data->grammar->rules[(item + i)->rule]->name, symbol->name) == 0)
+			{
+				nstate.depth = state.depth + 1;
+				nstate.node = ((t_ms_edge *)data->chart->adjacency_list[state.node]->contents + i)->finish;
+				nstate.rule = state.rule;
+				nstate.end = state.end;
+				int	res = ms_search_core(tree, data, nstate);
+				if (res > 0)
+				{
+					subtree.rule_name = (char *)symbol->name;
+					subtree.start = state.node;
+					subtree.end = nstate.node;
+					ft_darray_set(tree->children, &subtree, state.depth);
+					//ft_darray_append(tree->children, &subtree);
+					printf("Success! 0 %s %d %d\n", symbol->name, state.node, nstate.node);
+				}
+			}
+		}
+		return (0);
+	}
+	// todo: this should be an error.
+	printf("Parsing Failed!");
+	return (-1);
+}
+
+int	ms_search(t_parse_tree *parse_tree, t_parsing_data *data, int rule)
+{
+	t_parser_state	state;
+	//int	i;
+
+	state.depth = 0;
+	state.node = parse_tree->start;
+	state.end = parse_tree->end;
+	state.rule = data->grammar->rules[rule];
+	parse_tree->rule = rule;
+	// i = -1;
+	// printf("Decompose ");
+	// while (++i < state.rule->length)
+	// 	printf("%s ", state.rule->symbols[i]->name);
+	// printf("%d %d\n", parse_tree->start, parse_tree->end);
+	//printf("Hello hello! %d %d\n", state.node, state.end);
+	//todo: go to sub_children
+	ms_search_core(parse_tree, data, state);
 	return (1);
 }
 
-int	ms_search(t_darray *paths, t_ms_rule *rule, int root)
+int	ms_build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 {
-	ft_darray_init(paths, sizeof(t_darray), 10);
+	int				end;
+	int				i;
+	t_ms_edge		*edge;
+	t_parse_tree	*child;
+
+	if (parse_tree->terminal)
+		return (0);
+	end = 0;
+	edge = ((t_ms_edge *)data->chart->adjacency_list[parse_tree->start]->contents);
+	while (++end < data->chart->adjacency_list[parse_tree->start]->size)
+	{
+		if (edge->finish == parse_tree->end && strcmp(parse_tree->rule_name, data->grammar->rules[edge->rule]->name) == 0)
+			break;
+		edge = ((t_ms_edge *)data->chart->adjacency_list[parse_tree->start]->contents + end);
+	}
+	parse_tree->children = malloc(sizeof(t_darray));
+	ft_darray_init(parse_tree->children, sizeof(t_parse_tree), 10);
+	ms_search(parse_tree, data, edge->rule);
+	i = -1;
+	while (++i < parse_tree->children->size)
+	{
+		child = (t_parse_tree *)parse_tree->children->contents + i;
+		ms_build_parse_tree(child, data);
+	}
 	return (1);
 }

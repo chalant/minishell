@@ -34,7 +34,8 @@ SRC_FILES = ft_atoi.c \
 			ft_substr.c \
 			ft_tolower.c \
 			ft_toupper.c \
-			ft_darray.c
+			ft_darray.c \
+			ft_darray_interface.c
 
 BONUS_FILES = ft_lstnew_bonus.c \
 			  ft_lstadd_front_bonus.c \
