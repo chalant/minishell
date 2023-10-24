@@ -5,10 +5,11 @@ OBJ_DIR = ./obj
 INCLUDES_FILES = minishell.h \
 				 #minishell_parsing.h
 
-SRC_FILES = minishell_variable_util.c \
+SRC_FILES = minishell_main.c \
+			#minishell_variable_util.c \
+			#minishell_echo.c \
 			minishell_export.c \
 			minishell_env.c \
-			#minishell_echo.c \
 			#minishell_recogniser.c \
 			minishel.c \
 			minishell_parser.c
@@ -21,14 +22,15 @@ NAME = minishell
 LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR) -Wall -Wextra -Werror
+C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR) -Wall -Wextra -Werror  -I ~/homebrew/opt/readline/include
+READLINE = -lreadline -lhistory -L ~/homebrew/opt/readline/lib
 
 all:
 	mkdir -p $(OBJ_DIR)
 	make $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	cc $(C_FLAGS) $(OBJ) $(LIBFT) -o $(NAME)
+	cc $(C_FLAGS) $(OBJ) $(LIBFT) -o $(NAME) $(READLINE)
 
 $(LIBFT):
 	make -C $(LIBFT_DIR)
