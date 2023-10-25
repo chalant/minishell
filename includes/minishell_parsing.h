@@ -5,8 +5,9 @@
 #define MS_NON_TERMINAL_SYMBOL 1
 #define MS_NULL_SYMBOL 2
 
-# include "libft.h"
-# include "minishell_graph.h"
+#include "libft.h"
+#include "minishell_graph.h"
+#include "minishell_grammar.h"
 
 typedef struct	s_earley_item
 {
@@ -21,30 +22,6 @@ typedef	struct	s_earley_set
 	int			size;
 	t_darray	*items;
 }				t_earley_set;
-
-typedef struct	s_ms_symbol
-{
-	const char	*name;
-	int			symbol_type;
-	int			rule;
-	int			(*match)(struct s_ms_symbol*, char *);
-}				t_ms_symbol;
-
-typedef struct	s_ms_rule
-{
-	int			rule_id;
-	int			length;
-	const char	*name;
-	t_ms_symbol	**symbols;
-}				t_ms_rule;
-
-typedef struct	s_ms_grammar
-{
-	const char		*start_rule;
-	const char		*name;
-	t_ms_rule		**rules;
-	int				length;
-}				t_ms_grammar;
 
 typedef struct	s_ms_edge
 {
