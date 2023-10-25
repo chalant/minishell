@@ -6,6 +6,16 @@ void	*ft_darray_get(t_darray *darray, int index)
 	return (darray->contents + index * darray->type_size);
 }
 
+int		ft_darray_exists(t_darray *darray, int index)
+{
+	unsigned char *target;
+
+	target = (unsigned char *)darray->contents + index * darray->type_size;
+	if (!*target)
+		return (0);
+	return (1);
+}
+
 int	ft_darray_set(t_darray *darray, void *element, int index)
 {
 	unsigned char *target;

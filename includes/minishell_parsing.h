@@ -72,9 +72,7 @@ typedef struct	s_parser_state
 {
 	int				depth;
 	int				node;
-	int				end;
 	t_ms_rule		*rule;
-	t_darray		*substate;
 }				t_parser_state;
 
 typedef struct	s_parse_tree

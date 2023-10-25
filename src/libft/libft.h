@@ -88,6 +88,7 @@ t_list				*ft_lstlast(t_list *lst);
 t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
 						void (*del)(void *));
 
+int					ft_darray_exists(t_darray *darray, int index);
 void				*ft_darray_get(t_darray *darray, int index);
 int					ft_darray_init(t_darray *darray, int type_size, int size);
 int					ft_darray_set(t_darray *darray, void *element, int index);

@@ -256,11 +256,17 @@ void print_parse_tree(t_parse_tree *node, int depth)
 	int	i;
 	t_parse_tree *child;
 
+	if (!node)
+		return ;
+	if (!node->rule_name)
+		return ;
 	i = -1;
 	for (int i = 0; i < depth; i++)
 		printf("   |");
 	printf("%s\n", node->rule_name);
 	if (node->terminal)
+		return ;
+	if (!node->children)
 		return ;
 	while (++i < node->children->size)
 	{
@@ -269,22 +275,62 @@ void print_parse_tree(t_parse_tree *node, int depth)
 	}
 }
 
+int	count_split(char **input)
+{
+	int	i;
+
+	i = 0;
+	while (input[i])
+		i++;
+	return (i);
+}
+
+int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
+{
+	int				end;
+	t_ms_edge		*edge;
+	//int				i;
+
+	end = 0;
+	edge = ((t_ms_edge *)data->chart->adjacency_list[tree->start]->contents + end);
+	while (++end < data->chart->adjacency_list[tree->start]->size + 1)
+	{
+		//printf("YO! %d %d\n", edge->finish, tree->end);
+		if (edge->finish == tree->end)
+		{
+			printf("Found! %s %d\n", data->grammar->rules[edge->rule]->name, tree->end);
+			// i = -1;
+			// printf("Decompose ");
+			// while (++i < data->grammar->rules[edge->rule]->length)
+			// 	printf("%s ", data->grammar->rules[edge->rule]->symbols[i]->name);
+			// printf("\n");
+			tree->rule_name = (char *)data->grammar->rules[edge->rule]->name;
+			return (1);
+		}
+		edge = ((t_ms_edge *)data->chart->adjacency_list[tree->start]->contents + end);
+	}
+	tree->end = edge->finish;
+	return (0);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	(void)ac;
 	(void)av;
 	(void)env;
 	int	i = -1;
+	int	size;
 	char *chars = av[1];
 	char **input = ft_split(chars, ' ');
-	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * 10);
+	size = count_split(input) + 1;
+	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (size + 1));
 	t_ms_grammar	grammar;
-	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * 10);
+	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (size + 1));
 	t_graph			graph;
 	t_parse_tree	tree;
 	t_parsing_data	data;
 	set_test_grammar(&grammar);
-	while (++i < 10)
+	while (++i < size)
 	{
 		sets[i] = malloc(sizeof(t_earley_set));
 		reversed[i] = malloc(sizeof(t_earley_set));
@@ -293,20 +339,22 @@ int	main(int ac, char **av, char **env)
 		ft_darray_init(sets[i]->items, sizeof(t_earley_item), 20);
 		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), 20);
 	}
-	build_earley_items(sets, &grammar, 10, input);
+	build_earley_items(sets, &grammar, size, input);
 	//todo: reverse earley items.
-	print_earley(sets, &grammar, 10);
-	build_chart(sets, &graph, 10);
-	reverse_earley(sets, reversed, 10);
-	print_earley(reversed, &grammar, 10);
+	print_earley(sets, &grammar, size);
+	build_chart(sets, &graph, size);
+	reverse_earley(sets, reversed, size);
+	print_earley(reversed, &grammar, size);
 	data.chart = &graph;
 	data.grammar = &grammar;
 	data.input = input;
-	data.input_length = 9;
-	data.chart_size = 10;
+	data.input_length = size;
+	data.chart_size = size;
 	tree.start = 0;
 	tree.rule_name = (char *)data.grammar->start_rule;
-	tree.end = data.chart_size - 1;
+	//tree.end = data.chart_size - 1;
+	ms_start_rule(&tree, &data);
+	tree.end = data.input_length - 1;
 	tree.terminal = 0;
 	ms_build_parse_tree(&tree, &data);
 	print_parse_tree(&tree, 0);
