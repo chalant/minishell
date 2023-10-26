@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/25 18:24:08 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/26 16:04:49 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void	ms_kill_pid(int sig)
 
 int	main(void)
 {
+	t_shellshock		data;
 	char				*line;
 	extern int			rl_catch_signals;
 	struct sigaction	act_sigint;
@@ -81,10 +82,10 @@ int	main(void)
 	pid = 0;
 	rl_catch_signals = 0;
 	ft_bzero(&act_sigint, sizeof(struct sigaction));
-	act_sigint.__sigaction_u.__sa_handler = ms_new_prompt;
-	sigaction(SIGINT, &act_sigint, NULL);
 	ft_bzero(&act_sigquit, sizeof(struct sigaction));
+	act_sigint.__sigaction_u.__sa_handler = ms_new_prompt;
 	act_sigquit.__sigaction_u.__sa_handler = ms_kill_pid;
+	sigaction(SIGINT, &act_sigint, NULL);
 	sigaction(SIGQUIT, &act_sigquit, NULL);
 	line = readline(MS_PROMPT);
 	while (line)

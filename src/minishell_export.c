@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/20 18:34:36 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/26 17:50:25 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,46 +65,49 @@ static int	ms_env_alpha()
 	return (0);
 }
 
-static void	ms_add_var_env(char *var)
+static void	ms_add_var_env(t_shellshock *data, char *var)
 {
 	extern char	**environ;
 	int			i;
-// can we keep track of char **environ size?
-// if we unset a var we don't need to resize it
-// if there's left-over space we don't need to malloc anything here :)
-// if we do malloc something we could malloc like 3 lines at once
 
-	environ = ms_realloc(environ, 1);
-	if (!environ)
-		exit(1);
-// malloc failed
+	if (!data->env_excess)
+	{
+		environ = ms_realloc(environ, 3);
+		if (!environ)
+			exit(1);
+	// malloc failed
+		data->env_excess += 3;
+	}
 	i = 0;
 	while (environ[i])
 		i++;
 	environ[i] = var;
 	environ[i + 1] = NULL;
+	data->env_excess--;
 }
 
 // NOT TESTED YET WITH ARGS
 // no arguments: print env in alphabetical order (all uppercase before any lowercase)
 // always returns 0 (even on bad arguments it seems like) (ok not true, e.g. "export =ab=c")
-int	ms_export(char **arg)
+int	ms_export(t_shellshock *data, char **arg)
 {
+	char	*ptr;
 	char	**temp;
 
-// check input? if it starts with '=' that's bad
+// check input? if it starts with '=' or there's reserved symbols in the name that's bad
 	if (!arg || !*arg)
 		return (ms_env_alpha());
 	while (*arg)
 	{
-		temp = ms_get_var_env(*arg);
-		if (temp)
+		ptr = ms_get_var_env(*arg);
+		temp = &ptr;
+		if (*temp)
 		{
 			free(*temp);
 			*temp = *arg;
 		}
 		else
-			ms_add_var_env(*arg);
+			ms_add_var_env(data, *arg);
 		arg++;
 	}
 	return (0);
