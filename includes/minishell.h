@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/24 18:14:58 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/26 16:04:21 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@
 # include <signal.h>
 # include "minishell_parsing.h"
 # include "libft.h"
+
+typedef struct s_shellshock
+{
+	int		env_excess;
+}			t_shellshock;
 
 # define MS_PROMPT "shellshock$ "
 
