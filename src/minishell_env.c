@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:32:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/20 18:51:14 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/27 14:31:34 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,23 @@
 #include <crt_externs.h>
 
 // prints out env on std_out and returns 0
-int	ms_env()
+int	ms_env(void)
 {
 	extern char	**environ;
-	char		**envp;
+	int			i;
 
-	envp = environ;
-	while(*envp)
+	i = 0;
+	while (environ[i])
 	{
-		write(1, *envp, ft_strlen(*envp));
+		write(1, environ[i], ft_strlen(environ[i]));
 		write(1, "\n", 1);
-		envp++;
+		i++;
 	}
 	return (0);
 }
 
 // returns 1 if malloc failed, else 0
-int	ms_envcpy(void)
+int	ms_envcpy(t_shellshock *data)
 {
 	extern char	**environ;
 	char		**new;
@@ -40,6 +40,9 @@ int	ms_envcpy(void)
 	while (environ[i])
 		i++;
 	new = malloc(sizeof(char *) * (i + 1));
+	if (!new)
+		return (1);
+// malloc fail
 	i = 0;
 	while (environ[i])
 	{
@@ -48,17 +51,20 @@ int	ms_envcpy(void)
 		{
 			ft_clear_ds(new);
 			return (1);
+// malloc fail
 		}
 		i++;
 	}
 	new[i] = NULL;
+	data->env = new;
 	environ = new;
 	return (0);
 }
 
-// mallocs size of 'ptr' + 'addon', copies content of 'ptr' over and clears it
+// for ENVIRON: call with data->env = ft(data->env) and assign environ after
+// mallocs size of 'ptr' + 'add', copies content of 'ptr' over and clears it
 // returns new 'ptr' or NULL if malloc failed (always clears 'ptr')
-char	**ms_realloc(char **ptr, int addon)
+char	**ms_realloc(char **ptr, int add)
 {
 	size_t	i;
 	char	**new;
@@ -68,7 +74,13 @@ char	**ms_realloc(char **ptr, int addon)
 	i = 0;
 	while (ptr[i])
 		i++;
-	new = malloc(sizeof(char *) * (i + addon + 1));
+	new = malloc(sizeof(char *) * (i + add + 1));
+	if (!new)
+	{
+		ft_clear_ds(ptr);
+		return (NULL);
+// malloc failed
+	}
 	i = 0;
 	while (ptr[i])
 	{
@@ -86,22 +98,3 @@ char	**ms_realloc(char **ptr, int addon)
 	ft_clear_ds(ptr);
 	return (new);
 }
-
-/* TEST MAIN */
-
-// int	main(void)
-// {
-// 	extern char	**environ;
-
-// 	// environ = ms_realloc(environ, 1);
-// 	// if (!environ)
-// 	// 	return (1);
-// 	// i = 0;
-// 	// while (environ[i])
-// 	// 	i++;
-// 	// environ[i] = ft_strdup("test=ait");
-// 	// environ[i + 1] = NULL;
-// 	if (ms_envcpy())
-// 		return (1);
-// 	ft_clear_ds(environ);
-// }

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/26 17:50:25 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/27 13:53:04 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static int	ms_env_alpha()
 	{
 		if (ft_strncmp(envp[i], "_=", 2))
 			printf("%s\n", envp[i]);
-// swap out this printf (it's leaking 'still reachable' mem anyways?)
+// this printf is leaking 'still reachable' mem?
 		i++;
 	}
 	free(envp);
@@ -72,10 +72,11 @@ static void	ms_add_var_env(t_shellshock *data, char *var)
 
 	if (!data->env_excess)
 	{
-		environ = ms_realloc(environ, 3);
-		if (!environ)
+		data->env = ms_realloc(data->env, 3);
+		if (!data->env)
 			exit(1);
-	// malloc failed
+// malloc failed
+		environ = data->env;
 		data->env_excess += 3;
 	}
 	i = 0;
@@ -86,38 +87,32 @@ static void	ms_add_var_env(t_shellshock *data, char *var)
 	data->env_excess--;
 }
 
-// NOT TESTED YET WITH ARGS
-// no arguments: print env in alphabetical order (all uppercase before any lowercase)
+// free's arg (unless *arg == NULL)
+// no arguments: prints env in alphabetical order (all uppercase before any lowercase)
 // always returns 0 (even on bad arguments it seems like) (ok not true, e.g. "export =ab=c")
 int	ms_export(t_shellshock *data, char **arg)
 {
 	char	*ptr;
 	char	**temp;
+	int		i;
 
 // check input? if it starts with '=' or there's reserved symbols in the name that's bad
 	if (!arg || !*arg)
 		return (ms_env_alpha());
-	while (*arg)
+	i = 0;
+	while (arg[i])
 	{
-		ptr = ms_get_var_env(*arg);
+		ptr = ms_get_var_env(arg[i]);
 		temp = &ptr;
 		if (*temp)
 		{
 			free(*temp);
-			*temp = *arg;
+			*temp = arg[i];
 		}
 		else
-			ms_add_var_env(data, *arg);
-		arg++;
+			ms_add_var_env(data, arg[i]);
+		i++;
 	}
+	ft_clear_ds(arg);
 	return (0);
-}
-
-/* TEST MAIN */
-
-int	main(void)
-{
-	extern char	**environ;
-
-	ms_export(NULL);
 }

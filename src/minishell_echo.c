@@ -6,12 +6,13 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:10:33 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/20 18:02:57 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/27 12:50:49 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// free's arg
 int	ms_echo(char **arg)
 {
 	int	flag_n;
@@ -33,20 +34,6 @@ int	ms_echo(char **arg)
 	}
 	if (!flag_n)
 		write(STDOUT_FILENO, "\n", 1);
+	ft_clear_ds(arg);
 	return (0);
-}
-
-/* TEST MAIN */
-
-int	main(int ac, char **av)
-{
-	char	**arg;
-
-	arg = malloc(sizeof(char *) * ac);
-	ac--;
-	arg[ac] = NULL;
-	while (ac--)
-		arg[ac] = av[ac + 1];
-	ms_echo(arg);
-	free(arg);
 }
