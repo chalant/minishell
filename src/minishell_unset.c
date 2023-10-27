@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 18:31:09 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/27 13:53:32 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/27 16:20:03 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int	ms_unset(t_shellshock *data, char **arg)
 		i = -1 * (data->env_excess - 10);
 		data->env = ms_realloc(data->env, i);
 		if (!data->env)
-			exit (1);
+			exit(1);
 		environ = data->env;
 // error: malloc failed
 		data->env_excess += i;

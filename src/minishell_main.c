@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/27 15:53:28 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/27 16:18:04 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,15 +60,15 @@ static void	ms_sleep(char *line)
 	extern char	**environ;
 	char		*argv[2];
 
-	pid = fork ();
+	pid = fork();
 	if (!pid)
 	{
-		free (line);
+		free(line);
 		rl_clear_history();
 		argv[0] = "./sleep";
 		argv[1] = NULL;
-		execve ("sleep", argv, environ);
-		exit (1);
+		execve("sleep", argv, environ);
+		exit(1);
 	}
 	if (pid)
 		waitpid(pid, NULL, 0);
@@ -108,8 +108,8 @@ void	ms_kill_pid(int sig)
 		return ;
 	if (pid)
 	{
-		kill (pid, SIGQUIT);
-		write (STDOUT_FILENO, "Quit: 3\n", 8);
+		kill(pid, SIGQUIT);
+		printf("Quit: %i\n", SIGQUIT);
 	}
 }
 
