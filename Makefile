@@ -25,7 +25,10 @@ SRC_FILES = minishell_tokens.c \
 			minishell_recogniser.c \
 			minishell_parser.c \
 			minishell_graph.c \
-			minishell_grammar.c
+			minishell_grammar.c \
+			minishell_grammar_rules.c \
+			minishell_grammar_symbols.c \
+			minishell_grammar_matching.c
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))

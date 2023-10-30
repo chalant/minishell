@@ -24,7 +24,7 @@ static inline char	**clear_lst(char **s, int from)
 	return (NULL);
 }
 
-static inline int	ft_count(char const *s, char c)
+static inline int	ft_count_split(char const *s, char c)
 {
 	size_t	i;
 	int		count;
@@ -83,7 +83,7 @@ char	**ft_split(char const *s, char c)
 
 	if (!s)
 		return (NULL);
-	count = ft_count(s, c);
+	count = ft_count_split(s, c);
 	str = malloc(sizeof(char *) * (count + 1));
 	if (!str)
 		return (NULL);

@@ -10,19 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "minishell.h"
+#include "minishell.h"
 
-static int	count_split(char **input)
-{
-	int	i;
-
-	i = 0;
-	while (input[i])
-		i++;
-	return (i);
-}
-
-static const char	*g_minishell_grammar = "sum:sum <'+-' product\n"\
+static const char	*g_test_grammar = "sum:sum <'+-' product\n"\
 	"sum:product\n"\
 	"product:product <'*/' factor\n"\
 	"product:factor\n"\
@@ -31,185 +21,100 @@ static const char	*g_minishell_grammar = "sum:sum <'+-' product\n"\
 	"number:<'0123456789' number\n"\
 	"number:<'0123456789'\n";
 
-int ms_match_subset(t_ms_symbol *symbol, char *input)
-{
-	int	i;
+static const char	*g_minishell_grammar = "word:$'3'\n"\
+	"number:$'2'\n"\
+	"assignment-word:$'1'\n"\
+	
+	"command_argument:word command_argument\n"\
+	"command_argument:word\n"\
 
-	i = 0;
-	if (!input)
-		return (0);
-	while (input[i])
-	{
-		if (!ft_strchr(symbol->name, input[i]))
-			return (0);
-		i++;
-	}
-	return (1);
-}
+	"simple_command:word command_argument\n"\
+	"simple_command:word\n"\
 
-int ms_match_equal(t_ms_symbol *symbol, char *input)
-{
-	size_t	len;
+	"redirection:command ='>' word\n"\
+	"redirection:='>' word\n"\
+	"command:redirection\n"\
+	"command:command ='||' command_product\n"\
+	"command:command_product\n"\
+	"command_product:command_product ='&&' command_factor\n"\
+	"command_product:command_factor\n"\
+	"command_factor:='(' command =')'\n"\
+	"command_factor:simple_command\n"\
 
-	if (!input)
-		return (0);
-	len = ft_strlen(symbol->name);
-	if (ft_strlen(symbol->name) != len)
-		return (0);
-	if (ft_strnstr(symbol->name, input, len))
-		return (1);
-	return (0);
-}
+	"pipeline:command\n"\
+	"pipeline:pipeline ='|' command\n";
 
-int	ms_match_integer(t_ms_symbol *symbol, char *input)
-{
-	(void)symbol;
-	(void)input;
-	return (0);
-}
-
-int	ms_match_string(t_ms_symbol *symbol, char *input)
-{
-	(void)symbol;
-	(void)input;
-	return (0);
-}
-
-int	ms_strclen(const char *str, char c)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] && str[i] != c)
-		i++;
-	return (i);
-}
-
-char *ms_strcdup(const char *src, char c)
+char **ft_reverse_strings(char **strings)
 {
 	int		i;
-	char	*dest;
+	int		j;
+	int		max;
+	char	*tmp;
 
-	i = 0;
-	dest = malloc(sizeof(char) * (ms_strclen(src, c) + 1));
-	if (!dest)
+	if (!strings)
 		return (NULL);
-	while (src[i] && src[i] != c)
+	i = 0;
+	j = ft_count_strings(strings) - 1;
+	max = j + 1;
+	while (i < j)
 	{
-		dest[i] = src[i];
+		tmp = strings[i];
+		strings[i] = strings[j];
+		strings[j] = tmp;
 		i++;
+		j--;
 	}
-	dest[i] = '\0';
-	return (dest);
+	strings[max] = 0;
+	return (strings);
 }
 
-int	handle_terminal_symbol(t_ms_symbol *symbol, char *input)
+char **get_test_definition(void)
 {
-	char	*ptr;
-	char	*name;
-
-	name = ft_strchr(input, '\'');
-	name++;
-	symbol->name = ms_strcdup(name, '\'');
-	symbol->symbol_type = MS_TERMINAL_SYMBOL;
-	if (ft_strchr(input, '='))
-		symbol->match = ms_match_equal;
-	else if (ft_strchr(input, '<'))
-		symbol->match = ms_match_subset;
-	else
-	{
-		ptr = ft_strchr(input, '%');
-		if (!ptr)
-			return (0);
-		ptr++;
-		ptr++;
-		if (*ptr == MS_NEW_LINE)
-		{
-			symbol->name = "\n";
-			symbol->match = ms_match_equal;
-		}
-		else if (*ptr == MS_INTEGER)
-		{
-			symbol->name = "number";
-			symbol->match = ms_match_integer;
-		}
-		else if (*ptr == MS_EQUAL)
-		{
-			symbol->name = "=";
-			symbol->match = ms_match_equal;
-		}
-		else if (*ptr == MS_STRING)
-		{
-			symbol->name = "string";
-			symbol->match = ms_match_string;
-		}
-
-	}
-	return (1);
+	return (ft_split(g_test_grammar, '\n'));
 }
 
-const char *get_test_definition(void)
+char	**get_minishell_definition(void)
 {
-	return (g_minishell_grammar);
-}
-
-int	add_rule(t_ms_grammar *grammar, char **rules, int i)
-{
-	int			j;
-	char		**rule;
-	char		**symbols;
-	t_ms_symbol	*symbol;
-
-	rule = ft_split(rules[i], ':');
-	grammar->rules[i] = malloc(sizeof(t_ms_rule));
-	grammar->rules[i]->name = rule[0];
-	symbols = ft_split(rule[1], ' ');
-	grammar->rules[i]->symbols = malloc((count_split(symbols) + 1) * sizeof(t_ms_symbol *));
-	j = 0;
-	// function loop for setting up the symbol.
-	while (symbols[j])
-	{
-		symbol = malloc(sizeof(t_ms_symbol));
-		symbol->name = NULL;
-		if (!symbol)
-			return (-1);
-		grammar->rules[i]->symbols[j] = symbol;
-		//todo: this is a terminal symbol
-		if (ft_strchr(symbols[j], '\''))
-			handle_terminal_symbol(symbol, symbols[j]);
-		else
-		{
-			symbol->name = symbols[j];
-			symbol->symbol_type = MS_NON_TERMINAL_SYMBOL;
-		}
-		j++;
-	}
-	symbol = malloc(sizeof(t_ms_symbol));
-	symbol->name = "nil";
-	symbol->symbol_type = MS_NULL_SYMBOL;
-	grammar->rules[i]->symbols[j] = symbol;
-	grammar->rules[i]->length = j + 1;
-	return (1);
+	return (ft_reverse_strings(ft_split(g_minishell_grammar, '\n')));
 }
 
 //todo use t_darray for splits, symbols and rules.
-int	set_grammar(t_ms_grammar *grammar, const char *definition)
+int	set_grammar(t_ms_grammar *grammar, char **definition)
 {
-	int			i;
-	char		**rules;
-	// int			size;
+	int	i;
 
 	i = 0;
-	rules = ft_split(definition, '\n');
-	//size = count_split(rules);
-	grammar->rules = malloc(count_split(rules) * sizeof(t_ms_rule *));
-	//todo: set start rule of the grammar as-well
-	while (rules[i])
+	if (!definition)
+		return (-1);
+	grammar->rules = malloc(ft_count_strings(definition) * sizeof(t_ms_rule *));
+	if (!grammar->rules)
+		return (-1);
+	while (definition[i])
 	{
-		add_rule(grammar, rules, i);
+		add_rule(grammar, definition, i);
 		i++;
 	}
 	grammar->start_rule = grammar->rules[0]->name;
 	grammar->length = i;
+	return (1);
+}
+
+int	print_grammar(t_ms_grammar *grammar)
+{
+	int			i;
+	int			j;
+	t_ms_rule	*rule;
+
+	i = 0;
+	while (i < grammar->length)
+	{
+		rule = grammar->rules[i];
+		printf("%s ->", rule->name);
+		j = -1;
+		while (++j < rule->length)
+			printf(" %s", rule->symbols[j]->name);
+		printf("\n");
+		i++;
+	}
 	return (1);
 }

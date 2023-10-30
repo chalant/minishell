@@ -71,6 +71,7 @@ void	ms_tokeniser(const char *input, t_darray *tokens)
 {
 	const char	*start;
 	const char	*end;
+	t_token		tok;
 
 	end = input;
 	while (end && *end)
@@ -85,6 +86,8 @@ void	ms_tokeniser(const char *input, t_darray *tokens)
 		ms_add_token(start, end, tokens);
 		end = ms_handle_symbol(end, tokens);
 	}
+	tok.string = NULL;
+	ft_darray_append(tokens, &tok);
 }
 
 /* TEST MAIN AND PRINT FOR TOKENS RIGHT HERE */
@@ -101,7 +104,7 @@ void	ms_print_tokens(t_darray *tokens)
 		printf("%s", ((t_token *)(tokens->contents + i * tokens->type_size))->string);
 		i++;
 		if (i < tokens->size)
-			printf(", ");
+			printf(",");
 	}
 	printf("}\n");
 }

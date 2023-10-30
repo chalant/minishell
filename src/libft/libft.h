@@ -75,6 +75,8 @@ char				**ft_split(char const *s, char c);
 size_t				ft_strlcat(char *dst, const char *src, size_t size);
 size_t				ft_strlcpy(char *dst, const char *src, size_t size);
 size_t				ft_strlen(const char *s);
+size_t				ft_count(void *elements, size_t type_size);
+size_t				ft_count_strings(char **strings);
 
 int					ft_lstsize(t_list *lst);
 

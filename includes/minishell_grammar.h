@@ -1,17 +1,21 @@
 #ifndef MINISHELL_GRAMMAR_H
 # define MINISHELL_GRAMMAR_H
 
+#include "minishell_tokens.h"
+
 # define MS_NEW_LINE '0'
 # define MS_EQUAL '1'
 # define MS_INTEGER '2'
 # define MS_STRING '3'
+# define MS_SPACE '4'
 
 typedef struct	s_ms_symbol
 {
 	char		*name;
 	int			symbol_type;
 	int			rule;
-	int			(*match)(struct s_ms_symbol*, char *);
+	int			skip;
+	int			(*match)(struct s_ms_symbol*, t_token *);
 }				t_ms_symbol;
 
 typedef struct	s_ms_rule
@@ -30,57 +34,19 @@ typedef struct	s_ms_grammar
 	int				length;
 }				t_ms_grammar;
 
-# define MINISHELL_GRAMMAR "word:%'3'\n"\
-						   "assignment-word:%'1'\n"\
-						   "number:%'2'\n"\
-						   "word_list:word\n"\
-						   "word_list:word_list word\n"\
-						   "redirection:='>' word\n"\
-						   "redirection:='<' word\n"\
-						   "redirection:number ='>' word\n"\
-						   "redirection:number ='<' word\n"\
-						   "redirection:='>>' word\n"\
-						   "redirection:number ='>>' word\n"\
-						   "redirection:='<<' word\n"\
-						   "redirection:number ='<<' word\n"\
-						   "simple_command_element:word\n"\
-						   "simple_command_element:assignment-word\n"\
-						   "simple_command_element:redirection\n"\
-						   "redirection_list:redirection\n"\
-						   "redirection_list:redirection_list redirection\n"\
-						   "simple_command:simple_command_element\n"\
-						   "simple_command:simple_command simple_command_element\n"\
-						   "command:simple_command\n"\
-						   "command:shell_command\n"\
-						   "command:shell_command redirection_list\n"\
-						   "shell_command:subshell\n"\
-						   "subshell:'(' compound_list ')'\n"\
-						   "compound_list:newline_list list0\n"\
-						   "list0:list1 %'0' newline_list\n"\
-						   "list0:list1 ='&' newline_list\n"\
-						   "list0:list1 =';' newline_list\n"\
-						   "list1:list1 ='&&' newline_list list1\n"\
-						   "list1:list1 ='||' newline_list list1\n"\
-						   "list1:list1 ='&' newline_list list1\n"\
-						   "list1:list1 =';' newline_list list1\n"\
-						   "list1:list1 %'0' newline_list list1\n"\
-						   "list1:pipeline_command\n"\
-						   "newline_list:newline_list %'0'\n"\
-						   "simple_list:simple_list1\n"\
-						   "simple_list:simple_list1 ='&'\n"\
-						   "simple_list:simple_list1 =';'\n"\
-						   "simple_list1:simple_list1 ='&&' newline_list simple_list1\n"\
-						   "simple_list1:simple_list1 ='||' newline_list simple_list1\n"\
-						   "simple_list1:simple_list1 ='&' simple_list1\n"\
-						   "simple_list1:simple_list1 =';' simple_list1\n"\
-						   "simple_list1:pipeline_command\n"\
-						   "pipeline_command:pipeline\n"\
-						   "pipeline:pipeline ='|' newline_list pipeline\n"\
-						   "pipeline:pipeline ='|&' newline_list pipeline\n"\
-						   "pipeline:command\n"
+int			ms_match_subset(t_ms_symbol *symbol, t_token *token);
+int 		ms_match_equal(t_ms_symbol *symbol, t_token *token);
+int			ms_match_integer(t_ms_symbol *symbol, t_token *token);
+int			ms_match_string(t_ms_symbol *symbol, t_token *token);
+int			ms_match_newline(t_ms_symbol *symbol, t_token *token);
 
-int	set_grammar(t_ms_grammar *grammar, const char *definition);
-const char *get_test_definition(void);
-// int	get_minishell_definition(char **dest);
+int			add_rule(t_ms_grammar *grammar, char **rules, int i);
+int			handle_terminal_symbol(t_ms_symbol *symbol, char *input);
+
+int			set_grammar(t_ms_grammar *grammar, char **definition);
+int			print_grammar(t_ms_grammar *grammar);
+
+char		**get_test_definition(void);
+char		**get_minishell_definition(void);
 
 #endif

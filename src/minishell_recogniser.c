@@ -88,7 +88,7 @@ int	earley_predict(t_earley_set **sets, t_ms_grammar *grammar, t_ms_symbol *symb
 }
 
 //add items to the next state if they match
-int	earley_scan(t_earley_set **sets, t_ms_symbol *symbol, int state_id, int item_idx, char **input)
+int	earley_scan(t_earley_set **sets, t_ms_symbol *symbol, int state_id, int item_idx, t_darray *tokens)
 {
 	t_earley_item	new_item;
 	t_earley_item	*item;
@@ -96,7 +96,7 @@ int	earley_scan(t_earley_set **sets, t_ms_symbol *symbol, int state_id, int item
 
 	items = (t_earley_item *)sets[state_id]->items->contents;
 	item = items + item_idx;
-	if (symbol->match(symbol, input[state_id]))
+	if (symbol->match(symbol, (t_token *)ft_darray_get(tokens, state_id)))
 	{
 		new_item.next = item->next + 1;
 		new_item.start = item->start;
@@ -108,12 +108,13 @@ int	earley_scan(t_earley_set **sets, t_ms_symbol *symbol, int state_id, int item
 	return (0);
 }
 
-int	build_earley_items(t_earley_set **sets, t_ms_grammar *grammar, int n_sets, char **input)
+int	build_earley_items(t_earley_set **sets, t_ms_grammar *grammar, int n_sets, t_darray *tokens)
 {
+	(void)n_sets;
 	int				i;
 	int				j;
 	t_earley_item	earley_item;
-	t_earley_item	*items;
+	//t_earley_item	*items;
 	t_ms_symbol		*symbol;
 
 	i = -1;
@@ -130,19 +131,19 @@ int	build_earley_items(t_earley_set **sets, t_ms_grammar *grammar, int n_sets, c
 		}
 	}
 	i = -1;
-	while (++i < n_sets)
+	while (++i < tokens->size)
 	{
 		j = -1;
 		while (++j < sets[i]->items->size)
 		{
-			items = (t_earley_item *)sets[i]->items->contents;
-			symbol = ms_next_symbol(grammar, items + j);
+			//items = (t_earley_item *)sets[i]->items->contents;
+			symbol = ms_next_symbol(grammar, (t_earley_item *)ft_darray_get(sets[i]->items, j));
 			if (symbol->symbol_type == MS_NON_TERMINAL_SYMBOL)
 				earley_predict(sets, grammar, symbol, i);
 			else if (symbol->symbol_type == MS_TERMINAL_SYMBOL)
-				earley_scan(sets, symbol, i, j, input);
+				earley_scan(sets, symbol, i, j, tokens);
 			else if (symbol->symbol_type == MS_NULL_SYMBOL)
-				earley_complete(sets, grammar, items + j, i);
+				earley_complete(sets, grammar, (t_earley_item *)ft_darray_get(sets[i]->items, j), i);
 			else
 				printf("Illegal rule");
 		}

@@ -40,7 +40,7 @@ typedef struct	s_parsing_data
 {
 	t_ms_grammar	*grammar;
 	t_graph			*chart;
-	char			**input;
+	t_darray		*tokens;
 	int				input_length;
 	int				chart_size;
 }				t_parsing_data;
@@ -49,6 +49,7 @@ typedef struct	s_parser_state
 {
 	int				depth;
 	int				node;
+	int				symbol_type;
 	t_ms_rule		*rule;
 }				t_parser_state;
 
@@ -62,7 +63,7 @@ typedef struct	s_parse_tree
 	t_darray	*children;
 }				t_parse_tree;
 
-int	build_earley_items(t_earley_set **sets, t_ms_grammar *grammar, int n_sets, char **input);
+int	build_earley_items(t_earley_set **sets, t_ms_grammar *grammar, int n_sets, t_darray *tokens);
 int	ms_build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
 
 #endif

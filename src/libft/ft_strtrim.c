@@ -27,7 +27,7 @@ static inline int	is_sep(char c, char const *set)
 	return (0);
 }
 
-static inline size_t	ft_count(const char *s, char const *set)
+static inline size_t	ft_count_trim(const char *s, char const *set)
 {
 	size_t	i;
 	size_t	count;
@@ -74,7 +74,7 @@ char	*ft_strtrim(char const *s1, char const *set)
 		return (ft_strdup(s1));
 	while (*s1 && is_sep(*s1, set))
 		s1++;
-	count = ft_count(s1, set);
+	count = ft_count_trim(s1, set);
 	str = malloc(sizeof(char) * (count + 1));
 	if (!str)
 		return (NULL);
