@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:26 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/23 13:50:07 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/10/30 14:09:40 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state stat
 	subtree.children = NULL;
 	if (symbol->symbol_type == MS_TERMINAL_SYMBOL)
 	{
-		//printf("Matching! 1 %s %s %d\n", ((t_token *)ft_darray_get(data->tokens, state.node))->string, symbol->name, state.node);
 		subtree.terminal = 1;
 		if (state.node >= tree->end)
 			return (0);
@@ -42,7 +41,6 @@ int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state stat
 			subtree.start = state.node - 1;
 			subtree.end = state.node;
 			ft_darray_set(tree->children, &subtree, state.depth);
-			//ft_darray_append(tree->children, &subtree);
 			nstate.depth = state.depth + 1;
 			nstate.rule = state.rule;
 			nstate.node = state.node + 1;
@@ -71,9 +69,6 @@ int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state stat
 					subtree.start = state.node;
 					subtree.end = nstate.node;
 					ft_darray_set(tree->children, &subtree, state.depth);
-					//ft_darray_append(tree->children, &subtree);
-					//printf("Success! 2 %s %d %d %d\n", symbol->name, state.node, nstate.node, state.depth);
-					//return (1);
 				}
 				if (nstate.node == tree->end)
 					return (1);
@@ -113,7 +108,6 @@ int	ms_build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 	int				i;
 	t_ms_edge		*edge;
 	t_parse_tree	*child;
-	// t_darray		search;
 
 	if (parse_tree->terminal || !parse_tree->end || parse_tree->start == parse_tree->end)
 		return (0);

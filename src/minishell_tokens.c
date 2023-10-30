@@ -3,50 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_tokens.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/16 18:15:34 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/30 14:20:38 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // returns the next instance of *end
-static const char	*ms_skip_quoted(const char *end)
+static int	ms_skip_quoted(const char **end)
 {
 	char	quote;
 
-	quote = *end;
-	end++;
-	end = ft_strchr(end, quote);
-	if (!end)
-		exit(2);
-// error: unclosed quote
-	return (end);
+	quote = **end;
+	*end = ft_strchr(*end + 1, quote);
+	if (!*end)
+		return (2);
+	return (0);
 }
 
 // mallocs and adds token including start but not end
-static void	ms_add_token(const char *start, const char *end, t_darray *tokens)
+static int	ms_add_token(const char *start, const char *end, t_darray *tokens, t_token *token)
 {
-	t_token	new;
-
 	if (start == end)
-		return ;
-	new.string = malloc(sizeof(char) * (end - start + 1));
-	if (!new.string)
-		exit(1);
-// error: malloc failed
-	ft_strlcpy(new.string, start, end - start + 1);
-	if (ft_darray_append(tokens, &new) == -1)
-		exit(1);
-// error: malloc failed
+		return (0);
+	token->string = malloc(sizeof(char) * (end - start + 1));
+	if (ft_strchr(RESERVED_SYMBOLS, *start))
+		token->flags |= IS_RESERVED;
+	if (!token->string)
+		return (-1);
+	ft_strlcpy(token->string, start, end - start + 1);
+	return (ft_darray_append(tokens, token));
 }
 
 static const char	*ms_handle_symbol(const char *end, t_darray *tokens)
 {
 	const char	*start;
+	t_token		new;
 
+	new.flags = 0;
 	if (!*end)
 		return (end);
 	if (ft_strchr(SKIP_SYMBOLS, *end))
@@ -54,8 +51,11 @@ static const char	*ms_handle_symbol(const char *end, t_darray *tokens)
 	start = end;
 	end++;
 	if (ft_strchr(DOUBLE_SYMBOLS, *start) && *start == *end)
+	{
+		new.flags |= IS_RESERVED;
 		end++;
-	ms_add_token(start, end, tokens);
+	}
+	ms_add_token(start, end, tokens, &new);
 	return (end);
 }
 
@@ -67,12 +67,13 @@ void	ms_clear_token(void *token)
 
 // for now just 'exit()' on early exits (malloc and unclosed quotes)
 // it's possible to put an add_flag ft in the while loop if needed
-void	ms_tokeniser(const char *input, t_darray *tokens)
+int	ms_tokeniser(const char *input, t_darray *tokens)
 {
 	const char	*start;
 	const char	*end;
 	t_token		tok;
 
+	tok.flags = 0;
 	end = input;
 	while (end && *end)
 	{
@@ -80,14 +81,19 @@ void	ms_tokeniser(const char *input, t_darray *tokens)
 		while (*end && !ft_strchr(RESERVED_SYMBOLS, *end))
 		{
 			if (*end == '"' || *end == '\'')
-				end = ms_skip_quoted(end);
+			{
+				//todo: handle errors
+				ms_skip_quoted(&end);
+				tok.flags |= IS_QUOTED;
+			}
 			end++;
 		}
-		ms_add_token(start, end, tokens);
+		//todo:handle errors
+		ms_add_token(start, end, tokens, &tok);
 		end = ms_handle_symbol(end, tokens);
 	}
 	tok.string = NULL;
-	ft_darray_append(tokens, &tok);
+	return (ft_darray_append(tokens, &tok));
 }
 
 /* TEST MAIN AND PRINT FOR TOKENS RIGHT HERE */

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/23 13:50:06 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/10/30 12:59:10 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,13 +146,13 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 	while (++end < data->chart->adjacency_list[tree->start]->size)
 	{
 		edge = ((t_ms_edge *)data->chart->adjacency_list[tree->start]->contents + end);
-		if (edge->finish > longest->finish)
+		if (edge->finish >= longest->finish)
 			longest = edge;
 		//printf("Starting rule: %d %d\n", longest->finish, end);
 	}
 	tree->rule_name = (char *)data->grammar->rules[longest->rule]->name;
 	tree->end = longest->finish;
-	//printf("Starting rule: %s %d\n", tree->rule_name, longest->finish);
+	printf("Starting rule: %s %d\n", tree->rule_name, longest->finish);
 	return (0);
 }
 
