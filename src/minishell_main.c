@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/27 16:18:04 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/31 13:55:54 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ static void	ms_sleep(char *line)
 	}
 	if (pid)
 		waitpid(pid, NULL, 0);
+		pid = 0;
 }
 
 // should free line
@@ -135,7 +136,6 @@ int	main(void)
 	line = readline(MS_PROMPT);
 	while (line)
 	{
-		pid = 0;
 		ms_process_line(&data, line);
 		line = readline(MS_PROMPT);
 	}
