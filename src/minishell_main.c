@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/31 13:55:54 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/10/31 16:53:18 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ int	ms_process_line(t_shellshock *data, char *line)
 	else if (!ft_strncmp(line, "sleep", 6))
 		ms_sleep(line);
 // do more stuff, just have some fun with it :)
+else if (!ft_strncmp(line, "* ", 2))
+ms_wildcard(line + 2);
 	if (*line)
 		add_history(line);
 	free(line);
@@ -101,6 +103,7 @@ void	ms_new_prompt(int sig)
 	rl_replace_line("", 1);
 	rl_on_new_line();
 	rl_redisplay();
+// set $? to 130
 }
 
 void	ms_kill_pid(int sig)
@@ -111,6 +114,7 @@ void	ms_kill_pid(int sig)
 	{
 		kill(pid, SIGQUIT);
 		printf("Quit: %i\n", SIGQUIT);
+// set $? to 131
 	}
 }
 

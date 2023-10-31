@@ -13,6 +13,8 @@ SRC_FILES = minishell_main.c \
 			minishell_variable_util.c \
 			minishell_env.c \
 			minishell_echo.c \
+			minishell_wildcard.c \
+			minishell_error.c \
 			#minishell_recogniser.c \
 			minishel.c \
 			minishell_parser.c
