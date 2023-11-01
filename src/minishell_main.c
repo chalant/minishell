@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/31 16:53:18 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/01 16:14:22 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,27 @@ void	ms_exit(t_shellshock *data, int exit_value)
 		return ;
 	write(STDOUT_FILENO, "exit\n", 5);
 	exit(exit_value);
+}
+
+static void	temp_print_darray(t_darray *a)
+{
+	int	i;
+
+	i = 0;
+	printf("{");
+	while (i < a->size)
+	{
+		if (i)
+			printf(" , ");
+		printf("%s", ((char **) a->contents)[i]);
+		i++;
+	}
+	printf("}\n");
+}
+
+static void	temp_free_darray(void *content)
+{
+	free(*(char **) content);
 }
 
 // returns 1 if something was executed
@@ -78,13 +99,21 @@ static void	ms_sleep(char *line)
 // should free line
 int	ms_process_line(t_shellshock *data, char *line)
 {
-	if (ms_parse_builtins(data, line))
+	t_darray	buf;
+
+	if (ft_strchr(line, '*'))
+	{
+		printf("checking wildcard results...\n");
+		ft_darray_init(&buf, sizeof(char *), 20);
+		ms_wildcard(&buf, line);
+		temp_print_darray(&buf);
+		ft_darray_delete(&buf, temp_free_darray);
+	}
+	else if (ms_parse_builtins(data, line))
 		(void) line;
 	else if (!ft_strncmp(line, "sleep", 6))
 		ms_sleep(line);
 // do more stuff, just have some fun with it :)
-else if (!ft_strncmp(line, "* ", 2))
-ms_wildcard(line + 2);
 	if (*line)
 		add_history(line);
 	free(line);
