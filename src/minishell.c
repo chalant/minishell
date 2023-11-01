@@ -124,16 +124,6 @@ void print_parse_tree(t_parse_tree *node, int depth)
 	}
 }
 
-int	count_split(char **input)
-{
-	int	i;
-
-	i = 0;
-	while (input[i])
-		i++;
-	return (i);
-}
-
 int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 {
 	int				end;
@@ -162,17 +152,21 @@ int	main(int ac, char **av, char **env)
 	(void)av;
 	(void)env;
 	int		i = -1;
-	int		size;
-	char	**grammar_definition;
-
-	t_darray	tokens;
+	int					size;
+	char				**grammar_definition;
+	t_tokeniser_info	info;
+	t_darray			tokens;
 
 	if (ac != 2)
 		return (1);
 	printf("INPUT: \"%s\"\n", av[1]);
+	
 	if (ft_darray_init(&tokens, sizeof(t_token), 20) == -1)
 		return (1);
-	ms_tokeniser(av[1], &tokens);
+	info.reserved_double = RESERVED_DOUBLE;
+	info.reserved_single = RESERVED_SINGLE;
+	info.reserved_skip = RESERVED_SKIP;
+	ms_tokeniser(av[1], &tokens, &info);
 	ms_print_tokens(&tokens);
 	//ft_darray_delete(&tokens, ms_clear_token);
 	
@@ -194,8 +188,8 @@ int	main(int ac, char **av, char **env)
 		reversed[i] = malloc(sizeof(t_earley_set));
 		sets[i]->items = malloc(sizeof(t_darray));
 		reversed[i]->items = malloc(sizeof(t_darray));
-		ft_darray_init(sets[i]->items, sizeof(t_earley_item), size);
-		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size);
+		ft_darray_init(sets[i]->items, sizeof(t_earley_item), size + 1);
+		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size + 1);
 	}
 	build_earley_items(sets, &grammar, size, &tokens);
 	//todo: reverse earley items.

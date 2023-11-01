@@ -33,6 +33,8 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 
 	"redirection:command ='>' word\n"\
 	"redirection:='>' word\n"\
+	"redirection:command ='<' word\n"\
+	"redirection:='<' word\n"\
 	"command:redirection\n"\
 	"command:command ='||' command_product\n"\
 	"command:command_product\n"\
