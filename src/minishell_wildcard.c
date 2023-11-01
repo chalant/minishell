@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/01 17:03:13 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/01 17:27:17 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,9 +86,9 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *token)
 	return (1);
 }
 
-// returns 0 if succesful
-// returns malloced strs in buf
-// buf is an initialised empty darray"
+// returns 0 if no errors
+// returns malloced strs in t_darray *buf
+// buf is an initialised empty darray
 int	ms_wildcard(t_darray *buf, char *token)
 {
 	DIR				*dirp;
@@ -107,8 +107,8 @@ int	ms_wildcard(t_darray *buf, char *token)
 			{
 				closedir(dirp);
 				return (1);
-			}
 // malloc error
+			}
 		entryp = readdir(dirp);
 	}
 	closedir(dirp);

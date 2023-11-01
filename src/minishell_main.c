@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/01 16:14:22 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/01 17:28:54 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static void	temp_print_darray(t_darray *a)
 	printf("}\n");
 }
 
-static void	temp_free_darray(void *content)
+static void	ms_freestr_darray(void *content)
 {
 	free(*(char **) content);
 }
@@ -105,9 +105,9 @@ int	ms_process_line(t_shellshock *data, char *line)
 	{
 		printf("checking wildcard results...\n");
 		ft_darray_init(&buf, sizeof(char *), 20);
-		ms_wildcard(&buf, line);
+		if (!ms_wildcard(&buf, line))
 		temp_print_darray(&buf);
-		ft_darray_delete(&buf, temp_free_darray);
+		ft_darray_delete(&buf, ms_freestr_darray);
 	}
 	else if (ms_parse_builtins(data, line))
 		(void) line;
