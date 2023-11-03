@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/03 14:00:56 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/03 14:45:07 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,9 +111,10 @@ int	ms_wildcard(t_darray *buf, char *token)
 	entryp = readdir(dirp);
 	while (entryp)
 	{
-		if (ms_wildcard_cmp(entryp, token))
-			if (ms_wildcard_add(entryp, buf))
-				return (ms_wildcard_error(dirp, buf, ERR_MALLOC));
+		if (ft_strncmp(entryp->d_name, ".", 2) && ft_strncmp(entryp->d_name, "..", 3))
+			if (ms_wildcard_cmp(entryp, token))
+				if (ms_wildcard_add(entryp, buf))
+					return (ms_wildcard_error(dirp, buf, ERR_MALLOC));
 // malloc error
 		entryp = readdir(dirp);
 	}
