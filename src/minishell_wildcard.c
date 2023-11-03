@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/03 14:45:07 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/03 20:11:17 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,18 +42,30 @@ static int	ms_wildcard_add(struct dirent *entryp, t_darray *buf)
 
 // returns -1 if no match, and amount of chars compared if a match
 // includes terminating 0
-static int	ms_cmp_until_wc(char *name, char *token)
+static int	ms_cmp_until_wc(char *name, char *token, int *qts)
 {
-	int	i;
+	int		i;
+	char	cqt;
 
 	i = 0;
-	while ((name[i] || token[i]) && token[i] != '*')
+	*qts = 0;
+	while ((name[i] || token[i + *qts]) && (*qts % 2 || token[i + *qts] != '*'))
 	{
-		if (name[i] != token[i])
+		while ((!(*qts % 2) && (token[i + *qts] == '"' || token[i + *qts] == '\'')) || ((*qts % 2) && cqt == token[i + *qts]))
+		{
+			if (!(*qts % 2))
+				cqt = token[i + *qts];
+			(*qts)++;
+		}
+		if ((!name[i] && !token[i + *qts]) || (!(*qts % 2) && token[i + *qts] == '*'))
+			break ;
+		if (name[i] != token[i + *qts])
+		{
 			return (-1);
+		}
 		i++;
 	}
-	if (!token[i] || token[i] == '*')
+	if (!token[i + *qts] || token[i + *qts] == '*')
 		return (i);
 	return (-1);
 }
@@ -63,21 +75,23 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *token)
 {
 	char	*name;
 	int		i;
+	int		qts;
 
 	name = entryp->d_name;
-	i = ms_cmp_until_wc(name, token);
+	i = ms_cmp_until_wc(name, token, &qts);
 	if (i == -1)
+	{
 		return (0);
+	}
 	name += i;
-	if (!*name && (!token[i] || !token[i + 1]))
+	if (!*name && (!token[i + qts] || !token[i + qts + 1]))
 		return (1);
-	token += i + 1;
-// printf("breakpoint 1: name = %s, token = %s\n", name, token);
+	token += i + qts + 1;
 	while (*token)
 	{
 		while (*name)
 		{
-			i = ms_cmp_until_wc(name, token);
+			i = ms_cmp_until_wc(name, token, &qts);
 			if (i > -1)
 				break ;
 			name++;
@@ -85,13 +99,16 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *token)
 		if (!*name)
 			break ;
 		name += i;
-		if (!*name && (!token[i] || !token[i + 1]))
+		if (!*name && (!token[i + qts] || !token[i + qts + 1]))
 			return (1);
-		token += i + 1;
-// printf("breakpoint 2: name = %s, token = %s\n", name, token);
+		token += i + qts + 1;
 	}
+	while ((*token == '"' || *token == '\'') && token[0] == token[1])
+		token += 2;
 	if (*token)
+	{
 		return (0);
+	}
 	return (1);
 }
 
@@ -115,7 +132,7 @@ int	ms_wildcard(t_darray *buf, char *token)
 			if (ms_wildcard_cmp(entryp, token))
 				if (ms_wildcard_add(entryp, buf))
 					return (ms_wildcard_error(dirp, buf, ERR_MALLOC));
-// malloc error
+// malloc error (print error or no?)
 		entryp = readdir(dirp);
 	}
 	closedir(dirp);

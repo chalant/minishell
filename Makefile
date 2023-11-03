@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
+#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/11/03 15:00:06 by ychalant         ###   ########.fr        #
+#    Updated: 2023/11/03 17:17:30 by bvercaem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ OBJ_DIR = ./obj
 
 INCLUDES_FILES = minishell.h \
 				 minishell_errors.h \
-				 minishell_tokens.h \
+				 #minishell_tokens.h \
 				 minishell_graph.h \
 				 minishell_parsing.h \
 				 minishell_grammar.h
@@ -31,10 +31,7 @@ SRC_FILES = minishell_main.c \
 			minishell_echo.c \
 			minishell_wildcard.c \
 			minishell_error.c \
-			#minishell_recogniser.c \
-			minishel.c \
-			minishell_parser.c
-SRC_FILES = minishell_tokens.c \
+			#minishell_tokens.c \
 			minishell.c \
 			minishell_recogniser.c \
 			minishell_parser.c \

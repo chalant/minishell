@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/03 13:49:17 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/03 18:55:27 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,18 +101,18 @@ int	ms_process_line(t_shellshock *data, char *line)
 {
 	t_darray	buf;
 
-	if (ft_strchr(line, '*'))
-	{
-		printf("checking wildcard results...\n");
-		ft_darray_init(&buf, sizeof(char *), 20);
-		if (!ms_wildcard(&buf, line))
-		temp_print_darray(&buf);
-		ft_darray_delete(&buf, ms_freestr_darray);
-	}
-	else if (ms_parse_builtins(data, line))
+	if (ms_parse_builtins(data, line))
 		(void) line;
 	else if (!ft_strncmp(line, "sleep", 6))
 		ms_sleep(line);
+	else
+	{
+		ft_darray_init(&buf, sizeof(char *), 20);
+		if (!ms_wildcard(&buf, line))
+		printf("matches: ");
+		temp_print_darray(&buf);
+		ft_darray_delete(&buf, ms_freestr_darray);
+	}
 // do more stuff, just have some fun with it :)
 	if (*line)
 		add_history(line);
