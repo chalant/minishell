@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/01 15:41:26 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/03 13:47:55 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int		ms_echo(char **arg);
 void	ms_cd(t_shellshock *data, char *path);
 void	ms_pwd(t_shellshock *data);
 int		ms_wildcard(t_darray *buf, char *token);
+void	ms_freestr_darray(void *content);
 
 int		ms_env(void);
 int		ms_export(t_shellshock *data, char **arg);

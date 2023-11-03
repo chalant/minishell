@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:45:06 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/31 15:09:01 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/03 14:02:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int	ms_print_error(const char *cmd, const char *msg, int return_value)
 {
 	extern int	errno;
 
+// could just return errno? not sure if that is how it works
 	printf("shellshock: ");
 	if (cmd)
 		printf("%s: ", cmd);

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/01 17:28:54 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/03 13:49:17 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static void	temp_print_darray(t_darray *a)
 	printf("}\n");
 }
 
-static void	ms_freestr_darray(void *content)
+void	ms_freestr_darray(void *content)
 {
 	free(*(char **) content);
 }
@@ -132,7 +132,7 @@ void	ms_new_prompt(int sig)
 	rl_replace_line("", 1);
 	rl_on_new_line();
 	rl_redisplay();
-// set $? to 130
+// set $? to 130 or get it from waitpid that would probs be better..
 }
 
 void	ms_kill_pid(int sig)
@@ -143,7 +143,7 @@ void	ms_kill_pid(int sig)
 	{
 		kill(pid, SIGQUIT);
 		printf("Quit: %i\n", SIGQUIT);
-// set $? to 131
+// set $? to 131 or get it from waitpid that would probs be better..
 	}
 }
 

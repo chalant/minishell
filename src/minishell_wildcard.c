@@ -6,11 +6,20 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/01 17:27:17 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/03 14:00:56 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static int	ms_wildcard_error(DIR *dirp, t_darray *buf, int ret)
+{
+	if (dirp)
+		closedir(dirp);
+	if (buf)
+		ft_darray_delete(buf, ms_freestr_darray);
+	return (ret);
+}
 
 // returns 1 on malloc error
 static int	ms_wildcard_add(struct dirent *entryp, t_darray *buf)
@@ -88,7 +97,8 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *token)
 
 // returns 0 if no errors
 // returns malloced strs in t_darray *buf
-// buf is an initialised empty darray
+// buf should be an initialised empty darray
+// clears buf if error encountered
 int	ms_wildcard(t_darray *buf, char *token)
 {
 	DIR				*dirp;
@@ -101,14 +111,10 @@ int	ms_wildcard(t_darray *buf, char *token)
 	entryp = readdir(dirp);
 	while (entryp)
 	{
-// take quotes into consideration
 		if (ms_wildcard_cmp(entryp, token))
 			if (ms_wildcard_add(entryp, buf))
-			{
-				closedir(dirp);
-				return (1);
+				return (ms_wildcard_error(dirp, buf, ERR_MALLOC));
 // malloc error
-			}
 		entryp = readdir(dirp);
 	}
 	closedir(dirp);
@@ -116,7 +122,7 @@ int	ms_wildcard(t_darray *buf, char *token)
 	{
 		str = ft_strdup(token);
 		if (!str || ft_darray_append(buf, &str))
-			return (1);
+			return (ms_wildcard_error(NULL, buf, ERR_MALLOC));
 // malloc error (don't have that header file in this branch yet)
 	}
 	return (0);
