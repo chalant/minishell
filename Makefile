@@ -6,7 +6,7 @@
 #    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/10/23 13:43:13 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/11/03 14:13:00 by bvercaem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,19 @@ INCLUDES_FILES = minishell.h \
 				 minishell_graph.h \
 				 minishell_parsing.h \
 
+SRC_FILES = minishell_main.c \
+			minishell_cd.c \
+			minishell_pwd.c \
+			minishell_export.c \
+			minishell_unset.c \
+			minishell_variable_util.c \
+			minishell_env.c \
+			minishell_echo.c \
+			minishell_wildcard.c \
+			minishell_error.c \
+			#minishell_recogniser.c \
+			minishel.c \
+			minishell_parser.c
 SRC_FILES = minishell_tokens.c \
 			minishell.c \
 			minishell_recogniser.c \
@@ -33,14 +46,15 @@ NAME = minishell
 LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR) -Wall -Wextra -Werror
+C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR) -Wall -Wextra -Werror  -I ~/homebrew/opt/readline/include
+READLINE = -lreadline -lhistory -L ~/homebrew/opt/readline/lib
 
 all:
 	mkdir -p $(OBJ_DIR)
 	make $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	cc $(C_FLAGS) $(OBJ) $(LIBFT) -o $(NAME)
+	cc $(C_FLAGS) $(OBJ) $(LIBFT) -o $(NAME) $(READLINE)
 
 $(LIBFT):
 	make -C $(LIBFT_DIR)

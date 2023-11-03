@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 16:35:27 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/23 13:45:30 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/03 14:13:57 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	ft_darray_delete(t_darray *darray, void del_content(void *))
 {
 	int	i;
 
-	if (!darray)
+	if (!darray || !darray->contents)
 		return (0);
 	if (del_content)
 	{
@@ -51,6 +51,7 @@ int	ft_darray_delete(t_darray *darray, void del_content(void *))
 		}
 	}
 	free(darray->contents);
+	darray->contents = NULL;
 	return (0);
 }
 
