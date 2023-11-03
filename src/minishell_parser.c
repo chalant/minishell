@@ -23,7 +23,6 @@ int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state stat
 	t_ms_edge		*item;
 	t_parse_tree	subtree;
 
-	//printf("NODE: %d\n", state.node);
 	if (state.depth >= state.rule->length - 1)
 		return (1);
 	symbol = state.rule->symbols[state.depth];
@@ -44,7 +43,6 @@ int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state stat
 			nstate.depth = state.depth + 1;
 			nstate.rule = state.rule;
 			nstate.node = state.node + 1;
-			nstate.symbol_type = MS_TERMINAL_SYMBOL;
 			if (state.node < data->input_length)
 				ms_search_core(tree, data, nstate);
 			return (1);
@@ -84,20 +82,11 @@ int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state stat
 int	ms_search(t_parse_tree *parse_tree, t_parsing_data *data, int rule)
 {
 	t_parser_state	state;
-	//int	i;
 
 	state.depth = 0;
 	state.node = parse_tree->start;
 	state.rule = data->grammar->rules[rule];
-	state.symbol_type = MS_NON_TERMINAL_SYMBOL;
 	parse_tree->rule = rule;
-	// i = -1;
-	// printf("Decompose ");
-	// while (++i < state.rule->length)
-	// 	printf("%d %s ", i + parse_tree->start, state.rule->symbols[i]->name);
-	// printf("%d %d\n", parse_tree->start, parse_tree->end);
-	//printf("Hello hello! %d %d\n", state.node, state.end);
-	//todo: go to sub_children
 	ms_search_core(parse_tree, data, state);
 	return (1);
 }
@@ -118,15 +107,9 @@ int	ms_build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 	{
 		edge = ((t_ms_edge *)data->chart->adjacency_list[parse_tree->start]->contents + end);
 		if (edge->finish == parse_tree->end && strcmp(parse_tree->rule_name, data->grammar->rules[edge->rule]->name) == 0)
-		{
-			//printf("Searching! %d %d\n", edge->start, edge->finish);
 			ms_search(parse_tree, data, edge->rule);
-		}
 	}
-	//printf("Searching! %d %d\n", edge->start, edge->finish);
-	//ms_search(parse_tree, data, edge->rule);
 	i = -1;
-	//printf("YOYOYOYOYOYOYOYOYOYOYOYOYOY! %d %s %d %d\n", parse_tree->children->size, parse_tree->rule_name, parse_tree->start, parse_tree->end);
 	while (++i < parse_tree->children->size)
 	{
 		child = (t_parse_tree *)parse_tree->children->contents + i;

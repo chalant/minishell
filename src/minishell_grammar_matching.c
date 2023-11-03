@@ -34,7 +34,7 @@ int ms_match_equal(t_ms_symbol *symbol, t_token *token)
 	if (!token->string)
 		return (0);
 	len = ft_strlen(symbol->name);
-	if (ft_strlen(symbol->name) != len)
+	if (ft_strlen(token->string) != len)
 		return (0);
 	if (ft_strncmp(symbol->name, token->string, len) == 0)
 		return (1);

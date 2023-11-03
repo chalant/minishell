@@ -192,7 +192,6 @@ int	main(int ac, char **av, char **env)
 		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size + 1);
 	}
 	build_earley_items(sets, &grammar, size, &tokens);
-	//todo: reverse earley items.
 	print_earley(sets, &grammar, size);
 	build_chart(sets, &graph, size);
 	reverse_earley(sets, reversed, size);
@@ -204,7 +203,6 @@ int	main(int ac, char **av, char **env)
 	data.chart_size = tokens.size;
 	tree.start = 0;
 	tree.rule_name = (char *)data.grammar->start_rule;
-	// //tree.end = data.chart_size - 1;
 	tree.end = data.input_length - 1;
 	ms_start_rule(&tree, &data);
 	tree.terminal = 0;

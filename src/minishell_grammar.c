@@ -25,17 +25,21 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"number:$'2'\n"\
 	"assignment-word:$'1'\n"\
 	
-	"command_argument:word command_argument\n"\
-	"command_argument:word\n"\
+	"command_element:word command_element\n"\
+	"command_element:word\n"\
+	"command_element:redirection_list\n"\
+	"command_element:redirection_list command_element\n"\
+	
+	"word_list:word word_list\n"\
+	"word_list:word\n"\
 
-	"simple_command:word command_argument\n"\
+	"simple_command:word command_element\n"\
 	"simple_command:word\n"\
 
-	"redirection:command ='>' word\n"\
 	"redirection:='>' word\n"\
-	"redirection:command ='<' word\n"\
-	"redirection:='<' word\n"\
-	"command:redirection\n"\
+	"redirection_list:redirection\n"\
+	"redirection_list:redirection redirection_list\n"\
+	
 	"command:command ='||' command_product\n"\
 	"command:command_product\n"\
 	"command_product:command_product ='&&' command_factor\n"\
