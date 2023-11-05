@@ -6,11 +6,42 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/05 18:35:45 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/05 23:03:22 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	ms_shift_string(char *str)
+{
+	while (*str)
+	{
+		str[0] = str[1];
+		str++;
+	}
+}
+
+void	ms_remove_quotes(char *str)
+{
+	char	qte;
+
+	qte = 0;
+	while (*str)
+	{
+		if (!qte && (*str == '"' || *str == '\''))
+		{
+			qte = *str;
+			ms_shift_string(str);
+		}
+		else if (qte && *str == qte)
+		{
+			qte = 0;
+			ms_shift_string(str);
+		}
+		else
+			str++;
+	}
+}
 
 // for use in ft_darray_delete
 void	ms_clear_token(void *token)
