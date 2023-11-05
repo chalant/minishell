@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/05 17:58:36 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/05 18:35:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,43 @@ static int	ms_skip_quoted(t_token *token, const char **end)
 	return (ERR_QUOTE_UNCLOSED);
 }
 
+// adds new wildcard tokens and clears old token
+static int	ms_add_wildcard(t_darray *tokens, t_token *token)
+{
+	t_darray	buf;
+	t_token		new;
+	int			i;
+
+	if (ft_darray_init(&buf, sizeof(char *), 20))
+	{
+		ms_clear_token(token);
+		return (ERR_MALLOC);
+	}
+	i = ms_wildcard(&buf, token->string);
+	ms_clear_token(token);
+	if (i)
+		return (i);
+	while (i < buf.size)
+	{
+		ms_init_token(&new);
+		new.string = ((char *) buf.contents)[i];
+// add quote flag if needed
+		if (ft_darray_append(tokens, &new))
+		{
+			while (i < buf.size)
+			{
+				free(((char *) buf.contents)[i]);
+				i++;
+			}
+			ft_darray_delete(&buf, NULL);
+			return (ERR_MALLOC);
+		}
+		i++;
+	}
+	ft_darray_delete(&buf, NULL);
+	return (0);
+}
+
 // mallocs and adds token including start but not end
 static int	ms_add_token(const char *start, const char *end, t_darray *tokens, t_token *token)
 {
@@ -74,6 +111,8 @@ static int	ms_add_token(const char *start, const char *end, t_darray *tokens, t_
 	if (!token->string)
 		return (ERR_MALLOC);
 	ft_strlcpy(token->string, start, end - start + 1);
+	if (token->flags & IS_WILDCARD)
+		return (ms_add_wildcard(tokens, token));
 	if (ft_darray_append(tokens, token) == -1)
 	{
 		ms_clear_token(token);
