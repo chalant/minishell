@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/03 15:01:20 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/05 18:01:44 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 # include <signal.h>
 # include <dirent.h>
 # include "minishell_parsing.h"
-#include "minishell_graph.h"
-#include "minishell_tokens.h"
-#include "minishell_errors.h"
+# include "minishell_graph.h"
+# include "minishell_tokens.h"
+# include "minishell_errors.h"
 # include "libft.h"
 
 typedef struct s_shellshock

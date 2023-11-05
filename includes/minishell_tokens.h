@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/30 17:57:58 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/05 17:34:00 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 
 # define IS_RESERVED 1 << 0
 # define IS_QUOTED 1 << 1
+# define IS_VAR 1 << 2
+# define IS_WILDCARD 1 << 3
 
 // # define RESERVED_SYMBOLS "+-*/() "
 // # define SKIP_SYMBOLS " "

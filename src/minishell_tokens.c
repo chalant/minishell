@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/30 17:59:59 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/05 17:58:36 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,14 @@ static t_token	*ms_init_token(t_token *token)
 	return (token);
 }
 
+static void	ms_add_flags(t_token *token, char c)
+{
+	if (c == '$')
+		token->flags |= IS_VAR;
+	if (c == '*')
+		token->flags |= IS_WILDCARD;
+}
+
 // returns 1 if *symbol is a reserved sequence
 static int	ms_is_reserved(const char *symbol, t_tokeniser_info *info)
 {
@@ -38,15 +46,23 @@ static int	ms_is_reserved(const char *symbol, t_tokeniser_info *info)
 }
 
 // returns the next instance of *end
-static int	ms_skip_quoted(const char **end)
+// adds the IS_VAR flag if applicable
+static int	ms_skip_quoted(t_token *token, const char **end)
 {
 	char	quote;
 
+	token->flags |= IS_QUOTED;
 	quote = **end;
-	*end = ft_strchr(*end + 1, quote);
-	if (!*end)
-		return (ERR_QUOTE_UNCLOSED);
-	return (0);
+	while (end[0][1])
+	{
+		(*end)++;
+		if (**end == quote)
+			return (0);
+		if (quote == '"')
+			if (**end == '$')
+				token->flags |= IS_VAR;
+	}
+	return (ERR_QUOTE_UNCLOSED);
 }
 
 // mallocs and adds token including start but not end
@@ -103,9 +119,10 @@ int	ms_tokeniser(const char *input, t_darray *tokens, t_tokeniser_info *info)
 			if (*end == '"' || *end == '\'')
 			{
 				//todo: handle errors
-				ms_skip_quoted(&end);
-				token.flags |= IS_QUOTED;
+				ms_skip_quoted(&token, &end);
 			}
+			// use this ft to add flags
+			ms_add_flags(&token, *end);
 			end++;
 		}
 		//todo: handle errors

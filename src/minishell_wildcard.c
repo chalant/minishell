@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/03 20:11:17 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/05 17:57:49 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ int	ms_wildcard(t_darray *buf, char *token)
 		str = ft_strdup(token);
 		if (!str || ft_darray_append(buf, &str))
 			return (ms_wildcard_error(NULL, buf, ERR_MALLOC));
-// malloc error (don't have that header file in this branch yet)
+// malloc error
 	}
 	return (0);
 }
