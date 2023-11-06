@@ -6,42 +6,11 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/05 23:03:22 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/06 16:49:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static void	ms_shift_string(char *str)
-{
-	while (*str)
-	{
-		str[0] = str[1];
-		str++;
-	}
-}
-
-void	ms_remove_quotes(char *str)
-{
-	char	qte;
-
-	qte = 0;
-	while (*str)
-	{
-		if (!qte && (*str == '"' || *str == '\''))
-		{
-			qte = *str;
-			ms_shift_string(str);
-		}
-		else if (qte && *str == qte)
-		{
-			qte = 0;
-			ms_shift_string(str);
-		}
-		else
-			str++;
-	}
-}
 
 // for use in ft_darray_delete
 void	ms_clear_token(void *token)
@@ -67,7 +36,7 @@ static void	ms_add_flags(t_token *token, char c)
 }
 
 // returns 1 if *symbol is a reserved sequence
-static int	ms_is_reserved(const char *symbol, t_tokeniser_info *info)
+static int	ms_is_reserved(const char *symbol, t_token_info *info)
 {
 	if (ft_strchr(info->reserved_single, *symbol))
 		return (1);
@@ -100,10 +69,9 @@ static int	ms_skip_quoted(t_token *token, const char **end)
 static int	ms_add_wildcard(t_darray *tokens, t_token *token)
 {
 	t_darray	buf;
-	t_token		new;
 	int			i;
 
-	if (ft_darray_init(&buf, sizeof(char *), 20))
+	if (ft_darray_init(&buf, sizeof(t_token), 20))
 	{
 		ms_clear_token(token);
 		return (ERR_MALLOC);
@@ -114,14 +82,11 @@ static int	ms_add_wildcard(t_darray *tokens, t_token *token)
 		return (i);
 	while (i < buf.size)
 	{
-		ms_init_token(&new);
-		new.string = ((char *) buf.contents)[i];
-// add quote flag if needed
-		if (ft_darray_append(tokens, &new))
+		if (ft_darray_append(tokens, buf.contents + (i * buf.type_size)))
 		{
 			while (i < buf.size)
 			{
-				free(((char *) buf.contents)[i]);
+				ms_clear_token(buf.contents + (i * buf.type_size));
 				i++;
 			}
 			ft_darray_delete(&buf, NULL);
@@ -152,7 +117,7 @@ static int	ms_add_token(const char *start, const char *end, t_darray *tokens, t_
 	return (0);
 }
 
-static const char	*ms_handle_symbol(const char *end, t_darray *tokens, t_token *token, t_tokeniser_info *info)
+static const char	*ms_handle_symbol(const char *end, t_darray *tokens, t_token *token, t_token_info *info)
 {
 	const char	*start;
 
@@ -173,7 +138,7 @@ static const char	*ms_handle_symbol(const char *end, t_darray *tokens, t_token *
 
 // for now just 'exit()' on early exits (malloc and unclosed quotes)
 // it's possible to put an add_flag ft in the while loop if needed
-int	ms_tokeniser(const char *input, t_darray *tokens, t_tokeniser_info *info)
+int	ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info)
 {
 	const char	*start;
 	const char	*end;
@@ -199,11 +164,12 @@ int	ms_tokeniser(const char *input, t_darray *tokens, t_tokeniser_info *info)
 		ms_add_token(start, end, tokens, &token);
 		end = ms_handle_symbol(end, tokens, &token, info);
 	}
+	ms_token_expansion(tokens);
 	//todo: handle errors
 	return (ft_darray_append(tokens, ms_init_token(&token)));
 }
 
-t_tokeniser_info	*ms_token_info(t_tokeniser_info *ti, const char *res_single, const char *res_double, const char *res_skip)
+t_token_info	*ms_token_info(t_token_info *ti, const char *res_single, const char *res_double, const char *res_skip)
 {
 	ti->reserved_single = res_single;
 	ti->reserved_double = res_double;
@@ -230,23 +196,23 @@ void	ms_print_tokens(t_darray *tokens)
 	printf("}\n");
 }
 
-// int	main(int ac, char **av)
-// {
-// 	int					i;
-// 	t_darray			array;
-// 	t_tokeniser_info	info;
+int	main(int ac, char **av)
+{
+	int				i;
+	t_darray		array;
+	t_token_info	info;
 
-// 	(void)ac;
-// 	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
-// 	i = 1;
-// 	while (i < ac)
-// 	{
-// 		printf("input: %s\n", av[i]);
-// 		if (ft_darray_init(&array, sizeof(t_token), 20))
-// 			return (13);
-// 		ms_tokeniser(av[i], &array, &info);
-// 		ms_print_tokens(&array);
-// 		ft_darray_delete(&array, ms_clear_token);
-// 		i++;
-// 	}
-// }
+	(void)ac;
+	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
+	i = 1;
+	while (i < ac)
+	{
+		printf("input: %s\n", av[i]);
+		if (ft_darray_init(&array, sizeof(t_token), 20))
+			return (13);
+		ms_tokeniser(av[i], &array, &info);
+		ms_print_tokens(&array);
+		ft_darray_delete(&array, ms_clear_token);
+		i++;
+	}
+}

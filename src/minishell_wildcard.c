@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/05 17:57:49 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/06 16:32:42 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,41 @@ static int	ms_wildcard_error(DIR *dirp, t_darray *buf, int ret)
 	if (dirp)
 		closedir(dirp);
 	if (buf)
-		ft_darray_delete(buf, ms_freestr_darray);
+		ft_darray_delete(buf, ms_clear_token);
 	return (ret);
+}
+
+// only looks for quotes
+static void	ms_add_flags(t_token *token)
+{
+	int	i;
+
+	token->flags = 0;
+	if (!token->string)
+		return ;
+	i = 0;
+	while (token->string[i] && !(token->flags & IS_QUOTED))
+	{
+		if (token->string[i] == '"' || token->string[i] == '\'')
+			token->flags |= IS_QUOTED;
+		i++;
+	}
 }
 
 // returns 1 on malloc error
 static int	ms_wildcard_add(struct dirent *entryp, t_darray *buf)
 {
-	char	*new;
+	t_token	new;
 
-	new = malloc(sizeof(char) * (entryp->d_namlen + 1));
-	if (!new)
+	new.string = malloc(sizeof(char) * (entryp->d_namlen + 1));
+	if (!new.string)
 		return (1);
 // malloc error
-	ft_strlcpy(new, entryp->d_name, entryp->d_namlen + 1);
+	ft_strlcpy(new.string, entryp->d_name, entryp->d_namlen + 1);
+	ms_add_flags(&new);
 	if (ft_darray_append(buf, &new))
 	{
-		free(new);
+		free(new.string);
 		return (1);
 // malloc error
 	}
@@ -112,15 +130,29 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *token)
 	return (1);
 }
 
+static int	ms_wildcard_empty(t_darray *buf, char *wildcard)
+{
+	t_token	new;
+
+	new.string = ft_strdup(wildcard);
+	ms_add_flags(&new);
+	if (!new.string || ft_darray_append(buf, &new))
+	{
+		ms_clear_token(&new);
+		return (ms_wildcard_error(NULL, buf, ERR_MALLOC));
+	}
+// malloc error
+	return (0);
+}
+
 // returns 0 if no errors
 // returns malloced strs in t_darray *buf
-// buf should be an initialised empty darray
+// buf should be an initialised empty darray of t_token *
 // clears buf if error encountered
 int	ms_wildcard(t_darray *buf, char *token)
 {
 	DIR				*dirp;
 	struct dirent	*entryp;
-	char			*str;
 
 	dirp = opendir(".");
 	if (!dirp)
@@ -137,11 +169,6 @@ int	ms_wildcard(t_darray *buf, char *token)
 	}
 	closedir(dirp);
 	if (!buf->size)
-	{
-		str = ft_strdup(token);
-		if (!str || ft_darray_append(buf, &str))
-			return (ms_wildcard_error(NULL, buf, ERR_MALLOC));
-// malloc error
-	}
+		return (ms_wildcard_empty(buf, token));
 	return (0);
 }

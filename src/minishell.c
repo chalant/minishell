@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/30 12:59:10 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/06 15:27:54 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,13 +154,13 @@ int	main(int ac, char **av, char **env)
 	int		i = -1;
 	int					size;
 	char				**grammar_definition;
-	t_tokeniser_info	info;
+	t_token_info		info;
 	t_darray			tokens;
 
 	if (ac != 2)
 		return (1);
 	printf("INPUT: \"%s\"\n", av[1]);
-	
+
 	if (ft_darray_init(&tokens, sizeof(t_token), 20) == -1)
 		return (1);
 	info.reserved_double = RESERVED_DOUBLE;
@@ -169,7 +169,7 @@ int	main(int ac, char **av, char **env)
 	ms_tokeniser(av[1], &tokens, &info);
 	ms_print_tokens(&tokens);
 	//ft_darray_delete(&tokens, ms_clear_token);
-	
+
 	size = tokens.size;
 	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size));
 	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size));
@@ -177,7 +177,7 @@ int	main(int ac, char **av, char **env)
 	t_graph			graph;
 	t_parse_tree	tree;
 	t_parsing_data	data;
-	
+
 	grammar_definition = get_minishell_definition();
 	set_grammar(&grammar, grammar_definition);
 	print_grammar(&grammar);
