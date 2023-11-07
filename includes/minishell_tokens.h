@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/06 15:26:57 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/07 15:50:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 typedef struct s_token
 {
 	char	*string;
+	char	*mask_exp;
 	int		flags;
 }				t_token;
 

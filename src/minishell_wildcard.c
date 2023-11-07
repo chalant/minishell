@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/06 16:32:42 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/07 18:40:23 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static int	ms_cmp_until_wc(char *name, char *token, int *qts)
 {
 	int		i;
 	char	cqt;
-
+// set char *mask_exp here for expansions
 	i = 0;
 	*qts = 0;
 	while ((name[i] || token[i + *qts]) && (*qts % 2 || token[i + *qts] != '*'))
@@ -94,7 +94,8 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *token)
 	char	*name;
 	int		i;
 	int		qts;
-
+// malloc char *mask_exp here somewhere
+// and free before returning ofc,,, or in parent ft for ease (maybe new ft with 'while (entryp)' loop)
 	name = entryp->d_name;
 	i = ms_cmp_until_wc(name, token, &qts);
 	if (i == -1)
@@ -153,6 +154,7 @@ int	ms_wildcard(t_darray *buf, char *token)
 {
 	DIR				*dirp;
 	struct dirent	*entryp;
+//	t_token 		new;
 
 	dirp = opendir(".");
 	if (!dirp)
@@ -160,8 +162,9 @@ int	ms_wildcard(t_darray *buf, char *token)
 	entryp = readdir(dirp);
 	while (entryp)
 	{
+// 		init_token(&new);
 		if (ft_strncmp(entryp->d_name, ".", 2) && ft_strncmp(entryp->d_name, "..", 3))
-			if (ms_wildcard_cmp(entryp, token))
+			if (ms_wildcard_cmp(entryp, token/*, &new*/))
 				if (ms_wildcard_add(entryp, buf))
 					return (ms_wildcard_error(dirp, buf, ERR_MALLOC));
 // malloc error (print error or no?)

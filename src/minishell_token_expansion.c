@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 14:56:22 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/06 17:38:43 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/07 18:33:58 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	ms_shift_string(char *str)
 void	ms_remove_quotes(char *str)
 {
 	char	qte;
-
+// take mask_exp into account
 	qte = 0;
 	while (*str)
 	{

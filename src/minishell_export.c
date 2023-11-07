@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/27 13:53:04 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/07 15:01:14 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int	ms_export(t_shellshock *data, char **arg)
 	char	**temp;
 	int		i;
 
-// check input? if it starts with '=' or there's reserved symbols in the name that's bad
+// check input? if it starts with '=' or there's reserved symbols in the name that's bad, or it starts with e.g. a digit
 	if (!arg || !*arg)
 		return (ms_env_alpha());
 	i = 0;
