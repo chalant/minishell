@@ -59,6 +59,11 @@ int	ms_match_string(t_ms_symbol *symbol, t_token *token)
 	i = 0;
 	if (token->flags & IS_RESERVED)
 		return (0);
+	//todo: add more builtins
+	if (strcmp(token->string, "cd") == 0)
+		return (0);
+	if (strcmp(token->string, "echo") == 0)
+		return (0);
 	while (token->string[i])
 	{
 		if (!ft_isascii(token->string[i]))

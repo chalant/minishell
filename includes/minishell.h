@@ -19,6 +19,8 @@
 #include "minishell_graph.h"
 #include "minishell_tokens.h"
 #include "minishell_errors.h"
+#include "minishell_commands.h"
+#include "minishell_semantics.h"
 #include "libft.h"
 
 #endif

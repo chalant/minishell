@@ -146,6 +146,19 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 	return (0);
 }
 
+int	print_execution_stack(t_darray *stack)
+{
+	int	i;
+
+	printf("[ ");
+	i = -1;
+	while (++i < stack->size - 1)
+		printf("%s, ", ((t_command *)ft_darray_get(stack, i))->command_name);
+	printf("%s ", ((t_command *)ft_darray_get(stack, i))->command_name);
+	printf("]\n");
+	return (1);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	(void)ac;
@@ -156,6 +169,7 @@ int	main(int ac, char **av, char **env)
 	char				**grammar_definition;
 	t_tokeniser_info	info;
 	t_darray			tokens;
+	t_darray			execution_stack;
 
 	if (ac != 2)
 		return (1);
@@ -188,8 +202,8 @@ int	main(int ac, char **av, char **env)
 		reversed[i] = malloc(sizeof(t_earley_set));
 		sets[i]->items = malloc(sizeof(t_darray));
 		reversed[i]->items = malloc(sizeof(t_darray));
-		ft_darray_init(sets[i]->items, sizeof(t_earley_item), size + 1);
-		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size + 1);
+		ft_darray_init(sets[i]->items, sizeof(t_earley_item), size);
+		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size);
 	}
 	build_earley_items(sets, &grammar, size, &tokens);
 	print_earley(sets, &grammar, size);
@@ -206,9 +220,16 @@ int	main(int ac, char **av, char **env)
 	tree.end = data.input_length - 1;
 	ms_start_rule(&tree, &data);
 	tree.terminal = 0;
+	tree.children = NULL;
 	ms_build_parse_tree(&tree, &data);
 	print_parse_tree(&tree, 0);
+	ft_darray_init(&execution_stack, sizeof(t_command), 100);
+	create_commands(&tree, &execution_stack);
 	printf("\n");
-
+	print_execution_stack(&execution_stack);
+	printf("\n");
+	t_stack	exec_stack;
+	ft_stack_init(&exec_stack, &execution_stack);
+	minishell_execute(&exec_stack);
 	return (0);
 }

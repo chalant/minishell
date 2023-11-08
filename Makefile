@@ -19,7 +19,8 @@ INCLUDES_FILES = minishell.h \
 				 minishell_tokens.h \
 				 minishell_graph.h \
 				 minishell_parsing.h \
-				 minishell_grammar.h
+				 minishell_grammar.h \
+				 minishell_commands.h
 
 SRC_FILES = minishell_tokens.c \
 			minishell.c \
@@ -29,7 +30,9 @@ SRC_FILES = minishell_tokens.c \
 			minishell_grammar.c \
 			minishell_grammar_rules.c \
 			minishell_grammar_symbols.c \
-			minishell_grammar_matching.c
+			minishell_grammar_matching.c \
+			minishell_semantics.c \
+			minishell_executor.c
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
