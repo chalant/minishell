@@ -24,6 +24,8 @@ typedef struct	s_command
 {
 	int					command_flags;
 	char				*command_name;
+	struct	s_command	*left;
+	struct	s_command	*right;
 	t_darray			*arguments;
 	t_darray			*redirections;
 	

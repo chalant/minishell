@@ -17,3 +17,10 @@ void	*ft_stack_peek(t_stack *stack)
 {
 	return (ft_darray_get(stack->elements, stack->size - 1));
 }
+
+int	ft_stack_push(t_stack *stack, void *element)
+{
+	stack->size += 1;
+	ft_darray_append(stack->elements, element);
+	return (1);
+}

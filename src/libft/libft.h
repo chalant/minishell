@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/10/23 13:46:51 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/09 15:19:14 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,5 +107,6 @@ int					ft_darray_delete(t_darray *darray, void del_content(void *));
 void				*ft_stack_peek(t_stack *stack);
 void				*ft_stack_pop(t_stack *stack);
 int					ft_stack_init(t_stack *stack, t_darray *darray);
+int					ft_stack_push(t_stack *stack, void *element);
 
 #endif

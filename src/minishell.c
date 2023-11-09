@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/30 12:59:10 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/09 15:53:32 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,7 +224,9 @@ int	main(int ac, char **av, char **env)
 	ms_build_parse_tree(&tree, &data);
 	print_parse_tree(&tree, 0);
 	ft_darray_init(&execution_stack, sizeof(t_command), 100);
-	create_commands(&tree, &execution_stack);
+	t_stack	sem_stack;
+	ft_stack_init(&sem_stack, &execution_stack);
+	collapse_tree(&tree, &sem_stack);
 	printf("\n");
 	print_execution_stack(&execution_stack);
 	printf("\n");
