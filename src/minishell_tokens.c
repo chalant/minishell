@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/06 16:49:19 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/09 16:46:46 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	ms_clear_token(void *token)
 {
 	if (((t_token *)token)->string)
 		free(((t_token *)token)->string);
+	if (((t_token *)token)->mask_exp)
+		free(((t_token *)token)->mask_exp);
 }
 
 // sets everything to 0 and returns 'token' ptr
@@ -24,6 +26,7 @@ static t_token	*ms_init_token(t_token *token)
 {
 	token->flags = 0;
 	token->string = NULL;
+	token->mask_exp = NULL;
 	return (token);
 }
 
@@ -53,7 +56,7 @@ static int	ms_skip_quoted(t_token *token, const char **end)
 
 	token->flags |= IS_QUOTED;
 	quote = **end;
-	while (end[0][1])
+	while ((*end)[1])
 	{
 		(*end)++;
 		if (**end == quote)
@@ -107,6 +110,7 @@ static int	ms_add_token(const char *start, const char *end, t_darray *tokens, t_
 	if (!token->string)
 		return (ERR_MALLOC);
 	ft_strlcpy(token->string, start, end - start + 1);
+// ms_add_var
 	if (token->flags & IS_WILDCARD)
 		return (ms_add_wildcard(tokens, token));
 	if (ft_darray_append(tokens, token) == -1)

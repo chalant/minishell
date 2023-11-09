@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/07 18:40:23 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/09 13:47:16 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *token)
 	char	*name;
 	int		i;
 	int		qts;
-// malloc char *mask_exp here somewhere
+// malloc char *mask_exp here somewhere (if still NULL)
 // and free before returning ofc,,, or in parent ft for ease (maybe new ft with 'while (entryp)' loop)
 	name = entryp->d_name;
 	i = ms_cmp_until_wc(name, token, &qts);
