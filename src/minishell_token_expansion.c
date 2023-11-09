@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 14:56:22 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/07 18:33:58 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/09 13:19:40 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,25 +21,29 @@ static void	ms_shift_string(char *str)
 	}
 }
 
-void	ms_remove_quotes(char *str)
+void	ms_remove_quotes(char *str, char *mask_exp)
 {
 	char	qte;
-// take mask_exp into account
+	int		i;
+
 	qte = 0;
-	while (*str)
+	i = 0;
+	while (str[i])
 	{
-		if (!qte && (*str == '"' || *str == '\''))
+		while (mask_exp && mask_exp[i] > '0')
+			i++;
+		if (!qte && (str[i] == '"' || str[i] == '\''))
 		{
-			qte = *str;
+			qte = str[i];
 			ms_shift_string(str);
 		}
-		else if (qte && *str == qte)
+		else if (qte && str[i] == qte)
 		{
 			qte = 0;
 			ms_shift_string(str);
 		}
-		else
-			str++;
+		else if (str[i])
+			i++;
 	}
 }
 
@@ -51,9 +55,7 @@ void	ms_token_expansion(t_darray *tokens)
 	i = 0;
 	while (i < tokens->size)
 	{
-		if (((t_token *) (tokens->contents + (i * tokens->type_size)))->flags & IS_VAR)
-			(void) (((t_token *) (tokens->contents + (i * tokens->type_size)))->string);
-// add var expander
+// wildcard and var are done during tokenising
 		if (((t_token *) (tokens->contents + (i * tokens->type_size)))->flags & IS_QUOTED)
 			ms_remove_quotes(((t_token *) (tokens->contents + (i * tokens->type_size)))->string);
 		i++;
