@@ -6,87 +6,176 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/09 16:05:07 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/10 19:10:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// handles a string pointing to '$' but not truncated
-int	ms_add_var(char *token, int index)
+static char	*ms_next_var(const char *str)
 {
-}
-
-// returns new token length based on index i
-static int	ms_length(int i)
-{
-	static int	old_i = 0;
-	int			ret;
-
-	ret = i - old_i;
-	old_i = i;
-	return (ret);
-}
-
-static int	ms_cursor_on_var(char *str)
-{
-	static int	i = 0;
-
-	while (str[i] && str[i] != '$')
+	while (*str && *str != '$')
 	{
-		if (str[i] == '\'')
-			while (str[++i] != '\'')
-				(void) i;
-		i++;
+		if (*str == '\'')
+			while (*++str != '\'')
+				(void) str;
+		str++;
 	}
-	return (i);
+	return (str);
 }
 
-// increments str till after var
-// returns ERR_MALLOC
-static int	ms_cut_var(char **str, char **var)
+// it's advised to pass the pointer of the starting '$'
+// returns pointer to right after the name
+static char	*ms_end_of_name(const char *str)
 {
-	int	len;
+	if (*str == '$')
+		str++;
+	while (('a' <= *str && *str <= 'z') || ('A' <= *str && *str <= 'Z')
+		|| *str == '_' || ('0' <= *str && *str <= '9'))
+		str++;
+	return (str);
+}
 
-	len = 0;
-	while ((*str)[len])
-// add var cutoff values
-		len++;
-	(*var) = malloc(sizeof(char) * (len + 1));
-	if (!*var)
+// skipped if (!add_len || !fill);
+static int	ms_join_mask(t_token *token, int add_len, char fill)
+{
+	char	*new;
+	int		i;
+	int		old_len;
+
+	if (!add_len || !fill)
+		return (0);
+	old_len = ft_strlen(token->mask_exp);
+	new = malloc(sizeof(char) * (old_len + add_len + 1));
+	if (!new)
 		return (ERR_MALLOC);
-	ft_strlcpy(*var, *str, len + 1);
-	(*str) += len;
+	ft_strlcpy(new, token->mask_exp, old_len + 1);
+	new[old_len + add_len] = 0;
+	while (add_len--)
+		new[old_len + add_len] = fill;
+	if (token->mask_exp)
+		free(token->mask_exp);
+	token->mask_exp = new;
 	return (0);
 }
 
-static int	ms_cut_str(char **str, char **new, int len)
+// never free's str
+static int	ms_join_str(t_token *token, char *str, char mask)
 {
-// do we cut it before we get a var value?
-	(*new) = malloc(sizeof(char) * (len + 1));
-	if (!*new)
+	char	*new;
+	char	*mask_new;
+	int		str_len;
+
+	if (!str || !*str)
+		return (0);
+	str_len = ft_strlen(str);
+	new = ft_strjoin(token->string, str);
+	if (!new)
 		return (ERR_MALLOC);
-	ft_strlcpy(*new, *str, len + 1);
-	(*str) += len;
+	if (token->string)
+		free(token->string);
+	token->string = new;
+	return (ms_join_mask(token, str_len, mask));
+}
+
+static int	ms_append_buf(t_darray *buf, t_token *new, char **value, int i)
+{
+// add token flags here?
+	if (ft_darray_append(buf, new))
+	{
+		while (value[i])
+		{
+			free(value[i]);
+			i++;
+		}
+		free(value);
+		return (ERR_MALLOC);
+	}
+	return (0);
+}
+
+static int	ms_add_var(t_darray *buf, t_token *new, char **str)
+{
+	char	*end;
+	char	temp;
+	char	**value;
+	int		i;
+
+	end = ms_end_of_name(*str);
+	if (*str == end)
+		return (0);
+	temp = *end;
+	*end = 0;
+	value = ft_split(getenv(*str), ' ');
+	*end = temp;
+	*str = end;
+	if (!value)
+		return (ERR_MALLOC);
+	if (ms_join_str(new, value[0], '1'))
+	{
+		ft_clear_ds(value);
+		return (ERR_MALLOC);
+	}
+	free(value[0]);
+	i = 1;
+	while (value[i])
+	{
+		if (ms_append_buf(buf, new, value, i))
+			return (ERR_MALLOC);
+		ms_init_token(new);
+		new->string = value[i];
+		if (ms_join_mask(new, ft_strlen(new->string), '1'))
+			return (ERR_MALLOC);
+		i++;
+	}
+	free(value);
+	return (0);
+}
+
+static int	ms_add_str(t_token *new, char **str)
+{
+	char	*end;
+	char	temp;
+
+	end = ms_next_var(*str);
+	if (*str == end)
+		return (0);
+	temp = *end;
+	*end = 0;
+	if (ms_join_str(new, *str, '0'))
+		return (ERR_MALLOC);
+	*end = temp;
+	*str = end;
 	return (0);
 }
 
 char	*ms_expand_var(t_darray *buf, t_token *token)
 {
 	char	*str;
-	char	*var;
-	char	*new;
-	int		i;
+	t_token	new;
+	int		ret;
 
 	str = token->string;
-	i = ms_cursor_on_var(str);
-// combine with ms_length? just return len and then str += len (no need for statics too)
-
-	if (ms_cut_var(&str, &var))
-		return (ERR_MALLOC);
+	ms_init_token(&new);
+	ret = 0;
+	while (*str)
+	{
+		if (ms_add_str(&new, &str) || ms_add_var(buf, &new, &str))
+		{
+			ret = ERR_MALLOC;
+			break ;
+		}
+	}
+	ms_clear_token(token);
+	if (!ret && ft_darray_append(buf, &new))
+		ret = ERR_MALLOC;
+// if we check for flags in buf_append then we miss this one
+	if (ret)
+		ms_clear_token(&new);
+	return (ret);
 }
 
-// set flag IS_WILDCARD somewhere in expansion
+// set flag IS_WILDCARD somewhere
 
 //results should be split on spaces:
 //	e.g. abc='a b c';	cat z$abc -> cat 'za'; cat 'b'; cat 'c';

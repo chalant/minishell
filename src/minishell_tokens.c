@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/09 16:46:46 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/10 16:06:50 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	ms_clear_token(void *token)
 }
 
 // sets everything to 0 and returns 'token' ptr
-static t_token	*ms_init_token(t_token *token)
+t_token	*ms_init_token(t_token *token)
 {
 	token->flags = 0;
 	token->string = NULL;
