@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 14:56:22 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/09 13:56:06 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/10 21:25:02 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,9 @@ void	ms_remove_quotes(char *str, char *mask_exp)
 	i = 0;
 	while (str[i])
 	{
-		while (mask_exp && mask_exp[i] > '0')
-			i++;
+		if (mask_exp)
+			while (mask_exp[i] > '0')
+				i++;
 		if (!qte && (str[i] == '"' || str[i] == '\''))
 		{
 			qte = str[i];

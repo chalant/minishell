@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/10 16:06:50 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/10 22:30:26 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,15 @@
 void	ms_clear_token(void *token)
 {
 	if (((t_token *)token)->string)
+	{
 		free(((t_token *)token)->string);
+		((t_token *)token)->string = NULL;
+	}
 	if (((t_token *)token)->mask_exp)
+	{
 		free(((t_token *)token)->mask_exp);
+		((t_token *)token)->mask_exp = NULL;
+	}
 }
 
 // sets everything to 0 and returns 'token' ptr
@@ -69,8 +75,9 @@ static int	ms_skip_quoted(t_token *token, const char **end)
 }
 
 // adds new wildcard tokens and clears old token
-static int	ms_add_wildcard(t_darray *tokens, t_token *token)
+int	ms_add_wildcard(t_darray *tokens, t_token *token)
 {
+// just make it work with the already existing and final destination t_darray *tokens?
 	t_darray	buf;
 	int			i;
 

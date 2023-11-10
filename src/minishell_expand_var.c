@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/10 19:10:45 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/10 22:35:54 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,23 +78,55 @@ static int	ms_join_str(t_token *token, char *str, char mask)
 	return (ms_join_mask(token, str_len, mask));
 }
 
-static int	ms_append_buf(t_darray *buf, t_token *new, char **value, int i)
+static void	ms_add_flags(t_token *new)
 {
-// add token flags here?
-	if (ft_darray_append(buf, new))
+	int		i;
+	char	qt;
+
+	i = 0;
+	qt = 0;
+	while (new->string[i])
 	{
-		while (value[i])
+		if (!qt && (new->string[i] == '"' || new->string[i] == '\''))
+			qt = new->string[i];
+		if (qt && new->mask_exp[i] == '0')
+			new->flags |= IS_QUOTED;
+		if (!qt && new->string[i] == '*')
+			new->flags |= IS_WILDCARD;
+		i++;
+		if (qt && new->string[i] == qt)
+			qt = 0;
+	}
+}
+
+static int	ms_append_tokens(t_darray *tokens, t_token *new, char **value, int i)
+{
+	int	err;
+
+	err = 0;
+	ms_add_flags(new);
+	if (new->flags & IS_WILDCARD)
+		err = ms_add_wildcard(tokens, new);
+	else
+		err = ft_darray_append(tokens, new);
+	if (err)
+	{
+		if (value)
 		{
-			free(value[i]);
-			i++;
+			while (value[i])
+			{
+				free(value[i]);
+				i++;
+			}
+			free(value);
 		}
-		free(value);
+		ms_clear_token(new);
 		return (ERR_MALLOC);
 	}
 	return (0);
 }
 
-static int	ms_add_var(t_darray *buf, t_token *new, char **str)
+static int	ms_add_var(t_darray *tokens, t_token *new, char **str)
 {
 	char	*end;
 	char	temp;
@@ -120,7 +152,7 @@ static int	ms_add_var(t_darray *buf, t_token *new, char **str)
 	i = 1;
 	while (value[i])
 	{
-		if (ms_append_buf(buf, new, value, i))
+		if (ms_append_tokens(tokens, new, value, i))
 			return (ERR_MALLOC);
 		ms_init_token(new);
 		new->string = value[i];
@@ -149,7 +181,7 @@ static int	ms_add_str(t_token *new, char **str)
 	return (0);
 }
 
-char	*ms_expand_var(t_darray *buf, t_token *token)
+char	*ms_expand_var(t_darray *tokens, t_token *token)
 {
 	char	*str;
 	t_token	new;
@@ -158,28 +190,17 @@ char	*ms_expand_var(t_darray *buf, t_token *token)
 	str = token->string;
 	ms_init_token(&new);
 	ret = 0;
-	while (*str)
-	{
-		if (ms_add_str(&new, &str) || ms_add_var(buf, &new, &str))
-		{
+	while (!ret && *str)
+		if (ms_add_str(&new, &str) || ms_add_var(tokens, &new, &str))
 			ret = ERR_MALLOC;
-			break ;
-		}
-	}
 	ms_clear_token(token);
-	if (!ret && ft_darray_append(buf, &new))
+	if (!ret && ms_append_tokens(tokens, &new, NULL, 0))
 		ret = ERR_MALLOC;
-// if we check for flags in buf_append then we miss this one
 	if (ret)
 		ms_clear_token(&new);
 	return (ret);
 }
 
-// set flag IS_WILDCARD somewhere
-
-//results should be split on spaces:
-//	e.g. abc='a b c';	cat z$abc -> cat 'za'; cat 'b'; cat 'c';
-//results should NOT be quote removed:
-//	e.g. abc='a" b "c';	cat 'z'$abc -> cat 'za"'; cat 'b'; cat '"c';
+// how do my flags fair when a quote starts before a var value and ends in one?
 
 // a token can be 'a'$b with b='b' which expands to 'a''b' and results in a'b'
