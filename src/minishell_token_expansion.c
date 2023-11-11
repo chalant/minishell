@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 14:56:22 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/10 21:25:02 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/11 14:35:17 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	ms_remove_quotes(char *str, char *mask_exp)
 	}
 }
 
-// expand var (not implemented), remove quotes
+// removes quotes
 void	ms_token_expansion(t_darray *tokens)
 {
 	int	i;
@@ -60,7 +60,6 @@ void	ms_token_expansion(t_darray *tokens)
 	i = 0;
 	while (i < tokens->size)
 	{
-// wildcard and var are done during tokenising
 		if (((t_token *) (tokens->contents + (i * tokens->type_size)))->flags & IS_QUOTED)
 			ms_remove_quotes(((t_token *) (tokens->contents + (i * tokens->type_size)))->string);
 		i++;

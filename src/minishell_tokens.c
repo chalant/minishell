@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/10 22:30:26 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/11 14:40:10 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,40 +74,6 @@ static int	ms_skip_quoted(t_token *token, const char **end)
 	return (ERR_QUOTE_UNCLOSED);
 }
 
-// adds new wildcard tokens and clears old token
-int	ms_add_wildcard(t_darray *tokens, t_token *token)
-{
-// just make it work with the already existing and final destination t_darray *tokens?
-	t_darray	buf;
-	int			i;
-
-	if (ft_darray_init(&buf, sizeof(t_token), 20))
-	{
-		ms_clear_token(token);
-		return (ERR_MALLOC);
-	}
-	i = ms_wildcard(&buf, token->string);
-	ms_clear_token(token);
-	if (i)
-		return (i);
-	while (i < buf.size)
-	{
-		if (ft_darray_append(tokens, buf.contents + (i * buf.type_size)))
-		{
-			while (i < buf.size)
-			{
-				ms_clear_token(buf.contents + (i * buf.type_size));
-				i++;
-			}
-			ft_darray_delete(&buf, NULL);
-			return (ERR_MALLOC);
-		}
-		i++;
-	}
-	ft_darray_delete(&buf, NULL);
-	return (0);
-}
-
 // mallocs and adds token including start but not end
 static int	ms_add_token(const char *start, const char *end, t_darray *tokens, t_token *token)
 {
@@ -117,9 +83,10 @@ static int	ms_add_token(const char *start, const char *end, t_darray *tokens, t_
 	if (!token->string)
 		return (ERR_MALLOC);
 	ft_strlcpy(token->string, start, end - start + 1);
-// ms_add_var
+	if (tokens->flags & IS_VAR)
+		return (ms_expand_var(tokens, token));
 	if (token->flags & IS_WILDCARD)
-		return (ms_add_wildcard(tokens, token));
+		return (ms_expand_wildcard(tokens, token));
 	if (ft_darray_append(tokens, token) == -1)
 	{
 		ms_clear_token(token);
@@ -142,7 +109,7 @@ static const char	*ms_handle_symbol(const char *end, t_darray *tokens, t_token *
 	end++;
 	if (ft_strchr(info->reserved_double, *start) && *start == *end)
 		end++;
-	//todo: handle errors
+	//todo: handle errors (clear tokens and stuff)
 	ms_add_token(start, end, tokens, token);
 	return (end);
 }
@@ -171,7 +138,7 @@ int	ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info)
 			ms_add_flags(&token, *end);
 			end++;
 		}
-		//todo: handle errors
+		//todo: handle errors (clear tokens and stuff)
 		ms_add_token(start, end, tokens, &token);
 		end = ms_handle_symbol(end, tokens, &token, info);
 	}
@@ -207,6 +174,23 @@ void	ms_print_tokens(t_darray *tokens)
 	printf("}\n");
 }
 
+// prints all masks in {t, t} format
+void	ms_print_masks(t_darray *tokens)
+{
+	int	i;
+
+	i = 0;
+	printf(" MASKS: {");
+	while (i < tokens->size)
+	{
+		printf("%s", ((t_token *)(tokens->contents + i * tokens->type_size))->mask_exp);
+		i++;
+		if (i < tokens->size)
+			printf(" , ");
+	}
+	printf("}\n");
+}
+
 int	main(int ac, char **av)
 {
 	int				i;
@@ -223,6 +207,7 @@ int	main(int ac, char **av)
 			return (13);
 		ms_tokeniser(av[i], &array, &info);
 		ms_print_tokens(&array);
+		ms_print_masks(&array);
 		ft_darray_delete(&array, ms_clear_token);
 		i++;
 	}

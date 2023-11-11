@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/10 22:30:40 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/11 14:42:15 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # define RESERVED_SINGLE "|<>() "
 # define RESERVED_DOUBLE "<>&|"
-
 # define RESERVED_SKIP " "
 
 # define IS_RESERVED 1 << 0
@@ -43,9 +42,8 @@ typedef struct s_token_info
 
 int		ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info);
 
-int		ms_add_wildcard(t_darray *tokens, t_token *token);
 char	*ms_expand_var(t_darray *tokens, t_token *token);
-int		ms_wildcard(t_darray *buf, char *token);
+int		ms_expand_wildcard(t_darray *tokens, t_token *token);
 void	ms_token_expansion(t_darray *tokens);
 
 void	ms_remove_quotes(char *str, char *mask_exp);

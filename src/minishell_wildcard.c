@@ -6,19 +6,45 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/09 13:47:16 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/11 14:33:03 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	ms_wildcard_error(DIR *dirp, t_darray *buf, int ret)
+static int	ms_wildcard_error(DIR *dirp, t_token *token, t_token *new, int ret)
 {
 	if (dirp)
 		closedir(dirp);
-	if (buf)
-		ft_darray_delete(buf, ms_clear_token);
+	if (token)
+		ms_clear_token(token);
+	if (new)
+		ms_clear_token(new);
 	return (ret);
+}
+
+static int	ms_prep_new(struct dirent *entryp, t_token *new)
+{
+	ms_init_token(new);
+	new->mask_exp = ft_calloc(entryp->d_namlen + 1, sizeof(char));
+	if (!new->mask_exp)
+		return (ERR_MALLOC);
+	return (0);
+}
+
+// returns n
+static int	ms_catnmask(t_token *new, int n, char fill)
+{
+	char	*str;
+	int		i;
+
+	i = n;
+	str = new->mask_exp;
+	while (*str)
+		str++;
+	while (i--)
+		str[i] = fill;
+	return (n);
 }
 
 // only looks for quotes
@@ -32,146 +58,147 @@ static void	ms_add_flags(t_token *token)
 	i = 0;
 	while (token->string[i] && !(token->flags & IS_QUOTED))
 	{
-		if (token->string[i] == '"' || token->string[i] == '\'')
+		if (token->mask_exp[i] == '0'
+			&& (token->string[i] == '"' || token->string[i] == '\''))
 			token->flags |= IS_QUOTED;
 		i++;
 	}
 }
 
 // returns 1 on malloc error
-static int	ms_wildcard_add(struct dirent *entryp, t_darray *buf)
+static int	ms_wildcard_add(t_darray *tokens, struct dirent *entryp, t_token *new)
 {
-	t_token	new;
-
-	new.string = malloc(sizeof(char) * (entryp->d_namlen + 1));
-	if (!new.string)
-		return (1);
+	new->string = malloc(sizeof(char) * (entryp->d_namlen + 1));
+	if (!new->string)
+		return (ERR_MALLOC);
 // malloc error
-	ft_strlcpy(new.string, entryp->d_name, entryp->d_namlen + 1);
-	ms_add_flags(&new);
-	if (ft_darray_append(buf, &new))
-	{
-		free(new.string);
-		return (1);
+	ft_strlcpy(new->string, entryp->d_name, entryp->d_namlen + 1);
+	ms_add_flags(new);
+	if (ft_darray_append(tokens, new))
+		return (ERR_MALLOC);
 // malloc error
-	}
 	return (0);
 }
 
 // returns -1 if no match, and amount of chars compared if a match
 // includes terminating 0
-static int	ms_cmp_until_wc(char *name, char *token, int *qts)
+static int	ms_cmp_until_wc(char *name, char *card, int *qts)
 {
 	int		i;
 	char	cqt;
-// set char *mask_exp here for expansions
+
 	i = 0;
 	*qts = 0;
-	while ((name[i] || token[i + *qts]) && (*qts % 2 || token[i + *qts] != '*'))
+	while ((name[i] || card[i + *qts]) && (*qts % 2 || card[i + *qts] != '*'))
 	{
-		while ((!(*qts % 2) && (token[i + *qts] == '"' || token[i + *qts] == '\'')) || ((*qts % 2) && cqt == token[i + *qts]))
+		while ((!(*qts % 2) && (card[i + *qts] == '"' || card[i + *qts] == '\'')) || ((*qts % 2) && cqt == card[i + *qts]))
 		{
 			if (!(*qts % 2))
-				cqt = token[i + *qts];
+				cqt = card[i + *qts];
 			(*qts)++;
 		}
-		if ((!name[i] && !token[i + *qts]) || (!(*qts % 2) && token[i + *qts] == '*'))
+		if ((!name[i] && !card[i + *qts]) || (!(*qts % 2) && card[i + *qts] == '*'))
 			break ;
-		if (name[i] != token[i + *qts])
+		if (name[i] != card[i + *qts])
 		{
 			return (-1);
 		}
 		i++;
 	}
-	if (!token[i + *qts] || token[i + *qts] == '*')
+	if (!card[i + *qts] || card[i + *qts] == '*')
 		return (i);
 	return (-1);
 }
 
 // returns 1 if it's a match
-static int	ms_wildcard_cmp(struct dirent *entryp, char *token)
+static int	ms_wildcard_cmp(struct dirent *entryp, char *card, t_token *new)
 {
 	char	*name;
+	char	*mask;
 	int		i;
 	int		qts;
-// malloc char *mask_exp here somewhere (if still NULL)
-// and free before returning ofc,,, or in parent ft for ease (maybe new ft with 'while (entryp)' loop)
+
 	name = entryp->d_name;
-	i = ms_cmp_until_wc(name, token, &qts);
+	i = ms_cmp_until_wc(name, card, &qts);
 	if (i == -1)
 	{
+		ms_clear_token(new);
 		return (0);
 	}
+	ms_catnmask(new, i, '0');
 	name += i;
-	if (!*name && (!token[i + qts] || !token[i + qts + 1]))
+	if (!*name && (!card[i + qts] || !card[i + qts + 1]))
 		return (1);
-	token += i + qts + 1;
-	while (*token)
+	mask = new->mask_exp + i;
+	card += i + qts + 1;
+	while (*card)
 	{
 		while (*name)
 		{
-			i = ms_cmp_until_wc(name, token, &qts);
+			i = ms_cmp_until_wc(name, card, &qts);
 			if (i > -1)
 				break ;
 			name++;
+			*mask = '1';
+			mask++;
 		}
 		if (!*name)
 			break ;
+		ms_catnmask(new, i, '0');
 		name += i;
-		if (!*name && (!token[i + qts] || !token[i + qts + 1]))
+		if (!*name && (!card[i + qts] || !card[i + qts + 1]))
 			return (1);
-		token += i + qts + 1;
+		card += i + qts + 1;
 	}
-	while ((*token == '"' || *token == '\'') && token[0] == token[1])
-		token += 2;
-	if (*token)
+	while ((*card == '"' || *card == '\'') && card[0] == card[1])
+		card += 2;
+	if (*card)
 	{
+		ms_clear_token(new);
 		return (0);
 	}
 	return (1);
 }
 
-static int	ms_wildcard_empty(t_darray *buf, char *wildcard)
+static int	ms_wildcard_empty(t_darray *tokens, t_token *token)
 {
-	t_token	new;
+	int	check;
 
-	new.string = ft_strdup(wildcard);
-	ms_add_flags(&new);
-	if (!new.string || ft_darray_append(buf, &new))
-	{
-		ms_clear_token(&new);
-		return (ms_wildcard_error(NULL, buf, ERR_MALLOC));
-	}
+	if (ft_darray_append(tokens, token))
+		return (ms_wildcard_error(NULL, token, NULL, ERR_MALLOC));
 // malloc error
 	return (0);
 }
 
-// returns 0 if no errors
-// returns malloced strs in t_darray *buf
-// buf should be an initialised empty darray of t_token *
-// clears buf if error encountered
-int	ms_wildcard(t_darray *buf, char *token)
+// returns 0 if succes
+int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 {
 	DIR				*dirp;
 	struct dirent	*entryp;
-//	t_token 		new;
+	char			*card;
+	t_token 		new;
+	int				start_size;
 
 	dirp = opendir(".");
 	if (!dirp)
 		return (ms_print_error("opendir", ".", 1));
 	entryp = readdir(dirp);
+	card = token->string;
+	start_size = tokens->size;
 	while (entryp)
 	{
-// 		init_token(&new);
+		if (ms_prep_new(entryp, &new))
+			return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));
 		if (ft_strncmp(entryp->d_name, ".", 2) && ft_strncmp(entryp->d_name, "..", 3))
-			if (ms_wildcard_cmp(entryp, token/*, &new*/))
-				if (ms_wildcard_add(entryp, buf))
-					return (ms_wildcard_error(dirp, buf, ERR_MALLOC));
+			if (ms_wildcard_cmp(entryp, card, &new))
+				if (ms_wildcard_add(tokens, entryp, &new))
+					return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));
 // malloc error (print error or no?)
 		entryp = readdir(dirp);
 	}
 	closedir(dirp);
-	if (!buf->size)
-		return (ms_wildcard_empty(buf, token));
+	if (tokens->size == start_size)
+		return (ms_wildcard_empty(tokens, token));
+	ms_clear_token(token);
 	return (0);
 }
