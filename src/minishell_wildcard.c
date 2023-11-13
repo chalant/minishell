@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/13 14:16:00 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/13 16:56:28 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ static int	ms_cmp_until_wc(char *name, char *card, int *qts)
 	int		i;
 	char	cqt;
 
+// skip masked quotes here,,, somehow
 	i = 0;
 	*qts = 0;
 	while ((name[i] || card[i + *qts]) && (*qts % 2 || card[i + *qts] != '*'))
@@ -201,13 +202,15 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 	start_size = tokens->size;
 	while (entryp)
 	{
-		if (ms_prep_new(entryp, &new))
-			return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));
 		if (ft_strncmp(entryp->d_name, ".", 2) && ft_strncmp(entryp->d_name, "..", 3))
+		{
+			if (ms_prep_new(entryp, &new))
+				return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));
 			if (ms_wildcard_cmp(entryp, card, &new))
 				if (ms_wildcard_add(tokens, entryp, &new))
 					return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));
 // malloc error (print error or no?)
+		}
 		entryp = readdir(dirp);
 	}
 	closedir(dirp);

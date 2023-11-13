@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/13 16:06:25 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/13 17:17:07 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,16 +89,15 @@ static void	ms_add_flags(t_token *new)
 	qt = 0;
 	while (new->string[i])
 	{
-		if (!qt && (new->string[i] == '"' || new->string[i] == '\''))
+		if (!qt && new->mask_exp[i] == '0' && (new->string[i] == '"' || new->string[i] == '\''))
 		{
 			qt = new->string[i];
-			if (new->mask_exp[i] == '0')
-				new->flags |= IS_QUOTED;
+			new->flags |= IS_QUOTED;
 			i++;
 		}
 		if (!qt && new->string[i] == '*')
 			new->flags |= IS_WILDCARD;
-		if (qt && new->string[i] == qt)
+		if (qt && new->mask_exp[i] == '0' && new->string[i] == qt)
 			qt = 0;
 		i++;
 	}
@@ -131,6 +130,27 @@ static int	ms_append_tokens(t_darray *tokens, t_token *new, char **value, int i)
 	return (0);
 }
 
+static char	**ms_handle_getenv(char *str)
+{
+	char	**ret;
+	char	*value;
+
+	value = getenv(str);
+	if (value)
+		return (ft_split(value, ' '));
+	ret = malloc(sizeof(char *) * 2);
+	if (!ret)
+		return (NULL);
+	ret[1] = NULL;
+	ret[0] = ft_strdup("");
+	if (!ret[0])
+	{
+		free(ret);
+		return (NULL);
+	}
+	return (ret);
+}
+
 static int	ms_add_var(t_darray *tokens, t_token *new, char **str)
 {
 	char	*end;
@@ -143,11 +163,11 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str)
 		return (0);
 	temp = *end;
 	*end = 0;
-	value = ft_split(getenv(*str + 1), ' ');
-	*end = temp;
-	*str = end;
+	value = ms_handle_getenv(*str + 1);
 	if (!value)
 		return (ERR_MALLOC);
+	*end = temp;
+	*str = end;
 	if (ms_join_str(new, value[0], '1'))
 	{
 		ft_clear_ds(value);
@@ -175,6 +195,9 @@ static int	ms_add_str(t_token *new, char **str)
 	char	temp;
 
 	end = ms_next_var(*str);
+	if (*end == '$' && ms_end_of_name(end) == end + 1)
+		end = ms_next_var(end + 1);
+// consider special vars here maybe (e.g. '$?')
 	if (*str == end)
 		return (0);
 	temp = *end;
@@ -206,7 +229,4 @@ int	ms_expand_var(t_darray *tokens, t_token *token)
 	return (ret);
 }
 
-// how do my flags fair when a quote starts before a var value and ends in one?
-// test: '"$"'
-
-// a token can be 'a'$b with b='b' which expands to 'a''b' and results in a'b'
+// test: var='"*' and var='*"' with "$var" and just $var
