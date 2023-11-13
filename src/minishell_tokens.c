@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/11 14:40:10 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/13 16:00:36 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ static int	ms_add_token(const char *start, const char *end, t_darray *tokens, t_
 	if (!token->string)
 		return (ERR_MALLOC);
 	ft_strlcpy(token->string, start, end - start + 1);
-	if (tokens->flags & IS_VAR)
+	if (token->flags & IS_VAR)
 		return (ms_expand_var(tokens, token));
 	if (token->flags & IS_WILDCARD)
 		return (ms_expand_wildcard(tokens, token));
@@ -166,7 +166,7 @@ void	ms_print_tokens(t_darray *tokens)
 	printf("TOKENS: {");
 	while (i < tokens->size)
 	{
-		printf("%s", ((t_token *)(tokens->contents + i * tokens->type_size))->string);
+		printf("%10s", ((t_token *)(tokens->contents + i * tokens->type_size))->string);
 		i++;
 		if (i < tokens->size)
 			printf(" , ");
@@ -183,7 +183,7 @@ void	ms_print_masks(t_darray *tokens)
 	printf(" MASKS: {");
 	while (i < tokens->size)
 	{
-		printf("%s", ((t_token *)(tokens->contents + i * tokens->type_size))->mask_exp);
+		printf("%10s", ((t_token *)(tokens->contents + i * tokens->type_size))->mask_exp);
 		i++;
 		if (i < tokens->size)
 			printf(" , ");

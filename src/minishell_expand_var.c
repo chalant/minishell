@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/10 22:35:54 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/13 16:06:25 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static char	*ms_next_var(const char *str)
 				(void) str;
 		str++;
 	}
-	return (str);
+	return ((char *) str);
 }
 
 // it's advised to pass the pointer of the starting '$'
@@ -33,18 +33,19 @@ static char	*ms_end_of_name(const char *str)
 	while (('a' <= *str && *str <= 'z') || ('A' <= *str && *str <= 'Z')
 		|| *str == '_' || ('0' <= *str && *str <= '9'))
 		str++;
-	return (str);
+	return ((char *) str);
 }
 
 // skipped if (!add_len || !fill);
 static int	ms_join_mask(t_token *token, int add_len, char fill)
 {
 	char	*new;
-	int		i;
 	int		old_len;
 
 	if (!add_len || !fill)
 		return (0);
+	if (!token->mask_exp)
+		token->mask_exp = ft_strdup("");
 	old_len = ft_strlen(token->mask_exp);
 	new = malloc(sizeof(char) * (old_len + add_len + 1));
 	if (!new)
@@ -63,12 +64,13 @@ static int	ms_join_mask(t_token *token, int add_len, char fill)
 static int	ms_join_str(t_token *token, char *str, char mask)
 {
 	char	*new;
-	char	*mask_new;
 	int		str_len;
 
 	if (!str || !*str)
 		return (0);
 	str_len = ft_strlen(str);
+	if (!token->string)
+		token->string = ft_strdup("");
 	new = ft_strjoin(token->string, str);
 	if (!new)
 		return (ERR_MALLOC);
@@ -88,14 +90,17 @@ static void	ms_add_flags(t_token *new)
 	while (new->string[i])
 	{
 		if (!qt && (new->string[i] == '"' || new->string[i] == '\''))
+		{
 			qt = new->string[i];
-		if (qt && new->mask_exp[i] == '0')
-			new->flags |= IS_QUOTED;
+			if (new->mask_exp[i] == '0')
+				new->flags |= IS_QUOTED;
+			i++;
+		}
 		if (!qt && new->string[i] == '*')
 			new->flags |= IS_WILDCARD;
-		i++;
 		if (qt && new->string[i] == qt)
 			qt = 0;
+		i++;
 	}
 }
 
@@ -106,7 +111,7 @@ static int	ms_append_tokens(t_darray *tokens, t_token *new, char **value, int i)
 	err = 0;
 	ms_add_flags(new);
 	if (new->flags & IS_WILDCARD)
-		err = ms_add_wildcard(tokens, new);
+		err = ms_expand_wildcard(tokens, new);
 	else
 		err = ft_darray_append(tokens, new);
 	if (err)
@@ -138,7 +143,7 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str)
 		return (0);
 	temp = *end;
 	*end = 0;
-	value = ft_split(getenv(*str), ' ');
+	value = ft_split(getenv(*str + 1), ' ');
 	*end = temp;
 	*str = end;
 	if (!value)
@@ -181,7 +186,7 @@ static int	ms_add_str(t_token *new, char **str)
 	return (0);
 }
 
-char	*ms_expand_var(t_darray *tokens, t_token *token)
+int	ms_expand_var(t_darray *tokens, t_token *token)
 {
 	char	*str;
 	t_token	new;
@@ -202,5 +207,6 @@ char	*ms_expand_var(t_darray *tokens, t_token *token)
 }
 
 // how do my flags fair when a quote starts before a var value and ends in one?
+// test: '"$"'
 
 // a token can be 'a'$b with b='b' which expands to 'a''b' and results in a'b'

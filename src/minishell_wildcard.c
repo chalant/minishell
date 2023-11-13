@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/11 14:33:03 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/13 14:16:00 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,22 @@ static int	ms_catnmask(t_token *new, int n, char fill)
 	while (i--)
 		str[i] = fill;
 	return (n);
+}
+
+// returns 1
+static int	ms_finish_mask(char *name, char *mask, char fill)
+{
+	int	i;
+
+	if (!mask)
+		return (1);
+	i = 0;
+	while (name[i])
+	{
+		mask[i] = fill;
+		i++;
+	}
+	return (1);
 }
 
 // only looks for quotes
@@ -157,13 +173,11 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *card, t_token *new)
 		ms_clear_token(new);
 		return (0);
 	}
-	return (1);
+	return (ms_finish_mask(name, mask, '1'));
 }
 
 static int	ms_wildcard_empty(t_darray *tokens, t_token *token)
 {
-	int	check;
-
 	if (ft_darray_append(tokens, token))
 		return (ms_wildcard_error(NULL, token, NULL, ERR_MALLOC));
 // malloc error

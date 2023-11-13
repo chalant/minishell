@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 14:56:22 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/11 14:35:17 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/13 13:34:02 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ void	ms_token_expansion(t_darray *tokens)
 	while (i < tokens->size)
 	{
 		if (((t_token *) (tokens->contents + (i * tokens->type_size)))->flags & IS_QUOTED)
-			ms_remove_quotes(((t_token *) (tokens->contents + (i * tokens->type_size)))->string);
+			ms_remove_quotes(((t_token *) (tokens->contents + (i * tokens->type_size)))->string,
+				((t_token *) (tokens->contents + (i * tokens->type_size)))->mask_exp);
 		i++;
 	}
 }
