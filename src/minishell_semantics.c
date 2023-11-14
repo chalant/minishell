@@ -1,23 +1,36 @@
 #include "minishell.h"
 
-//todo: this is temporary
-char	*get_word(t_parse_tree *node)
+int	init_command(t_command *command)
+{
+	command->command_flags = 0;
+	command->left = NULL;
+	command->right = NULL;
+	command->command_name = NULL;
+	return (1);
+}
+
+int	get_word(t_command *command, t_parse_tree *node)
 {
 	t_parse_tree	*tree;
 
 	tree = (t_parse_tree *)ft_darray_get(node->children, 0);
-	tree = (t_parse_tree *)ft_darray_get(tree->children, 0);
-	return (tree->rule_name);
+	if (strcmp(node->rule_name, "builtin") == 0)
+		command->command_flags |= MS_BUILTIN;
+	while (tree->children)
+		tree = (t_parse_tree *)ft_darray_get(tree->children, 0);
+	//todo: set the rule name to NULL and free the string from the command?
+	command->command_name = tree->rule_name;
+	return (1);
 }
 
-int	build_simple_command(t_parse_tree *node, t_stack *stack)
+int	create_simple_command(t_parse_tree *node, t_stack *stack)
 {
 	t_command	command;
 
+	init_command(&command);
 	//todo: also check if it is a builtin.
-	command.command_flags = 0;
-	command.command_name = get_word(node);
-	//todo: set values of the union.
+	get_word(&command, node);
+	//todo: set arguments, redirections...
 	// set_arguments(&command.arguments, node);
 	// set_redirections(&command.redirections, node);
 	command.command_flags |= MS_OPERAND;
@@ -25,34 +38,52 @@ int	build_simple_command(t_parse_tree *node, t_stack *stack)
 }
 
 //todo: this also builds a simple command.
-int	build_redirection_command(t_parse_tree *node, t_stack *stack)
+int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 {
 	(void)node;
 	(void)stack;
 	return (1);
 }
 
-int	collapse_tree(t_parse_tree *node, t_stack *result)
+int	build_operator(t_command *command, t_stack *commands)
+{
+	t_command	*right;
+	t_command	*left;
+
+	right = (t_command *)ft_stack_pop(commands);
+	if (right->command_flags & MS_OPERATOR)
+		build_operator(right, commands);
+	left = (t_command *)ft_stack_pop(commands);
+	if (left->command_flags & MS_OPERATOR)
+		build_operator(left, commands);
+	command->left = left;
+	command->right = right;
+	return (1);
+}
+
+int	create_operator(t_parse_tree *node, t_stack *stack, int type, const char *name)
+{
+	t_command	command;
+
+	collapse_tree((t_parse_tree *)ft_darray_get(node->children, 2), stack);
+	init_command(&command);
+	command.command_name = ft_strdup(name);
+	command.command_flags |= MS_OPERATOR;
+	command.command_flags |= type;
+	return (ft_stack_push(stack, &command));
+}
+
+int	collapse_tree(t_parse_tree *node, t_stack *commands)
 {
 	int				i;
 	t_parse_tree	*child;
-	t_command		command;
 
-	if (!node)
-		return (1);
-	if (!node->rule_name)
-		return (1);
-	if (node->terminal)
-		return (1);
-	if (!node->children)
+	if (!node || !node->rule_name || node->terminal || !node->children)
 		return (1);
 	if (strcmp(node->rule_name, "simple_command") == 0)
-		return (build_simple_command(node, result));
+		return (create_simple_command(node, commands));
 	else if (strcmp(node->rule_name, "redirection_command") == 0)
-		return (build_redirection_command(node, result));
-	command.command_flags = 0;
-	command.left = NULL;
-	command.right = NULL;
+		return (create_redirection_command(node, commands));
 	i = -1;
 	while (++i < node->children->size)
 	{
@@ -60,32 +91,31 @@ int	collapse_tree(t_parse_tree *node, t_stack *result)
 		if (!child->rule_name)
 			return (0);
 		if (strcmp(child->rule_name, "|") == 0)
-		{
-			collapse_tree((t_parse_tree *)ft_darray_get(node->children, 2), result);
-			command.command_name = ft_strdup("PIPE");
-			command.command_flags |= MS_OPERATOR;
-			command.command_flags |= MS_PIPE;
-			return (ft_stack_push(result, &command));
-		}
+			return (create_operator(node, commands, MS_PIPE, "PIPE"));
 		else if (strcmp(child->rule_name, "&&") == 0)
-		{
-			collapse_tree((t_parse_tree *)ft_darray_get(node->children, 2), result);
-			command.command_name = ft_strdup("AND");
-			command.command_flags |= MS_OPERATOR;
-			command.command_flags |= MS_AND;
-			return (ft_stack_push(result, &command));
-		}
+			return (create_operator(node, commands, MS_AND, "AND"));
 		else if (strcmp(child->rule_name, "||") == 0)
-		{
-			collapse_tree((t_parse_tree *)ft_darray_get(node->children, 2), result);
-			command.command_name = ft_strdup("OR");
-			command.command_flags |= MS_OPERATOR;
-			command.command_flags |= MS_OR;
-			return (ft_stack_push(result, &command));
-		}
+			return (create_operator(node, commands, MS_OR, "OR"));
 		//todo: handle errors
-		if (collapse_tree(child, result) < 0)
+		if (collapse_tree(child, commands) < 0)
 			return (-1);
 	}
 	return (1);
+}
+
+t_command	*build_command(t_darray	*command_array, t_parse_tree *node)
+{
+	t_stack		commands;
+	t_command	*command;
+
+	ft_darray_init(command_array, sizeof(t_command), 10);
+	ft_stack_init(&commands, command_array);
+	collapse_tree(node, &commands);
+
+	command = (t_command *)ft_stack_pop(&commands);
+	if (!command->command_name)
+		return (0);
+	if (command->command_flags & MS_OPERATOR)
+		build_operator(command, &commands);
+	return (command);
 }

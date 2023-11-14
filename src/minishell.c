@@ -169,7 +169,7 @@ int	main(int ac, char **av, char **env)
 	char				**grammar_definition;
 	t_tokeniser_info	info;
 	t_darray			tokens;
-	t_darray			execution_stack;
+	t_darray			command_array;
 
 	if (ac != 2)
 		return (1);
@@ -185,28 +185,31 @@ int	main(int ac, char **av, char **env)
 	//ft_darray_delete(&tokens, ms_clear_token);
 	
 	size = tokens.size;
+	//todo: store sets into dynamic array.
 	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size));
 	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size));
 	t_ms_grammar	grammar;
 	t_graph			graph;
 	t_parse_tree	tree;
+	t_command		*command;
+	//todo: this should store everything.
 	t_parsing_data	data;
 	
 	grammar_definition = get_minishell_definition();
 	set_grammar(&grammar, grammar_definition);
-	print_grammar(&grammar);
-	printf("\n");
+	//print_grammar(&grammar);
+	//printf("\n");
 	while (++i < tokens.size)
 	{
 		sets[i] = malloc(sizeof(t_earley_set));
 		reversed[i] = malloc(sizeof(t_earley_set));
 		sets[i]->items = malloc(sizeof(t_darray));
 		reversed[i]->items = malloc(sizeof(t_darray));
-		ft_darray_init(sets[i]->items, sizeof(t_earley_item), size);
-		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size);
+		ft_darray_init(sets[i]->items, sizeof(t_earley_item), size + 1);
+		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size + 1);
 	}
 	build_earley_items(sets, &grammar, size, &tokens);
-	print_earley(sets, &grammar, size);
+	//print_earley(sets, &grammar, size);
 	build_chart(sets, &graph, size);
 	reverse_earley(sets, reversed, size);
 	print_earley(reversed, &grammar, size);
@@ -223,15 +226,7 @@ int	main(int ac, char **av, char **env)
 	tree.children = NULL;
 	ms_build_parse_tree(&tree, &data);
 	print_parse_tree(&tree, 0);
-	ft_darray_init(&execution_stack, sizeof(t_command), 100);
-	t_stack	sem_stack;
-	ft_stack_init(&sem_stack, &execution_stack);
-	collapse_tree(&tree, &sem_stack);
-	printf("\n");
-	print_execution_stack(&execution_stack);
-	printf("\n");
-	t_stack	exec_stack;
-	ft_stack_init(&exec_stack, &execution_stack);
-	minishell_execute(&exec_stack);
+	command = build_command(&command_array, &tree);
+	minishell_execute(command);
 	return (0);
 }

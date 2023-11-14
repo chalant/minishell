@@ -1,4 +1,5 @@
 #include "minishell.h"
+//todo: add prompting.
 
 int	ms_match_newline(t_ms_symbol *symbol, t_token *token)
 {

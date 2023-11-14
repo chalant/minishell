@@ -96,6 +96,7 @@ int	earley_scan(t_earley_set **sets, t_ms_symbol *symbol, int state_id, int item
 
 	items = (t_earley_item *)sets[state_id]->items->contents;
 	item = items + item_idx;
+	//todo: add prompting
 	if (symbol->match(symbol, (t_token *)ft_darray_get(tokens, state_id)))
 	{
 		new_item.next = item->next + 1;

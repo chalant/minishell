@@ -37,7 +37,7 @@ char *ms_strcdup(const char *src, char c)
 	return (dest);
 }
 
-int	ms_match_space(t_ms_symbol *symbol, t_token *token)
+int	ms_prompt(t_ms_symbol *symbol, t_token *token)
 {
 	(void)symbol;
 
@@ -57,10 +57,11 @@ int	handle_special(t_ms_symbol *symbol, char *input)
 	ptr++;
 	if (*ptr == MS_NEW_LINE)
 		set_symbol(symbol, "<NL>", ms_match_newline);
-	else if (*ptr == MS_SPACE)
+	//todo: prompt and add tokenizer here.
+	else if (*ptr == MS_PROMPT)
 	{
-		symbol->skip = 1;
-		set_symbol(symbol, "<SPACE>", ms_match_space);
+		printf("PROMPT!\n");
+		set_symbol(symbol, "<>", ms_prompt);
 	}
 	else if (*ptr == MS_INTEGER)
 		set_symbol(symbol, "<NUMBER>", ms_match_integer);
