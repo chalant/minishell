@@ -16,16 +16,26 @@ int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
-	status = execute_command(left, commands, in_pipe, out_pipe);
+	status = execute_command(command->left, in_pipe, out_pipe);
 	if (status > 0)
-		return (build_command(right, commands, in_pipe, out_pipe));
+		return (execute_command(command->right, in_pipe, out_pipe));
 	return (status);
 }
 
 int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 {
-	status = execute_command(left, commands, in_pipe, out_pipe);
-	return (execute_command(right, commands, in_pipe, out_pipe));
+	int	status;
+	int	pid1;
+	int	pid2;
+
+	status = execute_command(command->left, in_pipe, out_pipe);
+	pid1 = fork();
+	if (pid1 == 0)
+		execute_command(command->right, in_pipe, out_pipe);
+	pid1 = fork();
+	if (pid2 == 0)
+		execute_command(command->r);
+	return (status)
 }
 
 int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
@@ -44,11 +54,11 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	else if (command->command_flags & MS_OPERATOR)
 	{
 		if (command->command_flags & MS_AND)
-			return (execute_and(command));
+			return (execute_and(command, in_pipe, out_pipe));
 		else if (command->command_flags & MS_OR)
-			return (execute_or(command));
+			return (execute_or(command, in_pipe, out_pipe));
 		else if (command->command_flags & MS_PIPE)
-			return (execute_pipe(command));
+			return (execute_pipe(command, in_pipe, out_pipe));
 	}
 	return (1);
 }
