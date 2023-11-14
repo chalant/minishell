@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/13 17:17:07 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/14 17:52:13 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,4 +229,5 @@ int	ms_expand_var(t_darray *tokens, t_token *token)
 	return (ret);
 }
 
+// a var SHOULDN'T be split when it is expanded in quotes (e.g. "$spaced")
 // test: var='"*' and var='*"' with "$var" and just $var

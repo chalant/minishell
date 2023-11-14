@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/13 16:00:36 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/14 17:45:44 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,3 +212,6 @@ int	main(int ac, char **av)
 		i++;
 	}
 }
+
+// try in bash: echo *.git ... for some reason it doesn't expand in my WSL bash
+//		then again,, WSL bash also expands . and ..

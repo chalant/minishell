@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/13 16:56:28 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/14 17:36:50 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,25 +26,10 @@ static int	ms_wildcard_error(DIR *dirp, t_token *token, t_token *new, int ret)
 static int	ms_prep_new(struct dirent *entryp, t_token *new)
 {
 	ms_init_token(new);
-	new->mask_exp = ft_calloc(entryp->d_namlen + 1, sizeof(char));
+	new->mask_exp = ft_calloc(ft_strlen(entryp->d_name) + 1, sizeof(char));
 	if (!new->mask_exp)
 		return (ERR_MALLOC);
 	return (0);
-}
-
-// returns n
-static int	ms_catnmask(t_token *new, int n, char fill)
-{
-	char	*str;
-	int		i;
-
-	i = n;
-	str = new->mask_exp;
-	while (*str)
-		str++;
-	while (i--)
-		str[i] = fill;
-	return (n);
 }
 
 // returns 1
@@ -84,11 +69,14 @@ static void	ms_add_flags(t_token *token)
 // returns 1 on malloc error
 static int	ms_wildcard_add(t_darray *tokens, struct dirent *entryp, t_token *new)
 {
-	new->string = malloc(sizeof(char) * (entryp->d_namlen + 1));
+	int	namlen;
+
+	namlen = ft_strlen(entryp->d_name);
+	new->string = malloc(sizeof(char) * (namlen + 1));
 	if (!new->string)
 		return (ERR_MALLOC);
 // malloc error
-	ft_strlcpy(new->string, entryp->d_name, entryp->d_namlen + 1);
+	ft_strlcpy(new->string, entryp->d_name, namlen + 1);
 	ms_add_flags(new);
 	if (ft_darray_append(tokens, new))
 		return (ERR_MALLOC);
@@ -96,19 +84,44 @@ static int	ms_wildcard_add(t_darray *tokens, struct dirent *entryp, t_token *new
 	return (0);
 }
 
+// returns n, increments mask by n
+// if !token->mask_exp, '0' char is used instead
+static int	ms_cpy_mask(int n, char **mask, char *card, t_token *token)
+{
+	char	*old_mask;
+	int		i;
+
+	if (!n)
+		return (0);
+	old_mask = token->mask_exp + (card - token->string);
+	i = 0;
+	while (i < n)
+	{
+		if (token->mask_exp)
+			(*mask)[i] = old_mask[i];
+		else
+			(*mask)[i] = '0';
+		i++;
+	}
+	(*mask) += n;
+	return (n);
+}
+
 // returns -1 if no match, and amount of chars compared if a match
 // includes terminating 0
-static int	ms_cmp_until_wc(char *name, char *card, int *qts)
+static int	ms_cmp_until_wc(char *name, char *card, int *qts, t_token *token)
 {
 	int		i;
 	char	cqt;
+	char	*mask;
 
-// skip masked quotes here,,, somehow
 	i = 0;
+	mask = token->mask_exp + (card - token->string);
 	*qts = 0;
+	cqt = 0;
 	while ((name[i] || card[i + *qts]) && (*qts % 2 || card[i + *qts] != '*'))
 	{
-		while ((!(*qts % 2) && (card[i + *qts] == '"' || card[i + *qts] == '\'')) || ((*qts % 2) && cqt == card[i + *qts]))
+		while ((!token->mask_exp || mask[i + *qts] == '0') && ((!(*qts % 2) && (card[i + *qts] == '"' || card[i + *qts] == '\'')) || ((*qts % 2) && cqt == card[i + *qts])))
 		{
 			if (!(*qts % 2))
 				cqt = card[i + *qts];
@@ -117,9 +130,7 @@ static int	ms_cmp_until_wc(char *name, char *card, int *qts)
 		if ((!name[i] && !card[i + *qts]) || (!(*qts % 2) && card[i + *qts] == '*'))
 			break ;
 		if (name[i] != card[i + *qts])
-		{
 			return (-1);
-		}
 		i++;
 	}
 	if (!card[i + *qts] || card[i + *qts] == '*')
@@ -128,31 +139,32 @@ static int	ms_cmp_until_wc(char *name, char *card, int *qts)
 }
 
 // returns 1 if it's a match
-static int	ms_wildcard_cmp(struct dirent *entryp, char *card, t_token *new)
+static int	ms_wildcard_cmp(struct dirent *entryp, t_token *token, t_token *new)
 {
+	char	*card;
 	char	*name;
 	char	*mask;
 	int		i;
 	int		qts;
 
+	card = token->string;
 	name = entryp->d_name;
-	i = ms_cmp_until_wc(name, card, &qts);
+	i = ms_cmp_until_wc(name, card, &qts, token);
 	if (i == -1)
 	{
 		ms_clear_token(new);
 		return (0);
 	}
-	ms_catnmask(new, i, '0');
-	name += i;
+	mask = new->mask_exp;
+	name += ms_cpy_mask(i, &mask, card, token);
 	if (!*name && (!card[i + qts] || !card[i + qts + 1]))
 		return (1);
-	mask = new->mask_exp + i;
 	card += i + qts + 1;
 	while (*card)
 	{
 		while (*name)
 		{
-			i = ms_cmp_until_wc(name, card, &qts);
+			i = ms_cmp_until_wc(name, card, &qts, token);
 			if (i > -1)
 				break ;
 			name++;
@@ -161,14 +173,17 @@ static int	ms_wildcard_cmp(struct dirent *entryp, char *card, t_token *new)
 		}
 		if (!*name)
 			break ;
-		ms_catnmask(new, i, '0');
-		name += i;
+		name += ms_cpy_mask(i, &mask, card, token);
 		if (!*name && (!card[i + qts] || !card[i + qts + 1]))
 			return (1);
 		card += i + qts + 1;
 	}
-	while ((*card == '"' || *card == '\'') && card[0] == card[1])
-		card += 2;
+	while (*card == '*' || ((*card == '"' || *card == '\'') && card[0] == card[1]))
+	{
+		if (*card != '*')
+			card++;
+		card++;
+	}
 	if (*card)
 	{
 		ms_clear_token(new);
@@ -190,15 +205,13 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 {
 	DIR				*dirp;
 	struct dirent	*entryp;
-	char			*card;
-	t_token 		new;
+	t_token			new;
 	int				start_size;
 
 	dirp = opendir(".");
 	if (!dirp)
 		return (ms_print_error("opendir", ".", 1));
 	entryp = readdir(dirp);
-	card = token->string;
 	start_size = tokens->size;
 	while (entryp)
 	{
@@ -206,7 +219,7 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 		{
 			if (ms_prep_new(entryp, &new))
 				return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));
-			if (ms_wildcard_cmp(entryp, card, &new))
+			if (ms_wildcard_cmp(entryp, token, &new))
 				if (ms_wildcard_add(tokens, entryp, &new))
 					return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));
 // malloc error (print error or no?)
