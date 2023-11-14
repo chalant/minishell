@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_commands.h                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
+/*   Updated: 2023/11/14 16:53:08 by ychalant         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_COMMANDS_H
 # define MINISHELL_COMMANDS_H
 
@@ -25,5 +37,7 @@ typedef struct	s_command
 	t_darray			*redirections;
 	
 }				t_command;
+
+int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2]);
 
 #endif
