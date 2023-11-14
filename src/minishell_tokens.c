@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/14 17:45:44 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/14 23:18:31 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,13 +160,29 @@ t_token_info	*ms_token_info(t_token_info *ti, const char *res_single, const char
 // prints all tokens in {t, t} format
 void	ms_print_tokens(t_darray *tokens)
 {
-	int	i;
+	int		i;
+	t_token	*token;
 
 	i = 0;
 	printf("TOKENS: {");
 	while (i < tokens->size)
 	{
-		printf("%10s", ((t_token *)(tokens->contents + i * tokens->type_size))->string);
+		token = (t_token *)(tokens->contents + i * tokens->type_size);
+		printf("[");
+		if (token->flags & IS_QUOTED)
+			printf("q");
+		else
+			printf(" ");
+		if (token->flags & IS_WILDCARD)
+			printf("w");
+		else
+			printf(" ");
+		if (token->flags & IS_VAR)
+			printf("v");
+		else
+			printf(" ");
+		printf("]  ");
+		printf("%s", token->string);
 		i++;
 		if (i < tokens->size)
 			printf(" , ");
@@ -177,13 +193,16 @@ void	ms_print_tokens(t_darray *tokens)
 // prints all masks in {t, t} format
 void	ms_print_masks(t_darray *tokens)
 {
-	int	i;
+	int		i;
+	t_token	*token;
 
 	i = 0;
 	printf(" MASKS: {");
 	while (i < tokens->size)
 	{
-		printf("%10s", ((t_token *)(tokens->contents + i * tokens->type_size))->mask_exp);
+		token = (t_token *)(tokens->contents + i * tokens->type_size);
+		printf("%7s", "");
+		printf("%s", token->mask_exp);
 		i++;
 		if (i < tokens->size)
 			printf(" , ");

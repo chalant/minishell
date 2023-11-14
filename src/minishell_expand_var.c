@@ -6,17 +6,21 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/14 17:52:13 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/14 23:50:08 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	*ms_next_var(const char *str)
+static char	*ms_next_var(const char *str, int *qt)
 {
 	while (*str && *str != '$')
 	{
-		if (*str == '\'')
+		if (!*qt && *str == '"')
+			*qt = 1;
+		else if (*qt && *str == '"')
+			*qt = 0;
+		if (!*qt && *str == '\'')
 			while (*++str != '\'')
 				(void) str;
 		str++;
@@ -130,19 +134,22 @@ static int	ms_append_tokens(t_darray *tokens, t_token *new, char **value, int i)
 	return (0);
 }
 
-static char	**ms_handle_getenv(char *str)
+static char	**ms_handle_getenv(char *str, int *qt)
 {
 	char	**ret;
 	char	*value;
 
 	value = getenv(str);
-	if (value)
+	if (!*qt && value)
 		return (ft_split(value, ' '));
 	ret = malloc(sizeof(char *) * 2);
 	if (!ret)
 		return (NULL);
 	ret[1] = NULL;
-	ret[0] = ft_strdup("");
+	if (value)
+		ret[0] = ft_strdup(value);
+	else
+		ret[0] = ft_strdup("");
 	if (!ret[0])
 	{
 		free(ret);
@@ -151,7 +158,7 @@ static char	**ms_handle_getenv(char *str)
 	return (ret);
 }
 
-static int	ms_add_var(t_darray *tokens, t_token *new, char **str)
+static int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 {
 	char	*end;
 	char	temp;
@@ -163,7 +170,7 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str)
 		return (0);
 	temp = *end;
 	*end = 0;
-	value = ms_handle_getenv(*str + 1);
+	value = ms_handle_getenv(*str + 1, qt);
 	if (!value)
 		return (ERR_MALLOC);
 	*end = temp;
@@ -189,14 +196,14 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str)
 	return (0);
 }
 
-static int	ms_add_str(t_token *new, char **str)
+static int	ms_add_str(t_token *new, char **str, int *qt)
 {
 	char	*end;
 	char	temp;
 
-	end = ms_next_var(*str);
+	end = ms_next_var(*str, qt);
 	if (*end == '$' && ms_end_of_name(end) == end + 1)
-		end = ms_next_var(end + 1);
+		end = ms_next_var(end + 1, qt);
 // consider special vars here maybe (e.g. '$?')
 	if (*str == end)
 		return (0);
@@ -214,12 +221,14 @@ int	ms_expand_var(t_darray *tokens, t_token *token)
 	char	*str;
 	t_token	new;
 	int		ret;
+	int		qt;
 
 	str = token->string;
 	ms_init_token(&new);
 	ret = 0;
+	qt = 0;
 	while (!ret && *str)
-		if (ms_add_str(&new, &str) || ms_add_var(tokens, &new, &str))
+		if (ms_add_str(&new, &str, &qt) || ms_add_var(tokens, &new, &str, &qt))
 			ret = ERR_MALLOC;
 	ms_clear_token(token);
 	if (!ret && ms_append_tokens(tokens, &new, NULL, 0))
@@ -228,6 +237,3 @@ int	ms_expand_var(t_darray *tokens, t_token *token)
 		ms_clear_token(&new);
 	return (ret);
 }
-
-// a var SHOULDN'T be split when it is expanded in quotes (e.g. "$spaced")
-// test: var='"*' and var='*"' with "$var" and just $var
