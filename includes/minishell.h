@@ -24,4 +24,6 @@
 #include "minishell_semantics.h"
 #include "libft.h"
 
+int	connect_pipes(int in_pipe[2], int out_pipe[2]);
+
 #endif
