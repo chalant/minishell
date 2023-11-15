@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/10/30 16:25:12 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/11/15 16:34:01 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ SRC_FILES = minishell_tokens.c \
 			minishell_grammar_symbols.c \
 			minishell_grammar_matching.c \
 			minishell_semantics.c \
-			minishell_executor.c
+			minishell_execution.c
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))

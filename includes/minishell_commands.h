@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/14 16:53:08 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/15 13:42:29 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,8 @@ typedef struct	s_command
 }				t_command;
 
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2]);
+int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2]);
+int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2]);
+int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2]);
 
 #endif
