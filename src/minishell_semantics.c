@@ -9,17 +9,32 @@ int	init_command(t_command *command)
 	return (1);
 }
 
-int	get_word(t_command *command, t_parse_tree *node)
+char	*get_word(t_parse_tree *node)
 {
 	t_parse_tree	*tree;
 
 	tree = (t_parse_tree *)ft_darray_get(node->children, 0);
-	if (strcmp(node->rule_name, "builtin") == 0)
-		command->command_flags |= MS_BUILTIN;
 	while (tree->children)
 		tree = (t_parse_tree *)ft_darray_get(tree->children, 0);
 	//todo: set the rule name to NULL and free the string from the command?
-	command->command_name = tree->rule_name;
+	return (tree->rule_name);
+}
+
+int	set_arguments(t_command *command, t_parse_tree *tree)
+{
+	t_parse_tree	*node;
+
+	if (ft_darray_init(command->arguments, sizeof(char), 3) < 0)
+		return (-1);
+	if (ft_darray_append(command->arguments, get_word(tree)) < 0)
+			return (-1);
+	node = (t_parse_tree *)ft_darray_get(node->children, 1);
+	while (node->children)
+	{
+		if (ft_darray_append(command->arguments, get_word(node)) < 0)
+			return (-1);
+		node = (t_parse_tree *)ft_darray_get(tree->children, 1);
+	}
 	return (1);
 }
 
@@ -29,10 +44,15 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 
 	init_command(&command);
 	//todo: also check if it is a builtin.
-	get_word(&command, node);
+	if (strcmp(node->rule_name, "builtin") == 0)
+		command.command_flags |= MS_BUILTIN;
+	command.command_name = get_word(node);
 	//todo: set arguments, redirections...
-	// set_arguments(&command.arguments, node);
-	// set_redirections(&command.redirections, node);
+	if (strcmp(command.command_name, "command_element") == 0)
+	{
+		set_arguments(&command, (t_parse_tree *)ft_darray_get(node->children, 0));
+		// set_redirections(&command.redirections, node);
+	}
 	command.command_flags |= MS_OPERAND;
 	return (ft_stack_push(stack, &command));
 }

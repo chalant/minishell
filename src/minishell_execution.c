@@ -34,6 +34,7 @@ int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 		return (-1);
 	if (pid == 0)
 	{
+		//connect_pipes(in_pipe, out_pipe);
 		status = execute_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
 			exit(status);
@@ -91,6 +92,7 @@ int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	//todo: if the simple command has a redirection, it will not write to the write-end of the out_pipe.
 	(void)in_pipe;
 	(void)out_pipe;
+	//execve(command->command_name, );
 	//todo: execute then return the status of the execution. in case of an execve, this will exit.
 	printf("Executing simple command! %s\n", command->command_name);
 	return (0);
@@ -123,7 +125,6 @@ void	print_commands(t_command *command, int depth)
 	print_commands(command->right, depth + 1);
 }
 
-//executes instructions by going through the stack.
 int	minishell_execute(t_command *command)
 {
 	int			in_pipe[2];

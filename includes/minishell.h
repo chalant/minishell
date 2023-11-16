@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include "minishell_parsing.h"
 #include "minishell_graph.h"
 #include "minishell_tokens.h"
