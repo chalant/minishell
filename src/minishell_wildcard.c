@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/14 17:36:50 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/16 16:52:28 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,6 +200,18 @@ static int	ms_wildcard_empty(t_darray *tokens, t_token *token)
 	return (0);
 }
 
+// returns 1 if entry is a suitable candidate
+static int	ms_pre_check(t_token *token, struct dirent *entryp)
+{
+	if (!ft_strncmp(entryp->d_name, ".", 2) || !ft_strncmp(entryp->d_name, "..", 3))
+		return (0);
+	if (entryp->d_name[0] == '.' && token->string[0] != '.')
+		return (0);
+	if (entryp->d_name[0] != '.' && token->string[0] == '.')
+		return (0);
+	return (1);
+}
+
 // returns 0 if succes
 int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 {
@@ -215,7 +227,7 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 	start_size = tokens->size;
 	while (entryp)
 	{
-		if (ft_strncmp(entryp->d_name, ".", 2) && ft_strncmp(entryp->d_name, "..", 3))
+		if (ms_pre_check(token, entryp))
 		{
 			if (ms_prep_new(entryp, &new))
 				return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));

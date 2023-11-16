@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/14 23:18:31 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/16 16:53:26 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,21 +168,21 @@ void	ms_print_tokens(t_darray *tokens)
 	while (i < tokens->size)
 	{
 		token = (t_token *)(tokens->contents + i * tokens->type_size);
-		printf("[");
-		if (token->flags & IS_QUOTED)
-			printf("q");
-		else
-			printf(" ");
-		if (token->flags & IS_WILDCARD)
-			printf("w");
-		else
-			printf(" ");
-		if (token->flags & IS_VAR)
-			printf("v");
-		else
-			printf(" ");
-		printf("]  ");
-		printf("%s", token->string);
+		// printf("[");
+		// if (token->flags & IS_QUOTED)
+		// 	printf("q");
+		// else
+		// 	printf(" ");
+		// if (token->flags & IS_WILDCARD)
+		// 	printf("w");
+		// else
+		// 	printf(" ");
+		// if (token->flags & IS_VAR)
+		// 	printf("v");
+		// else
+		// 	printf(" ");
+		// printf("]  ");
+		printf("%6s", token->string);
 		i++;
 		if (i < tokens->size)
 			printf(" , ");
@@ -201,8 +201,8 @@ void	ms_print_masks(t_darray *tokens)
 	while (i < tokens->size)
 	{
 		token = (t_token *)(tokens->contents + i * tokens->type_size);
-		printf("%7s", "");
-		printf("%s", token->mask_exp);
+		// printf("%7s", "");
+		printf("%6s", token->mask_exp);
 		i++;
 		if (i < tokens->size)
 			printf(" , ");
@@ -231,6 +231,3 @@ int	main(int ac, char **av)
 		i++;
 	}
 }
-
-// try in bash: echo *.git ... for some reason it doesn't expand in my WSL bash
-//		then again,, WSL bash also expands . and ..
