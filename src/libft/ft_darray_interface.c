@@ -3,8 +3,6 @@
 
 void	*ft_darray_get(t_darray *darray, int index)
 {
-	if (!ft_darray_exists(darray, index))
-		return (NULL);
 	return (darray->contents + index * darray->type_size);
 }
 

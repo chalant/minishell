@@ -6,13 +6,11 @@ int	init_command(t_command *command)
 	command->left = NULL;
 	command->right = NULL;
 	command->command_name = NULL;
-	command->arguments = malloc(sizeof(t_darray));
-	if (!command->arguments)
-		return (-1);
+	command->arguments = NULL;
 	return (1);
 }
 
-char	*get_word(t_parse_tree *node)
+char	**get_word(t_parse_tree *node)
 {
 	t_parse_tree	*tree;
 
@@ -20,13 +18,19 @@ char	*get_word(t_parse_tree *node)
 	while (tree->children)
 		tree = (t_parse_tree *)ft_darray_get(tree->children, 0);
 	//todo: set the rule name to NULL and free the string from the command?
-	return (tree->rule_name);
+	return (&tree->rule_name);
 }
 
 int	set_arguments(t_command *command, t_parse_tree *tree)
 {
+	//char			**args;
+	//int				i;
 	t_parse_tree	*node;
+	//t_darray		*list;
+	char			**lst;
 
+	command->arguments = malloc(sizeof(t_darray));
+	//list = command->arguments;
 	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
 		return (-1);
 	if (ft_darray_append(command->arguments, get_word(tree)) < 0)
@@ -34,39 +38,53 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 	node = (t_parse_tree *)ft_darray_get(tree->children, 1);
 	while (node->children)
 	{
-		printf("Setting arguments! %s\n", get_word(node));
 		if (ft_darray_append(command->arguments, get_word(node)) < 0)
 			return (-1);
 		node = (t_parse_tree *)ft_darray_get(node->children, 1);
 	}
+	lst = ft_darray_get(command->arguments, 1);
+	//printf("HELLO %s\n", *lst);
+	// args = malloc(sizeof(char *) * list.size + 2);
+	// //todo: free all
+	// args[0] = command->command_name;
+	// i = 0;
+	// while (++i < list.size + 1)
+	// 	args[i] = *(char **)ft_darray_get(&list, i - 1);
+	// args[i] = NULL;
+	// command->arguments = args;
+	// printf("Arguments: %d ", list.size);
+	// i = 0;
+	// while (command->arguments[i])
+	// {
+	// 	printf("%s ", command->arguments[i]);
+	// 	i++;
+	// }
+	// printf("\n");
+	//printf("%s\n", command->arguments[i + 1]);
+	//we probably don't need to free this ?
+	//ft_darray_delete(&list, NULL);
 	return (1);
 }
 
 int	create_simple_command(t_parse_tree *node, t_stack *stack)
 {
 	t_command	command;
-	//int			i;
-	char		*arguments;
 
 	init_command(&command);
-	//todo: also check if it is a builtin.
 	if (strcmp(node->rule_name, "builtin") == 0)
 		command.command_flags |= MS_BUILTIN;
-	command.command_name = get_word(node);
+	command.command_name = ft_strdup(*get_word(node));
 	//todo: set arguments, redirections...
+	// if (ft_darray_exists(node->children, 1))
+	// {
+	node = ft_darray_get(node->children, 1);
 	if (node->children)
 	{
-		node = ft_darray_get(node->children, 1);
-		printf("%s\n", node->rule_name);
-		if (node)
-		{
-			set_arguments(&command, (t_parse_tree *)ft_darray_get(node->children, 0));
-			// set_redirections(&command.redirections, node);
-		}
+		set_arguments(&command, (t_parse_tree *)ft_darray_get(node->children, 0));
+		// set_redirections(&command.redirections, node);
 	}
-	arguments = (char *)ft_darray_get(command.arguments, 4);
-	if (ft_darray_exists(command.arguments, 4))
-		printf("Arguments %p\n", arguments);
+	// }
+	//arguments = (char *)ft_darray_get(command.arguments, 4);
 	command.command_flags |= MS_OPERAND;
 	return (ft_stack_push(stack, &command));
 }
