@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_darray.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 16:35:27 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/23 13:45:30 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/16 10:18:31 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,10 @@ int	ft_darray_append(t_darray *darray, void *element)
 	darray->size += 1;
 	if (darray->size > darray->max_size)
 	{
-		new_elements = malloc((darray->max_size + darray->block_size) * darray->type_size);
+		new_elements = malloc((darray->max_size + darray->block_size) * darray->type_size + 1);
 		if (!new_elements)
 			return (-1);
+		ft_bzero(new_elements, (darray->max_size + darray->block_size) * darray->type_size + 1);
 		ft_memcpy(new_elements, darray->contents, darray->max_size * darray->type_size);
 		free(darray->contents);
 		darray->contents = new_elements;

@@ -6,6 +6,9 @@ int	init_command(t_command *command)
 	command->left = NULL;
 	command->right = NULL;
 	command->command_name = NULL;
+	command->arguments = malloc(sizeof(t_darray));
+	if (!command->arguments)
+		return (-1);
 	return (1);
 }
 
@@ -24,16 +27,17 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 {
 	t_parse_tree	*node;
 
-	if (ft_darray_init(command->arguments, sizeof(char), 3) < 0)
+	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
 		return (-1);
 	if (ft_darray_append(command->arguments, get_word(tree)) < 0)
 			return (-1);
-	node = (t_parse_tree *)ft_darray_get(node->children, 1);
+	node = (t_parse_tree *)ft_darray_get(tree->children, 1);
 	while (node->children)
 	{
+		printf("Setting arguments! %s\n", get_word(node));
 		if (ft_darray_append(command->arguments, get_word(node)) < 0)
 			return (-1);
-		node = (t_parse_tree *)ft_darray_get(tree->children, 1);
+		node = (t_parse_tree *)ft_darray_get(node->children, 1);
 	}
 	return (1);
 }
@@ -41,6 +45,8 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 int	create_simple_command(t_parse_tree *node, t_stack *stack)
 {
 	t_command	command;
+	//int			i;
+	char		*arguments;
 
 	init_command(&command);
 	//todo: also check if it is a builtin.
@@ -48,11 +54,19 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 		command.command_flags |= MS_BUILTIN;
 	command.command_name = get_word(node);
 	//todo: set arguments, redirections...
-	if (strcmp(command.command_name, "command_element") == 0)
+	if (node->children)
 	{
-		set_arguments(&command, (t_parse_tree *)ft_darray_get(node->children, 0));
-		// set_redirections(&command.redirections, node);
+		node = ft_darray_get(node->children, 1);
+		printf("%s\n", node->rule_name);
+		if (node)
+		{
+			set_arguments(&command, (t_parse_tree *)ft_darray_get(node->children, 0));
+			// set_redirections(&command.redirections, node);
+		}
 	}
+	arguments = (char *)ft_darray_get(command.arguments, 4);
+	if (ft_darray_exists(command.arguments, 4))
+		printf("Arguments %p\n", arguments);
 	command.command_flags |= MS_OPERAND;
 	return (ft_stack_push(stack, &command));
 }
