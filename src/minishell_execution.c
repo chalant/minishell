@@ -31,7 +31,7 @@ int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 	//todo: maybe print an error ?
 	if (pid < 0)
 		return (-1);
-	command->forked = 1;
+	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
 		//connect_pipes(in_pipe, out_pipe);
@@ -124,7 +124,7 @@ int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	//it will not write to the write-end of the out_pipe.
 	if (command->command_flags & MS_BUILTIN)
 		return (execute_builtin(command, in_pipe, out_pipe));
-	if (!command->forked)
+	if (!(command->command_flags & MS_FORKED))
 	{
 		pid = fork();
 		if (pid == 0)

@@ -8,7 +8,6 @@ int	init_command(t_command *command)
 	command->command_name = NULL;
 	command->arguments = NULL;
 	command->redirections = NULL;
-	command->forked = 0;
 	return (1);
 }
 
@@ -61,7 +60,7 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	else if (strcmp(redir->rule_name, ">>") == 0)
 	{
 		redirection->redirection_flags |= MS_APPEND;
-		redirection->redirection_flags &= ~MS_TRUNC;
+		redirection->redirection_flags &= ~(MS_TRUNC);
 	}
 	else
 		return (-1);
