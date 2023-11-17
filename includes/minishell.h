@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/14 15:58:48 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/17 16:46:30 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,17 +36,16 @@ typedef struct s_shellshock
 # define MS_PROMPT "shellshock$ "
 
 int		ms_echo(char **arg);
-void	ms_cd(t_shellshock *data, char *path);
-void	ms_pwd(t_shellshock *data);
+int		ms_cd(char **arg);
+int		ms_pwd(void);
 int		ms_env(void);
 int		ms_export(t_shellshock *data, char **arg);
 int		ms_unset(t_shellshock *data, char **arg);
 int		ms_envcpy(t_shellshock *data);
 char	**ms_realloc(char **ptr, int add);
 char	*ms_get_var_env(char *var);
+int		ms_check_varname(char *var);
 
-int		ms_print_error(const char *cmd, const char *msg, int return_value);
-
-
+int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
 
 #endif
