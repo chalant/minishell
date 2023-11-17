@@ -6,7 +6,6 @@ int	get_exit_status(int pid)
 
 	status = 0;
 	waitpid(pid, &status, 2);
-	//todo: we most likely don't need to wait for all processes to end.
 	while (wait(NULL) != -1)
 		continue ;
 	if (((status) & 0x7f) == 0)
@@ -86,31 +85,48 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (get_exit_status(pid));
 }
 
-//this is the core execution function.
-int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
+int	launch_execve(t_command *command, int in_pipe[2], int out_pipe[2])
 {
-	//todo: if the simple command has a redirection, it will not write to the write-end of the out_pipe.
 	(void)in_pipe;
 	(void)out_pipe;
 	extern char	**environ;
 	char		**arguments;
 	int			i;
-
+	int			pid;
 	//this is for non-builtin commands
-	int	pid = fork();
+	pid = fork();
 	if (pid == 0)
 	{
 		//doing this in the child process to avoid unnecessary copies.
 		arguments = malloc(sizeof(char *) * (command->arguments->size + 2));
-		//todo: free all
+		if (!arguments)
+			exit(1);
 		arguments[0] = command->command_name;
 		i = 0;
 		while (++i < command->arguments->size + 1)
 			arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
 		arguments[i] = NULL;
+		//todo: free all
 		execve(command->command_name, arguments, environ);
 	}
 	return (get_exit_status(pid));
+}
+
+int	launch_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
+{
+	(void)command;
+	(void)in_pipe;
+	(void)out_pipe;
+	return (0);
+}
+
+//this is the core execution function.
+int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
+{
+	//todo: if the simple command has a redirection, it will not write to the write-end of the out_pipe.
+	if (command->command_flags & MS_BUILTIN)
+		return (launch_builtin(command, in_pipe, out_pipe));
+	return (launch_execve(command, in_pipe, out_pipe));
 }
 
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
@@ -124,7 +140,7 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 		return (execute_or(command, in_pipe, out_pipe));
 	else if (command->command_flags & MS_PIPE)
 		return (execute_pipe(command, in_pipe, out_pipe));
-	return (-1);
+	return (1);
 }
 
 void	print_commands(t_command *command, int depth)
@@ -133,7 +149,7 @@ void	print_commands(t_command *command, int depth)
 		return ;
 	for (int i = 0; i < depth; i++)
 		printf("   |");
-	printf("Command name: %s\n", command->command_name);
+	printf("%s\n", command->command_name);
 	if (command->command_flags & MS_OPERAND)
 		return ;
 	print_commands(command->left, depth + 1);
@@ -145,10 +161,10 @@ int	minishell_execute(t_command *command)
 	int			in_pipe[2];
 	int			out_pipe[2];
 
+	printf("Commands: \n");
 	print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	// if (pipe(in_pipe) < 0)
 	// 	return (-1);
-	execute_command(command, in_pipe, out_pipe);
-	return (0);
+	return (execute_command(command, in_pipe, out_pipe));
 }

@@ -7,6 +7,7 @@ int	init_command(t_command *command)
 	command->right = NULL;
 	command->command_name = NULL;
 	command->arguments = NULL;
+	command->redirections = NULL;
 	return (1);
 }
 
@@ -26,11 +27,12 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 	t_parse_tree	*node;
 
 	command->arguments = malloc(sizeof(t_darray));
-	//list = command->arguments;
+	if (!command->arguments)
+		return (-1);
 	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
 		return (-1);
 	if (ft_darray_append(command->arguments, get_word(tree)) < 0)
-			return (-1);
+		return (-1);
 	node = (t_parse_tree *)ft_darray_get(tree->children, 1);
 	while (node->children)
 	{
@@ -41,6 +43,51 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 	return (1);
 }
 
+int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
+{
+	t_parse_tree	*redir;
+
+	redirection->redirection_flags = 0;
+	redirection->file_path = NULL;
+	redir = ft_darray_get(tree->children, 0);
+	if (strcmp(redir->rule_name, ">") == 0)
+		redirection->redirection_flags |= MS_WRITE;
+	else if (strcmp(redir->rule_name, "<") == 0)
+		redirection->redirection_flags |= MS_READ;
+	else if (strcmp(redir->rule_name, "<<") == 0)
+		redirection->redirection_flags |= MS_HEREDOC;
+	else if (strcmp(redir->rule_name, ">>") == 0)
+		redirection->redirection_flags |= MS_APPEND;
+	else
+		return (-1);
+	redirection->file_path = *(char **)get_word((t_parse_tree *)ft_darray_get(tree->children, 1));
+	return (0);
+}
+
+int	set_redirections(t_command *command, t_parse_tree *tree)
+{
+	t_parse_tree	*node;
+	t_redirection	redirection;
+
+	command->redirections = malloc(sizeof(t_darray));
+	if (!command->redirections)
+		return (-1);
+	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
+		return (-1);
+	set_redirection(&redirection, (t_parse_tree *)ft_darray_get(tree->children, 0));
+	if (ft_darray_append(command->arguments, &redirection) < 0)
+		return (-1);
+	node = (t_parse_tree *)ft_darray_get(tree->children, 1);
+	while (node->children)
+	{
+		set_redirection(&redirection, (t_parse_tree *)ft_darray_get(node->children, 0));
+		if (ft_darray_append(command->arguments, &redirection) < 0)
+			return (-1);
+		node = (t_parse_tree *)ft_darray_get(node->children, 1);
+	}
+	return (0);
+}
+
 int	create_simple_command(t_parse_tree *node, t_stack *stack)
 {
 	t_command	command;
@@ -49,17 +96,13 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 	if (strcmp(node->rule_name, "builtin") == 0)
 		command.command_flags |= MS_BUILTIN;
 	command.command_name = ft_strdup(*get_word(node));
-	//todo: set arguments, redirections...
-	// if (ft_darray_exists(node->children, 1))
-	// {
 	node = ft_darray_get(node->children, 1);
 	if (node->children)
 	{
 		set_arguments(&command, (t_parse_tree *)ft_darray_get(node->children, 0));
-		// set_redirections(&command.redirections, node);
+		if (node->children->size > 1)
+			set_redirections(&command, (t_parse_tree *)ft_darray_get(node->children, 1));
 	}
-	// }
-	//arguments = (char *)ft_darray_get(command.arguments, 4);
 	command.command_flags |= MS_OPERAND;
 	return (ft_stack_push(stack, &command));
 }
