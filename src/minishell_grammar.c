@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/09 13:30:45 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/17 16:10:38 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static const char	*g_test_grammar = "sum:sum <'+-' product\n"\
 
 static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"number:$'2'\n"\
+
 	"assignment-word:$'1'\n"\
 
 	"redirection:='>' word\n"\

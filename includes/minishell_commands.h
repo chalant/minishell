@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/17 12:33:43 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/17 16:50:39 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@
 #define MS_OPERAND 1 << 4
 #define MS_BUILTIN 1 << 5
 
-#define MS_HEREDOC 1 << 0
-#define MS_READ 1 << 1
-#define MS_WRITE 1 << 2
-#define MS_APPEND 1 << 3
-#define MS_TRUNC 1 << 4
+#define MS_HEREDOC 0
+#define MS_READ 1
+#define MS_WRITE 2
+#define MS_APPEND 3
+#define MS_TRUNC 4
 
 typedef struct	s_redirection
 {
@@ -42,7 +42,7 @@ typedef struct	s_command
 	struct	s_command	*right;
 	t_darray			*redirections;
 	t_darray			*arguments;
-	
+	int					forked;
 }				t_command;
 
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2]);

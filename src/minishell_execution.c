@@ -31,6 +31,7 @@ int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 	//todo: maybe print an error ?
 	if (pid < 0)
 		return (-1);
+	command->forked = 1;
 	if (pid == 0)
 	{
 		//connect_pipes(in_pipe, out_pipe);
@@ -73,7 +74,6 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	//todo: out_pipe could also be a redirection so we need to either create a pipe or open a file...
 	// if (pipe(out_pipe) < 0)
 	// 	return (-1);
-	//if (command->command_flags & MS_BUILTIN)
 	pid = execute_process(command->left, in_pipe, out_pipe);
 	dup_pipe(out_pipe, in_pipe);
 	//todo: out_pipe could also be a redirection so we need to either create a pipe or open a file...
@@ -92,27 +92,22 @@ int	launch_execve(t_command *command, int in_pipe[2], int out_pipe[2])
 	extern char	**environ;
 	char		**arguments;
 	int			i;
-	int			pid;
-	//this is for non-builtin commands
-	pid = fork();
-	if (pid == 0)
-	{
-		//doing this in the child process to avoid unnecessary copies.
-		arguments = malloc(sizeof(char *) * (command->arguments->size + 2));
-		if (!arguments)
-			exit(1);
-		arguments[0] = command->command_name;
-		i = 0;
-		while (++i < command->arguments->size + 1)
-			arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
-		arguments[i] = NULL;
-		//todo: free all
-		execve(command->command_name, arguments, environ);
-	}
-	return (get_exit_status(pid));
+	//todo: lookup into the environment.
+	//doing this in the child process to avoid unnecessary copies.
+	arguments = malloc(sizeof(char *) * (command->arguments->size + 2));
+	if (!arguments)
+		exit(1);
+	arguments[0] = command->command_name;
+	i = 0;
+	while (++i < command->arguments->size + 1)
+		arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
+	arguments[i] = NULL;
+	//todo: free all
+	execve(command->command_name, arguments, environ);
+	return (1);
 }
 
-int	launch_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	(void)command;
 	(void)in_pipe;
@@ -123,10 +118,21 @@ int	launch_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 //this is the core execution function.
 int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 {
-	//todo: if the simple command has a redirection, it will not write to the write-end of the out_pipe.
+	int			pid;
+
+	//todo: if the simple command has a redirection,
+	//it will not write to the write-end of the out_pipe.
 	if (command->command_flags & MS_BUILTIN)
-		return (launch_builtin(command, in_pipe, out_pipe));
-	return (launch_execve(command, in_pipe, out_pipe));
+		return (execute_builtin(command, in_pipe, out_pipe));
+	if (!command->forked)
+	{
+		pid = fork();
+		if (pid == 0)
+			launch_execve(command, in_pipe, out_pipe);
+		return (get_exit_status(pid));
+	}
+	launch_execve(command, in_pipe, out_pipe);
+	return (1);
 }
 
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])

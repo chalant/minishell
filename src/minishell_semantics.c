@@ -8,6 +8,7 @@ int	init_command(t_command *command)
 	command->command_name = NULL;
 	command->arguments = NULL;
 	command->redirections = NULL;
+	command->forked = 0;
 	return (1);
 }
 
@@ -15,9 +16,9 @@ char	**get_word(t_parse_tree *node)
 {
 	t_parse_tree	*tree;
 
-	tree = (t_parse_tree *)ft_darray_get(node->children, 0);
+	tree = ft_darray_get(node->children, 0);
 	while (tree->children)
-		tree = (t_parse_tree *)ft_darray_get(tree->children, 0);
+		tree = ft_darray_get(tree->children, 0);
 	//todo: set the rule name to NULL and free the string from the command?
 	return (&tree->rule_name);
 }
@@ -33,12 +34,12 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 		return (-1);
 	if (ft_darray_append(command->arguments, get_word(tree)) < 0)
 		return (-1);
-	node = (t_parse_tree *)ft_darray_get(tree->children, 1);
+	node = ft_darray_get(tree->children, 1);
 	while (node->children)
 	{
 		if (ft_darray_append(command->arguments, get_word(node)) < 0)
 			return (-1);
-		node = (t_parse_tree *)ft_darray_get(node->children, 1);
+		node = ft_darray_get(node->children, 1);
 	}
 	return (1);
 }
@@ -50,6 +51,7 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	redirection->redirection_flags = 0;
 	redirection->file_path = NULL;
 	redir = ft_darray_get(tree->children, 0);
+	redirection->redirection_flags |= MS_TRUNC;
 	if (strcmp(redir->rule_name, ">") == 0)
 		redirection->redirection_flags |= MS_WRITE;
 	else if (strcmp(redir->rule_name, "<") == 0)
@@ -57,10 +59,13 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	else if (strcmp(redir->rule_name, "<<") == 0)
 		redirection->redirection_flags |= MS_HEREDOC;
 	else if (strcmp(redir->rule_name, ">>") == 0)
+	{
 		redirection->redirection_flags |= MS_APPEND;
+		redirection->redirection_flags &= ~MS_TRUNC;
+	}
 	else
 		return (-1);
-	redirection->file_path = *(char **)get_word((t_parse_tree *)ft_darray_get(tree->children, 1));
+	redirection->file_path = *(char **)get_word(ft_darray_get(tree->children, 1));
 	return (0);
 }
 
@@ -72,18 +77,18 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	command->redirections = malloc(sizeof(t_darray));
 	if (!command->redirections)
 		return (-1);
-	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
+	if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
 		return (-1);
-	set_redirection(&redirection, (t_parse_tree *)ft_darray_get(tree->children, 0));
-	if (ft_darray_append(command->arguments, &redirection) < 0)
+	set_redirection(&redirection, ft_darray_get(tree->children, 0));
+	if (ft_darray_append(command->redirections, &redirection) < 0)
 		return (-1);
-	node = (t_parse_tree *)ft_darray_get(tree->children, 1);
+	node = ft_darray_get(tree->children, 1);
 	while (node->children)
 	{
-		set_redirection(&redirection, (t_parse_tree *)ft_darray_get(node->children, 0));
-		if (ft_darray_append(command->arguments, &redirection) < 0)
+		set_redirection(&redirection, ft_darray_get(node->children, 0));
+		if (ft_darray_append(command->redirections, &redirection) < 0)
 			return (-1);
-		node = (t_parse_tree *)ft_darray_get(node->children, 1);
+		node = ft_darray_get(node->children, 1);
 	}
 	return (0);
 }
@@ -99,9 +104,9 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 	node = ft_darray_get(node->children, 1);
 	if (node->children)
 	{
-		set_arguments(&command, (t_parse_tree *)ft_darray_get(node->children, 0));
+		set_arguments(&command, ft_darray_get(node->children, 0));
 		if (node->children->size > 1)
-			set_redirections(&command, (t_parse_tree *)ft_darray_get(node->children, 1));
+			set_redirections(&command, ft_darray_get(node->children, 1));
 	}
 	command.command_flags |= MS_OPERAND;
 	return (ft_stack_push(stack, &command));
@@ -110,6 +115,7 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 //todo: this also builds a simple command.
 int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 {
+	//todo: this also builds a simple command.
 	(void)node;
 	(void)stack;
 	return (1);
