@@ -23,11 +23,7 @@ char	**get_word(t_parse_tree *node)
 
 int	set_arguments(t_command *command, t_parse_tree *tree)
 {
-	//char			**args;
-	//int				i;
 	t_parse_tree	*node;
-	//t_darray		*list;
-	char			**lst;
 
 	command->arguments = malloc(sizeof(t_darray));
 	//list = command->arguments;
@@ -42,27 +38,6 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 			return (-1);
 		node = (t_parse_tree *)ft_darray_get(node->children, 1);
 	}
-	lst = ft_darray_get(command->arguments, 1);
-	//printf("HELLO %s\n", *lst);
-	// args = malloc(sizeof(char *) * list.size + 2);
-	// //todo: free all
-	// args[0] = command->command_name;
-	// i = 0;
-	// while (++i < list.size + 1)
-	// 	args[i] = *(char **)ft_darray_get(&list, i - 1);
-	// args[i] = NULL;
-	// command->arguments = args;
-	// printf("Arguments: %d ", list.size);
-	// i = 0;
-	// while (command->arguments[i])
-	// {
-	// 	printf("%s ", command->arguments[i]);
-	// 	i++;
-	// }
-	// printf("\n");
-	//printf("%s\n", command->arguments[i + 1]);
-	//we probably don't need to free this ?
-	//ft_darray_delete(&list, NULL);
 	return (1);
 }
 

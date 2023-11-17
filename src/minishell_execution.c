@@ -7,8 +7,8 @@ int	get_exit_status(int pid)
 	status = 0;
 	waitpid(pid, &status, 2);
 	//todo: we most likely don't need to wait for all processes to end.
-	// while (wait(NULL) != -1)
-	// 	continue ;
+	while (wait(NULL) != -1)
+		continue ;
 	if (((status) & 0x7f) == 0)
 		return ((((status) & 0xff00) >> 8));
 	return (0);
@@ -74,15 +74,15 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	//todo: out_pipe could also be a redirection so we need to either create a pipe or open a file...
 	// if (pipe(out_pipe) < 0)
 	// 	return (-1);
+	//if (command->command_flags & MS_BUILTIN)
 	pid = execute_process(command->left, in_pipe, out_pipe);
-	//close_read_write(in_pipe);
 	dup_pipe(out_pipe, in_pipe);
 	//todo: out_pipe could also be a redirection so we need to either create a pipe or open a file...
 	// if (pipe(out_pipe) < 0)
 	// 	return (-1);
 	pid = execute_process(command->right, in_pipe, out_pipe);
 	//close_read_write(in_pipe);
-	dup_pipe(out_pipe, in_pipe);
+	//dup_pipe(out_pipe, in_pipe);
 	return (get_exit_status(pid));
 }
 
@@ -92,46 +92,24 @@ int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	//todo: if the simple command has a redirection, it will not write to the write-end of the out_pipe.
 	(void)in_pipe;
 	(void)out_pipe;
-	extern char **environ;
-	char	*args[] = {command->command_name, NULL};
-	char	**arguments;
+	extern char	**environ;
+	char		**arguments;
+	int			i;
 
-	// i = 0;
-	// printf("RUN %d ", command->arguments->size);
-	// while (i < command->arguments->size + 1)
-	// {
-	// 	printf("YEAH!!!! %s ", arguments[i]);
-	// 	i++;
-	// }
-	// printf("\n");
+	//this is for non-builtin commands
 	int	pid = fork();
 	if (pid == 0)
 	{
+		//doing this in the child process to avoid unnecessary copies.
 		arguments = malloc(sizeof(char *) * (command->arguments->size + 2));
-	//todo: free all
-	arguments[0] = command->command_name;
-	int i = 0;
-	while (++i < command->arguments->size + 1)
-	{
-		arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
-		//printf("yo! %s\n", *(char **)ft_darray_get(command->arguments, i - 1));
+		//todo: free all
+		arguments[0] = command->command_name;
+		i = 0;
+		while (++i < command->arguments->size + 1)
+			arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
+		arguments[i] = NULL;
+		execve(command->command_name, arguments, environ);
 	}
-	arguments[i] = NULL;
-		//printf("Child process!\n");
-		if (command->arguments)
-		{
-			if (execve(command->command_name, arguments, environ) == - 1)
-				perror("Error 1");
-		}
-		else
-		{
-		if (execve(command->command_name, args, environ) == - 1)
-			perror("Error 2");
-		}
-		exit(0);
-	}
-	//todo: execute then return the status of the execution. in case of an execve, this will exit.
-	//printf("Executing simple command! %s\n", command->command_name);
 	return (get_exit_status(pid));
 }
 
