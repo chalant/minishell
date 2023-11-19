@@ -58,19 +58,18 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"redirection_command:='(' redirection_list =')' redirection_list\n"\
 	"redirection_command:redirection_list simple_command\n"\
 
-	"command_operator:='(' pipeline =')'\n"\
+	"command_operator:='(' command =')'\n"\
 
-	"command:command ='||' command_operand\n"\
-	"command:command ='&&' command_operand\n"\
 	"command:command_operand\n"\
 	"command_operand:command_operator\n"\
 	"command_operand:command_operator redirection_list\n"\
 	"command_operand:simple_command\n"\
 	"command_operand:redirection_command\n"\
 
-	"pipeline:command ='|' $'4'\n"\
-	"pipeline:command\n"\
-	"pipeline:pipeline ='|' command\n";
+	"command:command ='|' $'4'\n"\
+	"command:command ='|' command_operand\n"\
+	"command:command ='||' command_operand\n"\
+	"command:command ='&&' command\n";
 
 char	**ft_reverse_strings(char **strings)
 {
