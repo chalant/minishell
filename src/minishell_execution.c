@@ -14,7 +14,7 @@ int	get_exit_status(int pid)
 }
 
 //copies file descriptors
-void	dup_pipe(int src_pipe[2], int dest_pipe[2])
+void	copy_pipe(int src_pipe[2], int dest_pipe[2])
 {
 	dest_pipe[0] = src_pipe[0];
 	dest_pipe[1] = src_pipe[1];
@@ -22,7 +22,7 @@ void	dup_pipe(int src_pipe[2], int dest_pipe[2])
 
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
-int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_process(t_command *command, int *in_pipe, int *out_pipe)
 {
 	int	pid;
 	int	status;
@@ -34,16 +34,20 @@ int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		//connect_pipes(in_pipe, out_pipe);
+		dup2(in_pipe[0], STDIN_FILENO);
+		close(out_pipe[0]);
+		dup2(out_pipe[1], STDOUT_FILENO);
+		close(out_pipe[1]);
 		status = execute_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
 			exit(status);
 		exit(126);
 	}
+	close(out_pipe[1]);
 	return (pid);
 }
 
-int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_and(t_command *command, int *in_pipe, int *out_pipe)
 {
 	int	status;
 
@@ -55,7 +59,7 @@ int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (status);
 }
 
-int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_or(t_command *command, int *in_pipe, int *out_pipe)
 {
 	int	status;
 
@@ -67,25 +71,23 @@ int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (status);
 }
 
-int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_pipe(t_command *command, int *in_pipe, int *out_pipe)
 {
-	int	pid;
+	pid_t	pid;
 
+	if (pipe(out_pipe) < 0)
+		return (-1);
 	//todo: out_pipe could also be a redirection so we need to either create a pipe or open a file...
-	// if (pipe(out_pipe) < 0)
-	// 	return (-1);
+	//read from in pipe of the parent
 	pid = execute_process(command->left, in_pipe, out_pipe);
-	dup_pipe(out_pipe, in_pipe);
-	//todo: out_pipe could also be a redirection so we need to either create a pipe or open a file...
-	// if (pipe(out_pipe) < 0)
-	// 	return (-1);
+	close(in_pipe[0]);
+	close(in_pipe[1]);
+	copy_pipe(out_pipe, in_pipe);
 	pid = execute_process(command->right, in_pipe, out_pipe);
-	//close_read_write(in_pipe);
-	//dup_pipe(out_pipe, in_pipe);
 	return (get_exit_status(pid));
 }
 
-int	launch_execve(t_command *command, int in_pipe[2], int out_pipe[2])
+int	launch_execve(t_command *command, int *in_pipe, int *out_pipe)
 {
 	(void)in_pipe;
 	(void)out_pipe;
@@ -107,7 +109,7 @@ int	launch_execve(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (1);
 }
 
-int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_builtin(t_command *command, int *in_pipe, int *out_pipe)
 {
 	(void)command;
 	(void)in_pipe;
@@ -116,12 +118,12 @@ int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 }
 
 //this is the core execution function.
-int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_simple_command(t_command *command, int *in_pipe, int *out_pipe)
 {
-	int			pid;
+	pid_t	pid;
 
 	//todo: if the simple command has a redirection,
-	//it will not write to the write-end of the out_pipe.
+	//it will not write to the write-end of the out_pipe, so close it.
 	if (command->command_flags & MS_BUILTIN)
 		return (execute_builtin(command, in_pipe, out_pipe));
 	if (!(command->command_flags & MS_FORKED))
@@ -135,7 +137,7 @@ int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (1);
 }
 
-int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_command(t_command *command, int *in_pipe, int *out_pipe)
 {
 	if (command->command_flags & MS_OPERAND)
 		return (execute_simple_command(command, in_pipe, out_pipe));
@@ -170,7 +172,8 @@ int	minishell_execute(t_command *command)
 	printf("Commands: \n");
 	print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
-	// if (pipe(in_pipe) < 0)
-	// 	return (-1);
-	return (execute_command(command, in_pipe, out_pipe));
+	if (pipe(in_pipe) < 0)
+		return (-1);
+	execute_command(command, in_pipe, out_pipe);
+	return (0);
 }
