@@ -22,7 +22,7 @@ void	copy_pipe(int src_pipe[2], int dest_pipe[2])
 
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
-int	execute_process(t_command *command, int *in_pipe, int *out_pipe)
+int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	pid;
 	int	status;
@@ -47,7 +47,7 @@ int	execute_process(t_command *command, int *in_pipe, int *out_pipe)
 	return (pid);
 }
 
-int	execute_and(t_command *command, int *in_pipe, int *out_pipe)
+int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
@@ -59,7 +59,7 @@ int	execute_and(t_command *command, int *in_pipe, int *out_pipe)
 	return (status);
 }
 
-int	execute_or(t_command *command, int *in_pipe, int *out_pipe)
+int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
@@ -71,7 +71,7 @@ int	execute_or(t_command *command, int *in_pipe, int *out_pipe)
 	return (status);
 }
 
-int	execute_pipe(t_command *command, int *in_pipe, int *out_pipe)
+int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 
@@ -87,13 +87,13 @@ int	execute_pipe(t_command *command, int *in_pipe, int *out_pipe)
 	return (get_exit_status(pid));
 }
 
-int	launch_execve(t_command *command, int *in_pipe, int *out_pipe)
+int	launch_execve(t_command *command, int in_pipe[2], int out_pipe[2])
 {
-	(void)in_pipe;
-	(void)out_pipe;
 	extern char	**environ;
 	char		**arguments;
 	int			i;
+	(void)in_pipe;
+	(void)out_pipe;
 	//todo: lookup into the environment.
 	//doing this in the child process to avoid unnecessary copies.
 	arguments = malloc(sizeof(char *) * (command->arguments->size + 2));
@@ -104,12 +104,12 @@ int	launch_execve(t_command *command, int *in_pipe, int *out_pipe)
 	while (++i < command->arguments->size + 1)
 		arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
 	arguments[i] = NULL;
-	//todo: free all
 	execve(command->command_name, arguments, environ);
+	//todo: free arguments here.
 	return (1);
 }
 
-int	execute_builtin(t_command *command, int *in_pipe, int *out_pipe)
+int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	(void)command;
 	(void)in_pipe;
@@ -118,7 +118,7 @@ int	execute_builtin(t_command *command, int *in_pipe, int *out_pipe)
 }
 
 //this is the core execution function.
-int	execute_simple_command(t_command *command, int *in_pipe, int *out_pipe)
+int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 
@@ -137,7 +137,7 @@ int	execute_simple_command(t_command *command, int *in_pipe, int *out_pipe)
 	return (1);
 }
 
-int	execute_command(t_command *command, int *in_pipe, int *out_pipe)
+int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	if (command->command_flags & MS_OPERAND)
 		return (execute_simple_command(command, in_pipe, out_pipe));

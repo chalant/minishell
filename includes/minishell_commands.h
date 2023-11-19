@@ -45,9 +45,9 @@ typedef struct	s_command
 	t_darray			*arguments;
 }				t_command;
 
-int	execute_command(t_command *command, int *in_pipe, int *out_pipe);
-int	execute_or(t_command *command, int *in_pipe, int *out_pipe);
-int	execute_and(t_command *command, int *in_pipe, int *out_pipe);
-int	execute_pipe(t_command *command, int *in_pipe, int *out_pipe);
+int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2]);
+int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2]);
+int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2]);
+int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2]);
 
 #endif
