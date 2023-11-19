@@ -20,6 +20,24 @@ void	copy_pipe(int src_pipe[2], int dest_pipe[2])
 	dest_pipe[1] = src_pipe[1];
 }
 
+int	redirect(t_command *command, int *in_pipe, int *out_pipe)
+{
+	//todo:handle heredocs as-well
+	if (command->input)
+	{
+		close(in_pipe[0]);
+		in_pipe[0] = open(command->input->file_path, command->input->file_flags, 0666);
+	}
+	if (command->output)
+	{
+		close(out_pipe[1]);
+		int	fd = open(command->output->file_path, command->output->file_flags, 0666);
+		printf("writing to: %s\n", command->output->file_path);
+		out_pipe[1] = fd;
+	}
+	return (0);
+}
+
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
 int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
@@ -27,6 +45,7 @@ int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 	int	pid;
 	int	status;
 
+	//redirect(command, in_pipe, out_pipe);
 	pid = fork();
 	//todo: maybe print an error ?
 	if (pid < 0)
@@ -36,7 +55,10 @@ int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 	{
 		dup2(in_pipe[0], STDIN_FILENO);
 		close(out_pipe[0]);
-		dup2(out_pipe[1], STDOUT_FILENO);
+		if (command->output)
+			dup2(open(command->output->file_path, command->output->file_flags, 0666), STDOUT_FILENO);
+		else
+			dup2(out_pipe[1], STDOUT_FILENO);
 		close(out_pipe[1]);
 		status = execute_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
@@ -71,6 +93,7 @@ int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (status);
 }
 
+//todo: should also be able to launch heredocs.
 int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
@@ -87,24 +110,33 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (get_exit_status(pid));
 }
 
-int	launch_execve(t_command *command, int in_pipe[2], int out_pipe[2])
+int	launch_execve(t_command *command)
 {
 	extern char	**environ;
 	char		**arguments;
+	int			nargs;
 	int			i;
-	(void)in_pipe;
-	(void)out_pipe;
+
 	//todo: lookup into the environment.
 	//doing this in the child process to avoid unnecessary copies.
-	arguments = malloc(sizeof(char *) * (command->arguments->size + 2));
+	nargs = 2;
+	if (command->arguments)
+		nargs = command->arguments->size + 2;
+	fprintf(stderr, "here!\n");
+	arguments = malloc(sizeof(char *) * nargs);
 	if (!arguments)
 		exit(1);
 	arguments[0] = command->command_name;
 	i = 0;
-	while (++i < command->arguments->size + 1)
+	fprintf(stderr, "arg %s\n", arguments[i]);
+	while (++i < nargs - 1 && nargs != 2)
+	{
 		arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
+		fprintf(stderr, "arg %s\n", arguments[i]);
+	}
 	arguments[i] = NULL;
 	execve(command->command_name, arguments, environ);
+	perror("error");
 	//todo: free arguments here.
 	return (1);
 }
@@ -122,18 +154,32 @@ int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 
-	//todo: if the simple command has a redirection,
-	//it will not write to the write-end of the out_pipe, so close it.
+	//redirect(command, in_pipe, out_pipe);
 	if (command->command_flags & MS_BUILTIN)
 		return (execute_builtin(command, in_pipe, out_pipe));
 	if (!(command->command_flags & MS_FORKED))
 	{
+		//todo: add redirection handling as-well
 		pid = fork();
 		if (pid == 0)
-			launch_execve(command, in_pipe, out_pipe);
+		{
+			printf("HUH?\n");
+			if (command->output)
+			{
+				int fd = open(command->output->file_path, command->output->file_flags, 0666);
+				printf("output! %s\n", command->output->file_path);
+				dup2(fd, STDOUT_FILENO);
+				close(fd);
+			}
+			if (command->input)
+				dup2(open(command->input->file_path, command->input->file_flags, 0666), STDIN_FILENO);
+			// close(in_pipe[0]);
+			//close(in_pipe[1]);
+			launch_execve(command);
+		}
 		return (get_exit_status(pid));
 	}
-	launch_execve(command, in_pipe, out_pipe);
+	launch_execve(command);
 	return (1);
 }
 
@@ -153,11 +199,25 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 
 void	print_commands(t_command *command, int depth)
 {
+	int	i;
 	if (!command->command_name)
 		return ;
 	for (int i = 0; i < depth; i++)
 		printf("   |");
-	printf("%s\n", command->command_name);
+	printf("%s ", command->command_name);
+	i = -1;
+	if (command->arguments)
+	{
+		while(++i < command->arguments->size)
+			printf("%s ", *(char **)ft_darray_get(command->arguments, i));
+	}
+	i = -1;
+	if (command->redirections)
+	{
+		while(++i < command->redirections->size)
+			printf("> %s ", ((t_redirection *)ft_darray_get(command->redirections, i))->file_path);
+	}
+	printf("\n");
 	if (command->command_flags & MS_OPERAND)
 		return ;
 	print_commands(command->left, depth + 1);

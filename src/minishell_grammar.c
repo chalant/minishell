@@ -68,7 +68,7 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 
 	"command:command ='|' $'4'\n"\
 	"command:command ='|' command_operand\n"\
-	"command:command ='||' command_operand\n"\
+	"command:command ='||' command\n"\
 	"command:command ='&&' command\n";
 
 char	**ft_reverse_strings(char **strings)

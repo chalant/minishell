@@ -8,6 +8,8 @@ int	init_command(t_command *command)
 	command->command_name = NULL;
 	command->arguments = NULL;
 	command->redirections = NULL;
+	command->input = NULL;
+	command->output = NULL;
 	return (1);
 }
 
@@ -43,14 +45,60 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 	return (1);
 }
 
+int	create_files(t_command *command, t_darray *redirections)
+{
+	int				i;
+	int				last_in;
+	int				last_out;
+	t_redirection	*redirection;
+	int				fd;
+
+	last_in = 0;
+	last_out = 0;
+	i = -1;
+	//todo: set proper permissions for file.
+	while (++i < redirections->size)
+	{
+		redirection = ft_darray_get(redirections, i);
+		if (!(redirection->redirection_flags & MS_HEREDOC))
+		{
+			//todo:handle errors
+			fd = open(redirection->file_path, redirection->file_flags, 0666);
+			close(fd);
+		}
+		if (redirection->redirection_flags & MS_READ)
+			last_in = i;
+		if (redirection->redirection_flags & MS_WRITE)
+			last_out = i;
+	}
+	redirection = ft_darray_get(redirections, last_in);
+	if (redirection)
+	{
+		command->input = malloc(sizeof(t_redirection));
+		ft_memcpy(command->input, redirection, sizeof(t_redirection));
+	}
+	redirection = ft_darray_get(redirections, last_out);
+	if (redirection)
+	{
+		command->output = malloc(sizeof(t_redirection));
+		ft_memcpy(command->output, redirection, sizeof(t_redirection));
+	}
+	return (1);
+}
+
 int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 {
 	t_parse_tree	*redir;
 
+	//todo: need to set the right file permissions.
 	redirection->redirection_flags = 0;
+	redirection->file_flags = 0;
 	redirection->file_path = NULL;
 	redir = ft_darray_get(tree->children, 0);
-	redirection->redirection_flags |= MS_TRUNC;
+	redirection->file_flags |= O_TRUNC;
+	redirection->file_flags |= O_CREAT;
+	redirection->file_flags |= O_APPEND;
+	redirection->file_flags |= O_RDWR;
 	if (strcmp(redir->rule_name, ">") == 0)
 		redirection->redirection_flags |= MS_WRITE;
 	else if (strcmp(redir->rule_name, "<") == 0)
@@ -59,8 +107,8 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 		redirection->redirection_flags |= MS_HEREDOC;
 	else if (strcmp(redir->rule_name, ">>") == 0)
 	{
-		redirection->redirection_flags |= MS_APPEND;
-		redirection->redirection_flags &= ~(MS_TRUNC);
+		redirection->file_flags &= ~(O_TRUNC);
+		redirection->redirection_flags |= MS_WRITE;
 	}
 	else
 		return (-1);
@@ -73,10 +121,11 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	t_parse_tree	*node;
 	t_redirection	redirection;
 
+	//todo:always store the last redirections.
 	command->redirections = malloc(sizeof(t_darray));
 	if (!command->redirections)
 		return (-1);
-	if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
+	if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
 		return (-1);
 	set_redirection(&redirection, ft_darray_get(tree->children, 0));
 	if (ft_darray_append(command->redirections, &redirection) < 0)
@@ -89,13 +138,16 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 			return (-1);
 		node = ft_darray_get(node->children, 1);
 	}
+	create_files(command, command->redirections);
 	return (0);
 }
 
+//todo:add redirections for operands!-> it will pass redirections
+//to each member, disabling the truncation mode after opening the file.
 int	create_simple_command(t_parse_tree *node, t_stack *stack)
 {
-	t_command	command;
-
+	t_command		command;
+	t_parse_tree	*element_type;
 	init_command(&command);
 	if (strcmp(node->rule_name, "builtin") == 0)
 		command.command_flags |= MS_BUILTIN;
@@ -103,9 +155,15 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 	node = ft_darray_get(node->children, 1);
 	if (node->children)
 	{
-		set_arguments(&command, ft_darray_get(node->children, 0));
-		if (node->children->size > 1)
-			set_redirections(&command, ft_darray_get(node->children, 1));
+		int i = -1;
+		while (++i < node->children->size)
+		{
+			element_type = ft_darray_get(node->children, i);
+			if (strcmp(element_type->rule_name, "command_argument") == 0)
+				set_arguments(&command, element_type);
+			if (strcmp(element_type->rule_name, "redirection_list") == 0)
+				set_redirections(&command, element_type);
+		}
 	}
 	command.command_flags |= MS_OPERAND;
 	return (ft_stack_push(stack, &command));
@@ -114,7 +172,7 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 //todo: this also builds a simple command.
 int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 {
-	//todo: this also builds a simple command.
+	//todo: this also builds a simple command
 	(void)node;
 	(void)stack;
 	return (1);
@@ -145,6 +203,11 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, const char *na
 	command.command_name = ft_strdup(name);
 	command.command_flags |= MS_OPERATOR;
 	command.command_flags |= type;
+	//todo:set redirections if any exists.
+	if (strcmp(node->rule_name, "command_operator") == 0)
+	{
+		printf("Redirections for %s\n", name);
+	}
 	return (ft_stack_push(stack, &command));
 }
 
@@ -171,6 +234,12 @@ int	collapse_tree(t_parse_tree *node, t_stack *commands)
 			return (create_operator(node, commands, MS_AND, "AND"));
 		else if (strcmp(child->rule_name, "||") == 0)
 			return (create_operator(node, commands, MS_OR, "OR"));
+		if (strcmp(node->rule_name, "command_operator") == 0)
+		{
+			//todo:set redirections for the operator.
+			printf("COMMAND %s\n", ((t_command *)ft_stack_peek(commands))->command_name);
+		}
+		//todo:set redirections if any exists.
 		//todo: handle errors
 		if (collapse_tree(child, commands) < 0)
 			return (-1);

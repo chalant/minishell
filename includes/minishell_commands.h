@@ -13,6 +13,7 @@
 #ifndef MINISHELL_COMMANDS_H
 # define MINISHELL_COMMANDS_H
 
+#include <fcntl.h>
 #include "minishell.h"
 
 #define MS_PIPE 1 << 0
@@ -26,13 +27,13 @@
 #define MS_HEREDOC 1 << 0
 #define MS_READ 1 << 1
 #define MS_WRITE 1 << 2
-#define MS_APPEND 1 << 3
-#define MS_TRUNC 1 << 4
 
 typedef struct	s_redirection
 {
 	int			redirection_flags;
+	int			file_flags;
 	char		*file_path;
+	mode_t		mode;
 }				t_redirection;
 
 typedef struct	s_command
@@ -42,6 +43,8 @@ typedef struct	s_command
 	struct	s_command	*left;
 	struct	s_command	*right;
 	t_darray			*redirections;
+	t_redirection		*input;
+	t_redirection		*output;
 	t_darray			*arguments;
 }				t_command;
 
