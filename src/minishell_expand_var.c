@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 13:48:33 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 15:40:24 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,29 +82,6 @@ static int	ms_join_str(t_token *token, char *str, char mask)
 		free(token->string);
 	token->string = new;
 	return (ms_join_mask(token, str_len, mask));
-}
-
-static void	ms_add_flags_str(t_token *new)
-{
-	int		i;
-	char	qt;
-
-	i = 0;
-	qt = 0;
-	while (new->string[i])
-	{
-		if (!qt && new->mask_exp[i] == '0' && (new->string[i] == '"' || new->string[i] == '\''))
-		{
-			qt = new->string[i];
-			new->flags |= IS_QUOTED;
-			i++;
-		}
-		if (!qt && new->string[i] == '*')
-			new->flags |= IS_WILDCARD;
-		if (qt && new->mask_exp[i] == '0' && new->string[i] == qt)
-			qt = 0;
-		i++;
-	}
 }
 
 static int	ms_append_tokens(t_darray *tokens, t_token *new, char **value, int i)

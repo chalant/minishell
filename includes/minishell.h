@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 14:13:38 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 15:37:40 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ typedef struct s_shellshock
 	char	**env;
 }			t_shellshock;
 
-# define MS_PROMPT "shellshock$ "
+# define MS_PROMPT_MSG "shellshock$ "
 
 int		ms_echo(char **arg);
 int		ms_cd(char **arg);

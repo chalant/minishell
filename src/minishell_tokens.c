@@ -6,43 +6,11 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 13:48:13 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 16:58:31 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-// for use in ft_darray_delete
-void	ms_clear_token(void *token)
-{
-	if (((t_token *)token)->string)
-	{
-		free(((t_token *)token)->string);
-		((t_token *)token)->string = NULL;
-	}
-	if (((t_token *)token)->mask_exp)
-	{
-		free(((t_token *)token)->mask_exp);
-		((t_token *)token)->mask_exp = NULL;
-	}
-}
-
-// sets everything to 0 and returns 'token' ptr
-t_token	*ms_init_token(t_token *token)
-{
-	token->flags = 0;
-	token->string = NULL;
-	token->mask_exp = NULL;
-	return (token);
-}
-
-static void	ms_add_flags_char(t_token *token, char c)
-{
-	if (c == '$')
-		token->flags |= IS_VAR;
-	if (c == '*')
-		token->flags |= IS_WILDCARD;
-}
 
 // returns 1 if *symbol is a reserved sequence
 static int	ms_is_reserved(const char *symbol, t_token_info *info)
@@ -114,7 +82,7 @@ static const char	*ms_handle_symbol(const char *end, t_darray *tokens, t_token *
 	return (end);
 }
 
-// for now just 'exit()' on early exits (malloc and unclosed quotes)
+// returns > 0 on failure, doesn't delete 'tokens'
 int	ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info)
 {
 	const char	*start;
@@ -133,101 +101,16 @@ int	ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info)
 				//todo: handle error: quote unclosed
 				ms_skip_quoted(&token, &end);
 			}
-			// use this ft to add flags
 			ms_add_flags_char(&token, *end);
 			end++;
 		}
-		//todo: handle errors (clear tokens and stuff)
-		ms_add_token(start, end, tokens, &token);
+		//todo: handle errors (clear stuff?, malloc or opendir or ..?)
+		if (ms_add_token(start, end, tokens, &token))
+			return (ERR_MALLOC);
 		end = ms_handle_symbol(end, tokens, &token, info);
 	}
 	ms_token_expansion(tokens);
 	//todo: handle errors
-	return (ft_darray_append(tokens, ms_init_token(&token)));
+	ft_darray_append(tokens, ms_init_token(&token));
+	return (0);
 }
-
-t_token_info	*ms_token_info(t_token_info *ti, const char *res_single, const char *res_double, const char *res_skip)
-{
-	ti->reserved_single = res_single;
-	ti->reserved_double = res_double;
-	ti->reserved_skip = res_skip;
-	return (ti);
-}
-
-/* TEST MAIN AND PRINT FOR TOKENS RIGHT HERE */
-/*
-// prints all tokens in {t, t} format
-void	ms_print_tokens(t_darray *tokens)
-{
-	int		i;
-	t_token	*token;
-
-	i = 0;
-	printf("TOKENS: {");
-	while (i < tokens->size)
-	{
-		token = (t_token *)(tokens->contents + i * tokens->type_size);
-		// printf("[");
-		// if (token->flags & IS_QUOTED)
-		// 	printf("q");
-		// else
-		// 	printf(" ");
-		// if (token->flags & IS_WILDCARD)
-		// 	printf("w");
-		// else
-		// 	printf(" ");
-		// if (token->flags & IS_VAR)
-		// 	printf("v");
-		// else
-		// 	printf(" ");
-		// printf("]  ");
-		printf("%6s", token->string);
-		i++;
-		if (i < tokens->size)
-			printf(" , ");
-	}
-	printf("}\n");
-}
-
-// prints all masks in {t, t} format
-void	ms_print_masks(t_darray *tokens)
-{
-	int		i;
-	t_token	*token;
-
-	i = 0;
-	printf(" MASKS: {");
-	while (i < tokens->size)
-	{
-		token = (t_token *)(tokens->contents + i * tokens->type_size);
-		// printf("%7s", "");
-		printf("%6s", token->mask_exp);
-		i++;
-		if (i < tokens->size)
-			printf(" , ");
-	}
-	printf("}\n");
-}
-
-int	main(int ac, char **av)
-{
-	int				i;
-	t_darray		array;
-	t_token_info	info;
-
-	(void)ac;
-	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
-	i = 1;
-	while (i < ac)
-	{
-		printf("input: %s\n", av[i]);
-		if (ft_darray_init(&array, sizeof(t_token), 20))
-			return (13);
-		ms_tokeniser(av[i], &array, &info);
-		ms_print_tokens(&array);
-		ms_print_masks(&array);
-		ft_darray_delete(&array, ms_clear_token);
-		i++;
-	}
-}
-*/

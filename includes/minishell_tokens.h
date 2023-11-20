@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/17 14:37:56 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 15:40:36 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,19 @@ typedef struct s_token_info
 	const char	*reserved_skip;
 }				t_token_info;
 
-int		ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info);
-t_token	*ms_init_token(t_token *token);
-void	ms_clear_token(void *token);
+typedef struct dirent t_dirent;
 
-int		ms_expand_var(t_darray *tokens, t_token *token);
-int		ms_expand_wildcard(t_darray *tokens, t_token *token);
-void	ms_token_expansion(t_darray *tokens);
-void	ms_remove_quotes(char *str, char *mask_exp);
+t_token_info	*ms_token_info(t_token_info *ti, const char *res_single,
+	const char *res_double, const char *res_skip);
+int			ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info);
+t_token		*ms_init_token(t_token *token);
+void		ms_clear_token(void *token);
 
-void	ms_print_tokens(t_darray *tokens);
+void		ms_add_flags_char(t_token *token, char c);
+void		ms_add_flags_str(t_token *new);
+int			ms_expand_var(t_darray *tokens, t_token *token);
+int			ms_expand_wildcard(t_darray *tokens, t_token *token);
+void		ms_token_expansion(t_darray *tokens);
+void		ms_remove_quotes(char *str, char *mask_exp);
 
 #endif
