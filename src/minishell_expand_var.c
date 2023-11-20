@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/14 23:50:08 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 13:48:33 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ static int	ms_join_str(t_token *token, char *str, char mask)
 	return (ms_join_mask(token, str_len, mask));
 }
 
-static void	ms_add_flags(t_token *new)
+static void	ms_add_flags_str(t_token *new)
 {
 	int		i;
 	char	qt;
@@ -112,7 +112,7 @@ static int	ms_append_tokens(t_darray *tokens, t_token *new, char **value, int i)
 	int	err;
 
 	err = 0;
-	ms_add_flags(new);
+	ms_add_flags_str(new);
 	if (new->flags & IS_WILDCARD)
 		err = ms_expand_wildcard(tokens, new);
 	else
@@ -216,6 +216,7 @@ static int	ms_add_str(t_token *new, char **str, int *qt)
 	return (0);
 }
 
+// always clears 'token'
 int	ms_expand_var(t_darray *tokens, t_token *token)
 {
 	char	*str;

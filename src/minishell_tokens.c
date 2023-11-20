@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/16 16:53:26 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 13:48:13 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ t_token	*ms_init_token(t_token *token)
 	return (token);
 }
 
-static void	ms_add_flags(t_token *token, char c)
+static void	ms_add_flags_char(t_token *token, char c)
 {
 	if (c == '$')
 		token->flags |= IS_VAR;
@@ -115,7 +115,6 @@ static const char	*ms_handle_symbol(const char *end, t_darray *tokens, t_token *
 }
 
 // for now just 'exit()' on early exits (malloc and unclosed quotes)
-// it's possible to put an add_flag ft in the while loop if needed
 int	ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info)
 {
 	const char	*start;
@@ -131,11 +130,11 @@ int	ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info)
 		{
 			if (*end == '"' || *end == '\'')
 			{
-				//todo: handle errors
+				//todo: handle error: quote unclosed
 				ms_skip_quoted(&token, &end);
 			}
 			// use this ft to add flags
-			ms_add_flags(&token, *end);
+			ms_add_flags_char(&token, *end);
 			end++;
 		}
 		//todo: handle errors (clear tokens and stuff)
@@ -156,7 +155,7 @@ t_token_info	*ms_token_info(t_token_info *ti, const char *res_single, const char
 }
 
 /* TEST MAIN AND PRINT FOR TOKENS RIGHT HERE */
-
+/*
 // prints all tokens in {t, t} format
 void	ms_print_tokens(t_darray *tokens)
 {
@@ -231,3 +230,4 @@ int	main(int ac, char **av)
 		i++;
 	}
 }
+*/
