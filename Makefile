@@ -6,7 +6,7 @@
 #    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/11/20 14:04:34 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/11/20 14:12:09 by bvercaem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ OBJ_DIR = ./obj
 
 INCLUDES_FILES = minishell.h \
 				 minishell_errors.h \
-				 minishell_tokens.h \
+				 #minishell_tokens.h \
 				 minishell_graph.h \
 				 minishell_parsing.h \
 				 minishell_grammar.h \
@@ -31,12 +31,11 @@ SRC_FILES = minishell_main.c \
 			minishell_env.c \
 			minishell_echo.c \
 			minishell_wildcard.c \
+			minishell_expand_var.c \
 			minishell_error.c \
-			#minishell_recogniser.c \
-			minishel.c \
-			minishell_parser.c
-SRC_FILES = minishell_tokens.c \
-			minishell.c \
+			minishell_tokens.c \
+			minishell_token_expansion.c \
+			#minishell.c \
 			minishell_recogniser.c \
 			minishell_parser.c \
 			minishell_graph.c \

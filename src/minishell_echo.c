@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:10:33 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/27 12:50:49 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/17 17:09:39 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,5 @@ int	ms_echo(char **arg)
 	}
 	if (!flag_n)
 		write(STDOUT_FILENO, "\n", 1);
-	ft_clear_ds(arg);
 	return (0);
 }

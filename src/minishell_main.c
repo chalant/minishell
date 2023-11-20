@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/03 13:49:17 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/06 17:34:41 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,27 +23,6 @@ void	ms_exit(t_shellshock *data, int exit_value)
 		return ;
 	write(STDOUT_FILENO, "exit\n", 5);
 	exit(exit_value);
-}
-
-static void	temp_print_darray(t_darray *a)
-{
-	int	i;
-
-	i = 0;
-	printf("{");
-	while (i < a->size)
-	{
-		if (i)
-			printf(" , ");
-		printf("%s", ((char **) a->contents)[i]);
-		i++;
-	}
-	printf("}\n");
-}
-
-void	ms_freestr_darray(void *content)
-{
-	free(*(char **) content);
 }
 
 // returns 1 if something was executed
@@ -99,17 +78,7 @@ static void	ms_sleep(char *line)
 // should free line
 int	ms_process_line(t_shellshock *data, char *line)
 {
-	t_darray	buf;
-
-	if (ft_strchr(line, '*'))
-	{
-		printf("checking wildcard results...\n");
-		ft_darray_init(&buf, sizeof(char *), 20);
-		if (!ms_wildcard(&buf, line))
-		temp_print_darray(&buf);
-		ft_darray_delete(&buf, ms_freestr_darray);
-	}
-	else if (ms_parse_builtins(data, line))
+	if (ms_parse_builtins(data, line))
 		(void) line;
 	else if (!ft_strncmp(line, "sleep", 6))
 		ms_sleep(line);
@@ -147,30 +116,30 @@ void	ms_kill_pid(int sig)
 	}
 }
 
-int	main(void)
-{
-	t_shellshock		data;
-	char				*line;
-	extern int			rl_catch_signals;
-	struct sigaction	act_sigint;
-	struct sigaction	act_sigquit;
+// int	main(void)
+// {
+// 	t_shellshock		data;
+// 	char				*line;
+// 	extern int			rl_catch_signals;
+// 	struct sigaction	act_sigint;
+// 	struct sigaction	act_sigquit;
 
-	rl_catch_signals = 0;
-	data.env_excess = 0;
-	if (ms_envcpy(&data))
-		return (1);
-// malloc fail
-	ft_bzero(&act_sigint, sizeof(struct sigaction));
-	ft_bzero(&act_sigquit, sizeof(struct sigaction));
-	act_sigint.__sigaction_u.__sa_handler = ms_new_prompt;
-	act_sigquit.__sigaction_u.__sa_handler = ms_kill_pid;
-	sigaction(SIGINT, &act_sigint, NULL);
-	sigaction(SIGQUIT, &act_sigquit, NULL);
-	line = readline(MS_PROMPT);
-	while (line)
-	{
-		ms_process_line(&data, line);
-		line = readline(MS_PROMPT);
-	}
-	ms_exit(&data, 0);
-}
+// 	rl_catch_signals = 0;
+// 	data.env_excess = 0;
+// 	if (ms_envcpy(&data))
+// 		return (1);
+// // malloc fail
+// 	ft_bzero(&act_sigint, sizeof(struct sigaction));
+// 	ft_bzero(&act_sigquit, sizeof(struct sigaction));
+// 	act_sigint.__sigaction_u.__sa_handler = ms_new_prompt;
+// 	act_sigquit.__sigaction_u.__sa_handler = ms_kill_pid;
+// 	sigaction(SIGINT, &act_sigint, NULL);
+// 	sigaction(SIGQUIT, &act_sigquit, NULL);
+// 	line = readline(MS_PROMPT);
+// 	while (line)
+// 	{
+// 		ms_process_line(&data, line);
+// 		line = readline(MS_PROMPT);
+// 	}
+// 	ms_exit(&data, 0);
+// }

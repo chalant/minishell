@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/27 13:53:04 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/17 17:18:25 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,8 @@ static int	ms_env_alpha()
 	return (0);
 }
 
-static void	ms_add_var_env(t_shellshock *data, char *var)
+// returns 1 if malloc failed
+static int	ms_add_var_env(t_shellshock *data, char *var)
 {
 	extern char	**environ;
 	int			i;
@@ -74,8 +75,7 @@ static void	ms_add_var_env(t_shellshock *data, char *var)
 	{
 		data->env = ms_realloc(data->env, 3);
 		if (!data->env)
-			exit(1);
-// malloc failed
+			return (ERR_MALLOC);
 		environ = data->env;
 		data->env_excess += 3;
 	}
@@ -95,24 +95,31 @@ int	ms_export(t_shellshock *data, char **arg)
 	char	*ptr;
 	char	**temp;
 	int		i;
+	int		ret;
 
-// check input? if it starts with '=' or there's reserved symbols in the name that's bad
 	if (!arg || !*arg)
 		return (ms_env_alpha());
+	ret = 0;
 	i = 0;
 	while (arg[i])
 	{
-		ptr = ms_get_var_env(arg[i]);
-		temp = &ptr;
-		if (*temp)
+		if (!ms_check_varname(arg[i]))
 		{
-			free(*temp);
-			*temp = arg[i];
+			ptr = ms_get_var_env(arg[i]);
+			temp = &ptr;
+			if (*temp)
+			{
+				free(*temp);
+				*temp = arg[i];
+			}
+			else
+				if (ms_add_var_env(data, arg[i]))
+					return (ERR_MALLOC);
+// malloc failed
 		}
 		else
-			ms_add_var_env(data, arg[i]);
+			ret = ms_perror("export", arg[i], "not a valid identifier", 0);
 		i++;
 	}
-	ft_clear_ds(arg);
-	return (0);
+	return (ret);
 }

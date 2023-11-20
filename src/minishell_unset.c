@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 18:31:09 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/27 16:20:03 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/17 17:18:42 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ int	ms_unset(t_shellshock *data, char **arg)
 	extern char	**environ;
 	int			i;
 
-// check input? if it starts with '=' that's bad
 	i = 0;
 	while (arg && arg[i])
 	{
@@ -60,9 +59,9 @@ int	ms_unset(t_shellshock *data, char **arg)
 		i = -1 * (data->env_excess - 10);
 		data->env = ms_realloc(data->env, i);
 		if (!data->env)
-			exit(1);
-		environ = data->env;
+			return (ERR_MALLOC);
 // error: malloc failed
+		environ = data->env;
 		data->env_excess += i;
 	}
 	return (0);
