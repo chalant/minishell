@@ -53,14 +53,14 @@ int	create_files(t_command *command, t_darray *redirections)
 	t_redirection	*redirection;
 	int				fd;
 
-	last_in = 0;
-	last_out = 0;
+	last_in = -1;
+	last_out = -1;
 	i = -1;
 	//todo: set proper permissions for file.
 	while (++i < redirections->size)
 	{
 		redirection = ft_darray_get(redirections, i);
-		if (!(redirection->redirection_flags & MS_HEREDOC))
+		if (!(redirection->redirection_flags & MS_HEREDOC) && !(redirection->redirection_flags & MS_READ))
 		{
 			//todo:handle errors
 			fd = open(redirection->file_path, redirection->file_flags, 0666);
@@ -72,15 +72,15 @@ int	create_files(t_command *command, t_darray *redirections)
 			last_out = i;
 	}
 	//todo: store redirections as file descriptors instead.
-	redirection = ft_darray_get(redirections, last_in);
-	if (redirection)
+	if (last_in != -1)
 	{
+		redirection = ft_darray_get(redirections, last_in);
 		command->input = malloc(sizeof(t_redirection));
 		ft_memcpy(command->input, redirection, sizeof(t_redirection));
 	}
-	redirection = ft_darray_get(redirections, last_out);
-	if (redirection)
+	if (last_out != -1)
 	{
+		redirection = ft_darray_get(redirections, last_out);
 		command->output = malloc(sizeof(t_redirection));
 		ft_memcpy(command->output, redirection, sizeof(t_redirection));
 	}
@@ -96,19 +96,21 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	redirection->file_flags = 0;
 	redirection->file_path = NULL;
 	redir = ft_darray_get(tree->children, 0);
-	redirection->file_flags |= O_TRUNC;
-	redirection->file_flags |= O_CREAT;
-	redirection->file_flags |= O_APPEND;
-	redirection->file_flags |= O_RDWR;
 	if (strcmp(redir->rule_name, ">") == 0)
+	{
+		redirection->file_flags = O_TRUNC | O_CREAT | O_APPEND | O_RDWR;
 		redirection->redirection_flags |= MS_WRITE;
+	}
 	else if (strcmp(redir->rule_name, "<") == 0)
+	{
+		redirection->file_flags |= O_RDONLY;
 		redirection->redirection_flags |= MS_READ;
+	}
 	else if (strcmp(redir->rule_name, "<<") == 0)
 		redirection->redirection_flags |= MS_HEREDOC;
 	else if (strcmp(redir->rule_name, ">>") == 0)
 	{
-		redirection->file_flags &= ~(O_TRUNC);
+		redirection->file_flags = O_CREAT | O_APPEND | O_RDWR;
 		redirection->redirection_flags |= MS_WRITE;
 	}
 	else
@@ -192,6 +194,7 @@ int	build_operator(t_command *command, t_stack *commands)
 		build_operator(left, commands);
 	if (command->redirections)
 	{
+		//todo:distribute inputs as-well
 		if (!left->output && !(command->command_flags & MS_PIPE))
 			left->output = command->output;
 		if (!right->output)
