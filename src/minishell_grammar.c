@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/30 13:17:53 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/20 13:26:09 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,34 +23,55 @@ static const char	*g_test_grammar = "sum:sum <'+-' product\n"\
 
 static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"number:$'2'\n"\
+
 	"assignment-word:$'1'\n"\
-	
-	"command_element:word command_element\n"\
-	"command_element:word\n"\
+
+	"redirection:='>' word\n"\
+	"redirection:='<' word\n"\
+	"redirection:='>>' word\n"\
+	"redirection:='<<' word\n"\
+
+	"redirection_list:redirection\n"\
+	"redirection_list:redirection redirection_list\n"\
+
+	"command_argument:word command_argument\n"\
+	"command_argument:word\n"\
+
+	"builtin:='echo'\n"\
+	"builtin:='cd'\n"\
+	"builtin:='pwd'\n"\
+	"builtin:='export'\n"\
+	"builtin:='env'\n"\
+	"builtin:='unset'\n"\
+	"builtin:='exit'\n"\
+
+	"command_element:command_argument redirection_list\n"\
 	"command_element:redirection_list\n"\
-	"command_element:redirection_list command_element\n"\
-	
-	"word_list:word word_list\n"\
-	"word_list:word\n"\
+	"command_element:command_argument\n"\
 
 	"simple_command:word command_element\n"\
 	"simple_command:word\n"\
+	"simple_command:builtin command_element\n"\
+	"simple_command:builtin\n"\
 
-	"redirection:='>' word\n"\
-	"redirection_list:redirection\n"\
-	"redirection_list:redirection redirection_list\n"\
-	
-	"command:command ='||' command_product\n"\
-	"command:command_product\n"\
-	"command_product:command_product ='&&' command_factor\n"\
-	"command_product:command_factor\n"\
-	"command_factor:='(' command =')'\n"\
-	"command_factor:simple_command\n"\
+	"redirection_command:redirection_list\n"\
+	"redirection_command:='(' redirection_list =')' redirection_list\n"\
+	"redirection_command:redirection_list simple_command\n"\
 
-	"pipeline:command\n"\
-	"pipeline:pipeline ='|' command\n";
+	"parenthesis:='(' command =')' redirection_list\n"\
+	"parenthesis:='(' command =')'\n"\
 
-char **ft_reverse_strings(char **strings)
+	"command:command_operand\n"\
+	"command_operand:parenthesis\n"\
+	"command_operand:simple_command\n"\
+	"command_operand:redirection_command\n"\
+
+	"command:command ='|' $'4'\n"\
+	"command:command ='|' command_operand\n"\
+	"command:command ='||' command\n"\
+	"command:command ='&&' command\n";
+
+char	**ft_reverse_strings(char **strings)
 {
 	int		i;
 	int		j;
@@ -74,7 +95,7 @@ char **ft_reverse_strings(char **strings)
 	return (strings);
 }
 
-char **get_test_definition(void)
+char	**get_test_definition(void)
 {
 	return (ft_split(g_test_grammar, '\n'));
 }

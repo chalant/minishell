@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/03 15:01:20 by ychalant         ###   ########.fr       */
+/*   Created: 2023/10/16 17:37:28 by bvercaem          #+#    #+#             */
+/*   Updated: 2023/11/20 14:06:54 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <stdio.h>
 # include <stdlib.h>
+# include <sys/wait.h>
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -24,6 +25,8 @@
 #include "minishell_graph.h"
 #include "minishell_tokens.h"
 #include "minishell_errors.h"
+#include "minishell_commands.h"
+#include "minishell_semantics.h"
 # include "libft.h"
 
 typedef struct s_shellshock
@@ -49,7 +52,5 @@ char	**ms_realloc(char **ptr, int add);
 char	*ms_get_var_env(char *var);
 
 int		ms_print_error(const char *cmd, const char *msg, int return_value);
-
-
 
 #endif

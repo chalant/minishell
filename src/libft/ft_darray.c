@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 16:35:27 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/03 14:13:57 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 14:06:58 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ int	ft_darray_append(t_darray *darray, void *element)
 		new_elements = malloc((darray->max_size + darray->block_size) * darray->type_size);
 		if (!new_elements)
 			return (-1);
+		ft_bzero(new_elements, (darray->max_size + darray->block_size) * darray->type_size);
 		ft_memcpy(new_elements, darray->contents, darray->max_size * darray->type_size);
 		free(darray->contents);
 		darray->contents = new_elements;

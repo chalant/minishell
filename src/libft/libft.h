@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/11 13:35:42 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/03 14:15:37 by bvercaem         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2023/11/20 14:07:48 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,13 @@ typedef	struct	s_darray
 	int			type_size;
 	void		*contents;
 }				t_darray;
+
+typedef struct	s_stack
+{
+	int			top;
+	int			size;
+	t_darray	*elements;
+}				t_stack;
 
 int					ft_isalnum(int c);
 int					ft_isalpha(int c);
@@ -97,5 +104,10 @@ int					ft_darray_init(t_darray *darray, int type_size, int size);
 int					ft_darray_set(t_darray *darray, void *element, int index);
 int					ft_darray_append(t_darray *darray, void *element);
 int					ft_darray_delete(t_darray *darray, void del_content(void *));
+
+void				*ft_stack_peek(t_stack *stack);
+void				*ft_stack_pop(t_stack *stack);
+int					ft_stack_init(t_stack *stack, t_darray *darray);
+int					ft_stack_push(t_stack *stack, void *element);
 
 #endif

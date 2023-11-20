@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/30 12:59:10 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/09 15:53:32 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,19 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 	return (0);
 }
 
+int	print_execution_stack(t_darray *stack)
+{
+	int	i;
+
+	printf("[ ");
+	i = -1;
+	while (++i < stack->size - 1)
+		printf("%s, ", ((t_command *)ft_darray_get(stack, i))->command_name);
+	printf("%s ", ((t_command *)ft_darray_get(stack, i))->command_name);
+	printf("]\n");
+	return (1);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	(void)ac;
@@ -156,6 +169,7 @@ int	main(int ac, char **av, char **env)
 	char				**grammar_definition;
 	t_tokeniser_info	info;
 	t_darray			tokens;
+	t_darray			command_array;
 
 	if (ac != 2)
 		return (1);
@@ -171,17 +185,20 @@ int	main(int ac, char **av, char **env)
 	//ft_darray_delete(&tokens, ms_clear_token);
 	
 	size = tokens.size;
-	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size));
-	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size));
+	//todo: store sets into dynamic array.
+	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size + 1));
+	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size + 1));
 	t_ms_grammar	grammar;
 	t_graph			graph;
 	t_parse_tree	tree;
+	t_command		*command;
+	//todo: this should store everything.
 	t_parsing_data	data;
 	
 	grammar_definition = get_minishell_definition();
 	set_grammar(&grammar, grammar_definition);
-	print_grammar(&grammar);
-	printf("\n");
+	//print_grammar(&grammar);
+	//printf("\n");
 	while (++i < tokens.size)
 	{
 		sets[i] = malloc(sizeof(t_earley_set));
@@ -192,7 +209,7 @@ int	main(int ac, char **av, char **env)
 		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size + 1);
 	}
 	build_earley_items(sets, &grammar, size, &tokens);
-	print_earley(sets, &grammar, size);
+	//print_earley(sets, &grammar, size);
 	build_chart(sets, &graph, size);
 	reverse_earley(sets, reversed, size);
 	print_earley(reversed, &grammar, size);
@@ -206,9 +223,10 @@ int	main(int ac, char **av, char **env)
 	tree.end = data.input_length - 1;
 	ms_start_rule(&tree, &data);
 	tree.terminal = 0;
+	tree.children = NULL;
 	ms_build_parse_tree(&tree, &data);
 	print_parse_tree(&tree, 0);
-	printf("\n");
-
+	command = build_command(&command_array, &tree);
+	minishell_execute(command);
 	return (0);
 }

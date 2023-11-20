@@ -56,6 +56,7 @@ typedef struct	s_parser_state
 typedef struct	s_parse_tree
 {
 	char		*rule_name;
+	int			start_rule;
 	int			rule;
 	int			terminal;
 	int			start;

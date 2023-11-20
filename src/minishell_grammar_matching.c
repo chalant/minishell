@@ -1,4 +1,5 @@
 #include "minishell.h"
+//todo: add prompting.
 
 int	ms_match_newline(t_ms_symbol *symbol, t_token *token)
 {
@@ -49,6 +50,26 @@ int	ms_match_integer(t_ms_symbol *symbol, t_token *token)
 	return (0);
 }
 
+int	is_builtin(t_token *token)
+{
+	//todo: add more builtins
+	if (strcmp(token->string, "cd") == 0 )
+		return (1);
+	else if (strcmp(token->string, "echo") == 0)
+		return (1);
+	else if (strcmp(token->string, "pwd") == 0)
+		return (1);
+	else if (strcmp(token->string, "export") == 0)
+		return (1);
+	else if (strcmp(token->string, "env") == 0)
+		return (1);
+	else if (strcmp(token->string, "unset") == 0)
+		return (1);
+	else if (strcmp(token->string, "exit") == 0)
+		return (1);
+	return (0);
+}
+
 int	ms_match_string(t_ms_symbol *symbol, t_token *token)
 {
 	(void)symbol;
@@ -58,6 +79,9 @@ int	ms_match_string(t_ms_symbol *symbol, t_token *token)
 		return (0);
 	i = 0;
 	if (token->flags & IS_RESERVED)
+		return (0);
+	//todo: add more builtins
+	if (is_builtin(token))
 		return (0);
 	while (token->string[i])
 	{
