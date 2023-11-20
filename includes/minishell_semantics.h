@@ -3,7 +3,7 @@
 
 #include "minishell.h"
 
-int			collapse_tree(t_parse_tree *root, t_stack *stack);
+int			flatten_tree(t_parse_tree *root, t_stack *stack);
 int			build_operand(t_command *command, t_stack *commands);
 int			build_operator(t_command *command, t_stack *commands);
 int			minishell_execute(t_command *command);

@@ -158,8 +158,9 @@ int	launch_execve(t_command *command)
 	while (++i < nargs - 1 && nargs != 2)
 		arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
 	arguments[i] = NULL;
+	//todo handle errors
 	execve(command->command_name, arguments, environ);
-	perror("error");
+	perror("error HERE");
 	//todo: free arguments here.
 	return (1);
 }
@@ -200,6 +201,8 @@ int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 {
+	if (!command)
+		return (0);
 	if (command->command_flags & MS_OPERAND)
 		return (execute_simple_command(command, in_pipe, out_pipe));
 	//todo: if the operand have redirections, open them in append mode, and pass them to the write-end of the out_pipe.
@@ -215,6 +218,8 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 void	print_commands(t_command *command, int depth)
 {
 	int	i;
+	if (!command)
+		return ;
 	if (!command->command_name)
 		return ;
 	for (int i = 0; i < depth; i++)
@@ -244,7 +249,7 @@ int	minishell_execute(t_command *command)
 	int			in_pipe[2];
 	int			out_pipe[2];
 
-	printf("Commands: \n");
+	//printf("Commands: \n");
 	print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	if (pipe(in_pipe) < 0)
