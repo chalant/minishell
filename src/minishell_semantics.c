@@ -71,6 +71,7 @@ int	create_files(t_command *command, t_darray *redirections)
 		if (redirection->redirection_flags & MS_WRITE)
 			last_out = i;
 	}
+	//todo: store redirections as file descriptors instead.
 	redirection = ft_darray_get(redirections, last_in);
 	if (redirection)
 	{
@@ -189,6 +190,13 @@ int	build_operator(t_command *command, t_stack *commands)
 	left = (t_command *)ft_stack_pop(commands);
 	if (left->command_flags & MS_OPERATOR)
 		build_operator(left, commands);
+	if (command->redirections)
+	{
+		if (!left->output && !(command->command_flags & MS_PIPE))
+			left->output = command->output;
+		if (!right->output)
+			right->output = command->output;
+	}
 	command->left = left;
 	command->right = right;
 	return (1);
@@ -203,12 +211,18 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, const char *na
 	command.command_name = ft_strdup(name);
 	command.command_flags |= MS_OPERATOR;
 	command.command_flags |= type;
-	//todo:set redirections if any exists.
-	if (strcmp(node->rule_name, "command_operator") == 0)
-	{
-		printf("Redirections for %s\n", name);
-	}
 	return (ft_stack_push(stack, &command));
+}
+
+int	handle_parenthesis(t_parse_tree *node, t_command *command)
+{
+	if (node->children->size == 4)
+	{
+		set_redirections(command, ft_darray_get(node->children, 3));
+		if (!(command->command_flags & MS_PIPE))
+			command->output->file_flags &= ~O_TRUNC;
+	}
+	return (1);
 }
 
 int	collapse_tree(t_parse_tree *node, t_stack *commands)
@@ -234,11 +248,8 @@ int	collapse_tree(t_parse_tree *node, t_stack *commands)
 			return (create_operator(node, commands, MS_AND, "AND"));
 		else if (strcmp(child->rule_name, "||") == 0)
 			return (create_operator(node, commands, MS_OR, "OR"));
-		if (strcmp(node->rule_name, "command_operator") == 0)
-		{
-			//todo:set redirections for the operator.
-			printf("COMMAND %s\n", ((t_command *)ft_stack_peek(commands))->command_name);
-		}
+		if (strcmp(node->rule_name, "parenthesis") == 0)
+			handle_parenthesis(node, ft_stack_peek(commands));
 		//todo:set redirections if any exists.
 		//todo: handle errors
 		if (collapse_tree(child, commands) < 0)

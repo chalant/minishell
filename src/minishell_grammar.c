@@ -58,11 +58,11 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"redirection_command:='(' redirection_list =')' redirection_list\n"\
 	"redirection_command:redirection_list simple_command\n"\
 
-	"command_operator:='(' command =')'\n"\
+	"parenthesis:='(' command =')' redirection_list\n"\
+	"parenthesis:='(' command =')'\n"\
 
 	"command:command_operand\n"\
-	"command_operand:command_operator\n"\
-	"command_operand:command_operator redirection_list\n"\
+	"command_operand:parenthesis\n"\
 	"command_operand:simple_command\n"\
 	"command_operand:redirection_command\n"\
 
