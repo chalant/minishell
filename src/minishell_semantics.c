@@ -62,7 +62,7 @@ int	create_files(t_command *command, t_darray *redirections)
 		redirection = ft_darray_get(redirections, i);
 		if (!(redirection->redirection_flags & MS_HEREDOC) && !(redirection->redirection_flags & MS_READ))
 		{
-			//todo:handle errors
+			//todo: handle errors
 			fd = open(redirection->file_path, redirection->file_flags, 0666);
 			close(fd);
 		}

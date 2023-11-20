@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_execution.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
+/*   Updated: 2023/11/20 17:20:00 by ychalant         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	get_exit_status(int pid)
@@ -20,13 +32,51 @@ void	copy_pipe(int src_pipe[2], int dest_pipe[2])
 	dest_pipe[1] = src_pipe[1];
 }
 
+int	redirect_in(t_command *command)
+{
+	int	fd;
+
+	// todo: handle file errors
+	// todo: dup file errors
+	fd = open(command->input->file_path, command->input->file_flags, 0666);
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+	return (0);
+}
+
+int	redirect_out(t_command *command)
+{
+	int	fd;
+	// todo: handle file errors
+	// todo: dup file errors
+	fd = open(command->output->file_path, command->output->file_flags, 0666);
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	return (0);
+}
+
+int	pipe_out(t_command *command, int _pipe[2])
+{
+	if (command->output)
+		return (redirect_out(command));
+	dup2(_pipe[1], STDOUT_FILENO);
+	return (0);
+}
+
+int	pipe_in(t_command *command, int _pipe[2])
+{
+	if (command->input)
+		return (redirect_in(command));
+	dup2(_pipe[0], STDIN_FILENO);
+	return (0);
+}
+
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
 int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	pid;
 	int	status;
-	int	fd;
 
 	pid = fork();
 	//todo: maybe print an error ?
@@ -36,29 +86,8 @@ int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		//close(out_pipe[0]);
-		if (!command->input)
-		{
-			dup2(in_pipe[0], STDIN_FILENO);
-			close(in_pipe[0]);
-		}
-		else
-		{
-			fd = open(command->input->file_path, command->input->file_flags, 0666);
-			dup2(fd, STDIN_FILENO);
-			close(fd);
-		}
-		if (command->output)
-		{
-			fd = open(command->output->file_path, command->output->file_flags, 0666);
-			dup2(fd, STDOUT_FILENO);
-			close(fd);
-		}
-		else
-		{
-			dup2(out_pipe[1], STDOUT_FILENO);
-			close(out_pipe[1]);
-		}
+		pipe_in(command, in_pipe);
+		pipe_out(command, out_pipe);
 		status = execute_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
 			exit(status);
@@ -147,9 +176,7 @@ int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
-	int		fd;
 
-	//redirect(command, in_pipe, out_pipe);
 	if (command->command_flags & MS_BUILTIN)
 		return (execute_builtin(command, in_pipe, out_pipe));
 	if (!(command->command_flags & MS_FORKED))
@@ -158,18 +185,11 @@ int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 		pid = fork();
 		if (pid == 0)
 		{
+			//todo: handle errors
 			if (command->output)
-			{
-				fd = open(command->output->file_path, command->output->file_flags, 0666);
-				dup2(fd, STDOUT_FILENO);
-				close(fd);
-			}
+				redirect_out(command);
 			if (command->input)
-			{
-				fd = open(command->input->file_path, command->input->file_flags, 0666);
-				dup2(fd, STDIN_FILENO);
-				close(fd);
-			}
+				redirect_in(command);
 			launch_execve(command);
 		}
 		return (get_exit_status(pid));

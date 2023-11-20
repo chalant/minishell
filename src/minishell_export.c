@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_export.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/17 17:18:25 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 15:26:59 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ static int	ms_add_var_env(t_shellshock *data, char *var)
 	environ[i] = var;
 	environ[i + 1] = NULL;
 	data->env_excess--;
+	return (0);
 }
 
 // free's arg (unless *arg == NULL)

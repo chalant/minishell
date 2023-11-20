@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/20 14:16:39 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 16:34:58 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,13 +181,14 @@ int	main(int ac, char **av, char **env)
 	info.reserved_single = RESERVED_SINGLE;
 	info.reserved_skip = RESERVED_SKIP;
 	ms_tokeniser(av[1], &tokens, &info);
-	ms_print_tokens(&tokens);
+	//ms_print_tokens(&tokens);
 	//ft_darray_delete(&tokens, ms_clear_token);
 
 	size = tokens.size;
 	//todo: store sets into dynamic array.
-	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size + 1));
-	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size + 1));
+	//todo: fix the set size BUG!
+	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size + 10));
+	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size + 10));
 	t_ms_grammar	grammar;
 	t_graph			graph;
 	t_parse_tree	tree;

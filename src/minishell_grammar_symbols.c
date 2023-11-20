@@ -57,8 +57,8 @@ int	handle_special(t_ms_symbol *symbol, char *input)
 	ptr++;
 	if (*ptr == MS_NEW_LINE)
 		set_symbol(symbol, "<NL>", ms_match_newline);
-	//todo: prompt and add tokenizer here.
-	else if (*ptr == MS_PROMPT)
+	//todo: prompt and call tokenizer here.
+	else if (*ptr == MS_PROMPTING)
 	{
 		printf("PROMPT!\n");
 		set_symbol(symbol, "<>", ms_prompt);

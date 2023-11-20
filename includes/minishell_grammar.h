@@ -7,7 +7,7 @@
 # define MS_EQUAL '1'
 # define MS_INTEGER '2'
 # define MS_STRING '3'
-# define MS_PROMPT '4'
+# define MS_PROMPTING '4'
 
 typedef struct	s_ms_symbol
 {

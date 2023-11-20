@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_wildcard.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/16 16:52:28 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 15:33:47 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,7 +222,7 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 
 	dirp = opendir(".");
 	if (!dirp)
-		return (ms_print_error("opendir", ".", 1));
+		return (ms_perror("opendir", ".", NULL, errno));
 	entryp = readdir(dirp);
 	start_size = tokens->size;
 	while (entryp)
