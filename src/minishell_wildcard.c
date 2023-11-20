@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/16 16:52:28 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 17:09:09 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ static int	ms_wildcard_error(DIR *dirp, t_token *token, t_token *new, int ret)
 		ms_clear_token(token);
 	if (new)
 		ms_clear_token(new);
+	if (ret == ERR_MALLOC)
+		ms_perror("filename expansion", NULL, NULL, errno);
 	return (ret);
 }
 
@@ -66,7 +68,7 @@ static void	ms_add_flags(t_token *token)
 	}
 }
 
-// returns 1 on malloc error
+// returns 1 on malloc error, doesn't clear 'new'
 static int	ms_wildcard_add(t_darray *tokens, struct dirent *entryp, t_token *new)
 {
 	int	namlen;
@@ -75,12 +77,10 @@ static int	ms_wildcard_add(t_darray *tokens, struct dirent *entryp, t_token *new
 	new->string = malloc(sizeof(char) * (namlen + 1));
 	if (!new->string)
 		return (ERR_MALLOC);
-// malloc error
 	ft_strlcpy(new->string, entryp->d_name, namlen + 1);
 	ms_add_flags(new);
 	if (ft_darray_append(tokens, new))
 		return (ERR_MALLOC);
-// malloc error
 	return (0);
 }
 
@@ -196,7 +196,6 @@ static int	ms_wildcard_empty(t_darray *tokens, t_token *token)
 {
 	if (ft_darray_append(tokens, token))
 		return (ms_wildcard_error(NULL, token, NULL, ERR_MALLOC));
-// malloc error
 	return (0);
 }
 
@@ -213,6 +212,7 @@ static int	ms_pre_check(t_token *token, struct dirent *entryp)
 }
 
 // returns 0 if succes
+// on error, doesn't clear 'tokens', prints message
 int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 {
 	DIR				*dirp;
@@ -222,7 +222,10 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 
 	dirp = opendir(".");
 	if (!dirp)
-		return (ms_print_error("opendir", ".", 1));
+	{
+		ms_clear_token(token);
+		return (ms_perror("filename expansion", ".", NULL, errno));
+	}
 	entryp = readdir(dirp);
 	start_size = tokens->size;
 	while (entryp)
@@ -234,7 +237,6 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 			if (ms_wildcard_cmp(entryp, token, &new))
 				if (ms_wildcard_add(tokens, entryp, &new))
 					return (ms_wildcard_error(dirp, token, &new, ERR_MALLOC));
-// malloc error (print error or no?)
 		}
 		entryp = readdir(dirp);
 	}
@@ -244,3 +246,5 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 	ms_clear_token(token);
 	return (0);
 }
+
+// errors are all good! (i'm pretty sure)

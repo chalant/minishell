@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/17 17:18:25 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 16:34:16 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ static int	ms_add_var_env(t_shellshock *data, char *var)
 	environ[i] = var;
 	environ[i + 1] = NULL;
 	data->env_excess--;
+	return (0);
 }
 
 // free's arg (unless *arg == NULL)

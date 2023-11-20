@@ -6,14 +6,14 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:45:06 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/17 16:49:51 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/20 15:34:13 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // prints error like (shellshock: cmd: item: msg: err)
-// handles NULL pointers, and err <= 0
+// handles NULL pointers, and err <= 0 (takes 'msg' as last arg)
 // returns 1
 int	ms_perror(const char *cmd, const char *item, const char *msg, int err)
 {
