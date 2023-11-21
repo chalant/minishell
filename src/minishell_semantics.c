@@ -125,6 +125,7 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	t_redirection	redirection;
 
 	set_redirection(&redirection, ft_darray_get(tree->children, 0));
+	printf("redirection 2 %p\n", command->redirections);
 	if (ft_darray_append(command->redirections, &redirection) < 0)
 		return (-1);
 	node = ft_darray_get(tree->children, 1);
@@ -222,6 +223,10 @@ int	build_operator(t_command *command, t_stack *commands)
 			left->output = command->output;
 		if (!right->output)
 			right->output = command->output;
+		if (!left->input && !(command->command_flags & MS_PIPE))
+			left->input = command->input;
+		if (!right->input)
+			right->input = command->input;
 	}
 	command->left = left;
 	command->right = right;
@@ -235,7 +240,7 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, const char *na
 	flatten_tree((t_parse_tree *)ft_darray_get(node->children, 2), stack);
 	init_command(&command);
 	command.command_name = ft_strdup(name);
-	command.command_flags | MS_OPERATOR | type;
+	command.command_flags = MS_OPERATOR | type;
 	return (ft_stack_push(stack, &command));
 }
 
@@ -243,6 +248,17 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 {
 	if (node->children->size == 4)
 	{
+		if (!command->redirections)
+		{
+			printf("creating redirections\n");
+			command->redirections = malloc(sizeof(t_darray));
+			if (!command->redirections)
+				return (-1);
+			//todo:always store the last redirections.
+			if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
+				return (-1);
+			printf("redirection 1 %p\n", command->redirections);
+		}
 		set_redirections(command, ft_darray_get(node->children, 3));
 		if (!(command->command_flags & MS_PIPE))
 			command->output->file_flags &= ~O_TRUNC;
