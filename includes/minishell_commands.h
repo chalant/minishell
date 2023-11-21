@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/17 16:50:39 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/21 16:12:07 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ typedef struct	s_command
 	struct	s_command	*left;
 	struct	s_command	*right;
 	t_darray			*redirections;
-	t_redirection		*input;
-	t_redirection		*output;
+	int					input;
+	int					output;
 	t_darray			*arguments;
 }				t_command;
 

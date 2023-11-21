@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 15:37:40 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/21 16:48:49 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,5 +50,6 @@ char	*ms_get_var_env(char *var);
 int		ms_check_varname(char *var);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
+char	*get_command(char *command);
 
 #endif

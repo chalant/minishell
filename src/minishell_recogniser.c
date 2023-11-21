@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:34 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/16 12:25:58 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/21 18:11:37 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,9 @@ int	earley_complete(t_earley_set **sets, t_ms_grammar *grammar, t_earley_item *i
 	t_earley_item	*old_item;
 	int				i;
 
+	//todo: fix segfault here.
 	i = -1;
+	//it seams like i am looking too far ahead here. should check the size of the set.
 	while (++i < sets[item->start]->items->size)
 	{
 		set = sets[item->start];

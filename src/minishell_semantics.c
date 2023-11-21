@@ -8,8 +8,8 @@ int	init_command(t_command *command)
 	command->command_name = NULL;
 	command->arguments = NULL;
 	command->redirections = NULL;
-	command->input = NULL;
-	command->output = NULL;
+	command->input = 0;
+	command->output = 0;
 	return (1);
 }
 
@@ -48,42 +48,49 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 int	create_files(t_command *command, t_darray *redirections)
 {
 	int				i;
-	int				last_in;
-	int				last_out;
+	// int				last_in;
+	// int				last_out;
 	t_redirection	*redirection;
 	int				fd;
 
-	last_in = -1;
-	last_out = -1;
-	i = -1;
+	// last_in = -1;
+	// last_out = -1;
+	i = redirections->size;
 	//todo: set proper permissions for file.
-	while (++i < redirections->size)
+	while (--i > -1)
 	{
 		redirection = ft_darray_get(redirections, i);
-		if (!(redirection->redirection_flags & MS_HEREDOC) && !(redirection->redirection_flags & MS_READ))
+		if (!(redirection->redirection_flags & MS_HEREDOC))
 		{
 			//todo: handle errors
 			fd = open(redirection->file_path, redirection->file_flags, 0666);
-			close(fd);
+			if (redirection->redirection_flags & MS_READ && !command->input)
+				command->input = fd;
+			else if (redirection->redirection_flags & MS_WRITE && !command->output)
+				command->output = fd;
+			else
+				close(fd);
+			
 		}
-		if (redirection->redirection_flags & MS_READ)
-			last_in = i;
-		if (redirection->redirection_flags & MS_WRITE)
-			last_out = i;
+		// if (redirection->redirection_flags & MS_READ && last_in == -1)
+		// 	last_in = i;
+		// if (redirection->redirection_flags & MS_WRITE && last_out == -1)
+		// 	last_out = i;
 	}
-	//todo: store redirections as file descriptors instead.
-	if (last_in != -1)
-	{
-		redirection = ft_darray_get(redirections, last_in);
-		command->input = malloc(sizeof(t_redirection));
-		ft_memcpy(command->input, redirection, sizeof(t_redirection));
-	}
-	if (last_out != -1)
-	{
-		redirection = ft_darray_get(redirections, last_out);
-		command->output = malloc(sizeof(t_redirection));
-		ft_memcpy(command->output, redirection, sizeof(t_redirection));
-	}
+	// //todo: store redirections as file descriptors instead.
+	// if (last_in != -1)
+	// {
+	// 	redirection = ft_darray_get(redirections, last_in);
+	// 	command->input = malloc(sizeof(t_redirection));
+	// 	ft_memcpy(command->input, redirection, sizeof(t_redirection));
+	// 	command->input = open
+	// }
+	// if (last_out != -1)
+	// {
+	// 	redirection = ft_darray_get(redirections, last_out);
+	// 	command->output = malloc(sizeof(t_redirection));
+	// 	ft_memcpy(command->output, redirection, sizeof(t_redirection));
+	// }
 	return (1);
 }
 
@@ -125,7 +132,6 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	t_redirection	redirection;
 
 	set_redirection(&redirection, ft_darray_get(tree->children, 0));
-	printf("redirection 2 %p\n", command->redirections);
 	if (ft_darray_append(command->redirections, &redirection) < 0)
 		return (-1);
 	node = ft_darray_get(tree->children, 1);
@@ -147,7 +153,8 @@ int	create_simple_command_core(t_parse_tree *node, t_stack *stack, t_command *co
 		return (0);
 	if (strcmp(node->rule_name, "builtin") == 0)
 		command->command_flags |= MS_BUILTIN;
-	command->command_name = ft_strdup(*get_word(node));
+	//command->command_name = ft_strdup(*get_word(node));
+	command->command_name = get_command(*get_word(node));
 	node = ft_darray_get(node->children, 1);
 	if (node->children)
 	{
@@ -195,7 +202,6 @@ int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 	command.redirections = malloc(sizeof(t_darray));
 	if (!command.redirections)
 		return (-1);
-	//todo:always store the last redirections.
 	if (ft_darray_init(command.redirections, sizeof(t_redirection), 10) < 0)
 		return (-1);
 	set_redirections(&command, ft_darray_get(node->children, 0));
@@ -212,21 +218,32 @@ int	build_operator(t_command *command, t_stack *commands)
 
 	right = (t_command *)ft_stack_pop(commands);
 	if (right->command_flags & MS_OPERATOR)
+	{
+		//todo: these should be copies when we free later.
+		right->redirections = command->redirections;
+		right->input = command->input;
+		right->input = command->input;
 		build_operator(right, commands);
+	}
 	left = (t_command *)ft_stack_pop(commands);
 	if (left->command_flags & MS_OPERATOR)
+	{
+		//todo: these should be copies when we free later.
+		left->redirections = command->redirections;
+		left->input = command->input;
+		left->input = command->input;
 		build_operator(left, commands);
+	}
+	//todo: distribute redirections recursively.
 	if (command->redirections)
 	{
-		//todo:distribute inputs as-well
 		if (!left->output && !(command->command_flags & MS_PIPE))
 			left->output = command->output;
 		if (!right->output)
 			right->output = command->output;
-		if (!left->input && !(command->command_flags & MS_PIPE))
+		if (!left->input)
 			left->input = command->input;
-		//todo: maybe set right to read only ?
-		if (!right->input)
+		if (!right->input && !(command->command_flags & MS_PIPE))
 			right->input = command->input;
 	}
 	command->left = left;
@@ -258,16 +275,11 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 			command->redirections = malloc(sizeof(t_darray));
 			if (!command->redirections)
 				return (-1);
-			//todo:always store the last redirections.
 			if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
 				return (-1);
-			printf("redirection 1 %p\n", command->redirections);
 		}
-		printf("redirection 2 %d\n", command->redirections->size);
 		set_redirections(command, ft_darray_get(node->children, 3));
 		create_files(command, command->redirections);
-		if (!(command->command_flags & MS_PIPE) && command->output)
-			command->output->file_flags &= ~O_TRUNC;
 	}
 	return (1);
 }
@@ -297,7 +309,6 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 			return (create_operator(node, commands, MS_OR, "OR"));
 		if (strcmp(node->rule_name, "parenthesis") == 0)
 			handle_parenthesis(node, ft_stack_peek(commands));
-		//todo:set redirections if any exists.
 		//todo: handle errors
 		if (flatten_tree(child, commands) < 0)
 			return (-1);
