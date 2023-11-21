@@ -225,6 +225,7 @@ int	build_operator(t_command *command, t_stack *commands)
 			right->output = command->output;
 		if (!left->input && !(command->command_flags & MS_PIPE))
 			left->input = command->input;
+		//todo: maybe set right to read only ?
 		if (!right->input)
 			right->input = command->input;
 	}
@@ -246,11 +247,14 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, const char *na
 
 int	handle_parenthesis(t_parse_tree *node, t_command *command)
 {
+	if (!command)
+		return (0);
+	if (!command->command_name)
+		return (0);
 	if (node->children->size == 4)
 	{
 		if (!command->redirections)
 		{
-			printf("creating redirections\n");
 			command->redirections = malloc(sizeof(t_darray));
 			if (!command->redirections)
 				return (-1);
@@ -259,8 +263,10 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 				return (-1);
 			printf("redirection 1 %p\n", command->redirections);
 		}
+		printf("redirection 2 %d\n", command->redirections->size);
 		set_redirections(command, ft_darray_get(node->children, 3));
-		if (!(command->command_flags & MS_PIPE))
+		create_files(command, command->redirections);
+		if (!(command->command_flags & MS_PIPE) && command->output)
 			command->output->file_flags &= ~O_TRUNC;
 	}
 	return (1);
