@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <crt_externs.h>
+//#include <crt_externs.h>
 
 // prints out env on std_out and returns 0
 int	ms_env(void)

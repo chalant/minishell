@@ -187,8 +187,10 @@ int	main(int ac, char **av, char **env)
 	size = tokens.size;
 	//todo: store sets into dynamic array.
 	//todo: fix the set size BUG!
-	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size + 10));
-	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size + 10));
+	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size));
+	ft_bzero(sets, tokens.size);
+	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size));
+	ft_bzero(reversed, tokens.size);
 	t_ms_grammar	grammar;
 	t_graph			graph;
 	t_parse_tree	tree;

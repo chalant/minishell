@@ -220,21 +220,21 @@ int	build_operator(t_command *command, t_stack *commands)
 	if (right->command_flags & MS_OPERATOR)
 	{
 		//todo: these should be copies when we free later.
-		right->redirections = command->redirections;
-		right->input = command->input;
-		right->input = command->input;
+		// right->redirections = command->redirections;
+		// right->input = command->input;
+		// right->output = command->output;
 		build_operator(right, commands);
 	}
 	left = (t_command *)ft_stack_pop(commands);
 	if (left->command_flags & MS_OPERATOR)
 	{
 		//todo: these should be copies when we free later.
-		left->redirections = command->redirections;
-		left->input = command->input;
-		left->input = command->input;
+		// left->redirections = command->redirections;
+		// left->input = command->input;
+		// left->output = command->output;
 		build_operator(left, commands);
 	}
-	//todo: distribute redirections recursively.
+	//todo: don't distribute for pipes!
 	if (command->redirections)
 	{
 		if (!left->output && !(command->command_flags & MS_PIPE))
@@ -242,7 +242,10 @@ int	build_operator(t_command *command, t_stack *commands)
 		if (!right->output)
 			right->output = command->output;
 		if (!left->input)
+		{
+			printf("Set input! %s %s\n", left->command_name, right->command_name);
 			left->input = command->input;
+		}
 		if (!right->input && !(command->command_flags & MS_PIPE))
 			right->input = command->input;
 	}
@@ -321,10 +324,11 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *node)
 	t_stack		commands;
 	t_command	*command;
 
-	ft_darray_init(command_array, sizeof(t_command), 10);
-	ft_stack_init(&commands, command_array);
+	if (ft_darray_init(command_array, sizeof(t_command), 10) < 0)
+		return (NULL);
+	if (ft_stack_init(&commands, command_array) < 0)
+		return (NULL);
 	flatten_tree(node, &commands);
-
 	command = (t_command *)ft_stack_pop(&commands);
 	if (!command->command_name)
 		return (0);
