@@ -198,12 +198,8 @@ int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 	if (ft_darray_init(command.redirections, sizeof(t_redirection), 10) < 0)
 		return (-1);
 	set_redirections(&command, ft_darray_get(node->children, 0));
-	printf("Simple command %d\n", node->children->size);
 	if (node->children->size >= 2)
-	{
-		printf("Simple command !\n");
 		return (create_simple_command_core(ft_darray_get(node->children, 1), stack, &command));
-	}
 	create_files(&command, command.redirections);
 	return (ft_stack_push(stack, &command));
 }
@@ -239,8 +235,7 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, const char *na
 	flatten_tree((t_parse_tree *)ft_darray_get(node->children, 2), stack);
 	init_command(&command);
 	command.command_name = ft_strdup(name);
-	command.command_flags |= MS_OPERATOR;
-	command.command_flags |= type;
+	command.command_flags | MS_OPERATOR | type;
 	return (ft_stack_push(stack, &command));
 }
 

@@ -1,0 +1,16 @@
+$
+					/---------------------------------\$
+					| GLORIOUS GAMEPLAN FOR MINISHELL |$
+					\---------------------------------/$
+$
+Tokenising:$
+	- splitting on spaces and reserved symbols?$
+		{' ', '|', '>', '<', '>>', '<<'} NOT '=', ''', '"'$
+			(don't split ON quotes, and don't split IN quotes)$
+	- checking what type of WORD a token is?$
+	- setting flags for parsing$
+$
+Parser:$
+	- quote removal (include empty strings ("" and ''))$
+	- var expansion$
+$
