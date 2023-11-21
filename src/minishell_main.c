@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 16:38:01 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/21 16:48:52 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,29 +25,51 @@ void	ms_exit(t_shellshock *data, int exit_value)
 	exit(exit_value);
 }
 
+static char **ms_convert_tokens_arg(t_darray *tokens)
+{
+	char	**arg;
+	int		i;
+
+	arg = malloc(sizeof(char *) * (tokens->size + 1));
+	if (!arg)
+		return (NULL);
+	i = 0;
+	while (i < tokens->size)
+	{
+		arg[i] = (((t_token *) tokens->contents) + i)->string;
+		i++;
+	}
+	arg[i] = NULL;
+	return (arg);
+}
+
 // returns 1 if something was executed
-// int	ms_parse_builtins(t_shellshock *data, char *line)
-// {
-// 	if (!ft_strncmp(line, "cd ", 3))
-// 		ms_cd(data, line + 3);
-// 	else if (!ft_strncmp(line, "pwd", 4))
-// 		ms_pwd(data);
-// 	else if (!ft_strncmp(line, "export", 7))
-// 		ms_export(data, NULL);
-// 	else if (!ft_strncmp(line, "export ", 7))
-// 		ms_export(data, ft_split(line + 7, ' '));
-// 	else if (!ft_strncmp(line, "unset ", 6))
-// 		ms_unset(data, ft_split(line + 6, ' '));
-// 	else if (!ft_strncmp(line, "env", 4))
-// 		ms_env();
-// 	else if (!ft_strncmp(line, "echo ", 5))
-// 		ms_echo(ft_split(line + 5, ' '));
-// 	else if (!ft_strncmp(line, "echo", 5))
-// 		ms_echo(NULL);
-// 	else
-// 		return (0);
-// 	return (1);
-// }
+int	ms_parse_builtins(t_shellshock *data, t_darray *tokens)
+{
+	char	**arg;
+
+	arg = ms_convert_tokens_arg(tokens);
+	// check malloc error here
+	if (!ft_strncmp((((t_token *) tokens->contents)->string), "cd", 3))
+		ms_cd(arg);
+	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "pwd", 4))
+		ms_pwd();
+	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "export", 7))
+		ms_export(data, arg);
+	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "unset", 6))
+		ms_unset(data, arg);
+	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "env", 4))
+		ms_env();
+	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "echo", 5))
+		ms_echo(arg);
+	else
+	{
+		free(arg);
+		return (0);
+	}
+	free(arg);
+	return (1);
+}
 
 static void	ms_sleep(char *line)
 {
@@ -88,6 +110,7 @@ int	ms_process_line(t_shellshock *data, char *line)
 		free(line);
 		ms_exit(data, 0);
 	}
+// TEST FT: SLEEP
 	if (!ft_strncmp(line, "sleep", 6))
 	{
 		ms_sleep(line);
@@ -96,16 +119,16 @@ int	ms_process_line(t_shellshock *data, char *line)
 	ft_darray_init(&tokens, sizeof(t_token), 20);
 	ms_tokeniser(line, &tokens, ms_token_info(&info,
 		RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP));
-int i = 0;
-while (i < tokens.size)
-{
-	printf("%s\n", (((t_token *) tokens.contents) + i)->string);
-	i++;
-}
+// int i = 0;
+// while (i < tokens.size)
+// {
+// 	printf("%s\n", (((t_token *) tokens.contents) + i)->string);
+// 	i++;
+// }
+	ms_parse_builtins(data, &tokens);
 	ft_darray_delete(&tokens, ms_clear_token);
 	return (ms_add_herstory(line));
 	(void) data;
-// ms_parse_builtins(data, line)
 }
 
 void	ms_new_prompt(int sig)

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 18:31:09 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/17 17:18:42 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/21 16:57:03 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,13 @@ int	ms_unset(t_shellshock *data, char **arg)
 	int			i;
 
 	i = 0;
+	if (arg)
+		arg++;
 	while (arg && arg[i])
 	{
 		ms_unset_core(data, arg[i]);
 		i++;
 	}
-	ft_clear_ds(arg);
 	if (data->env_excess > 20)
 	{
 		i = -1 * (data->env_excess - 10);

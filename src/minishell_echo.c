@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:10:33 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/17 17:09:39 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/21 16:50:33 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ int	ms_echo(char **arg)
 
 	i = 0;
 	flag_n = 0;
+	if (arg)
+		arg++;
 	if (arg && arg[i] && !ft_strncmp(arg[i], "-n", 3))
 	{
 		i++;

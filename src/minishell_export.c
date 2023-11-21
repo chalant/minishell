@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_export.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 17:23:59 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/21 16:51:23 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,8 @@ int	ms_export(t_shellshock *data, char **arg)
 	int		i;
 	int		ret;
 
+	if (arg)
+		arg++;
 	if (!arg || !*arg)
 		return (ms_env_alpha());
 	ret = 0;
