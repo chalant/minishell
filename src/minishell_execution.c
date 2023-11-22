@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/20 17:20:00 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/21 16:17:24 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,24 +34,24 @@ void	copy_pipe(int src_pipe[2], int dest_pipe[2])
 
 int	redirect_in(t_command *command)
 {
-	int	fd;
+	// int	fd;
 
-	// todo: handle file errors
-	// todo: dup file errors
-	fd = open(command->input->file_path, command->input->file_flags, 0666);
-	dup2(fd, STDIN_FILENO);
-	close(fd);
+	// // todo: handle file errors
+	// // todo: dup file errors
+	// fd = open(command->input->file_path, command->input->file_flags, 0666);
+	dup2(command->input, STDIN_FILENO);
+	close(command->input);
 	return (0);
 }
 
 int	redirect_out(t_command *command)
 {
-	int	fd;
-	// todo: handle file errors
-	// todo: dup file errors
-	fd = open(command->output->file_path, command->output->file_flags, 0666);
-	dup2(fd, STDOUT_FILENO);
-	close(fd);
+	// int	fd;
+	// // todo: handle file errors
+	// // todo: dup file errors
+	// fd = open(command->output->file_path, command->output->file_flags, 0666);
+	dup2(command->output, STDOUT_FILENO);
+	close(command->output);
 	return (0);
 }
 

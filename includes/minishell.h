@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/22 19:00:37 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/22 19:37:01 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,6 @@ char	**ms_get_var_envp(t_shellshock *data, char *var);
 int		ms_check_varname(char *var);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
+char	*get_command(char *command);
 
 #endif

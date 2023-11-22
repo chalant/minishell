@@ -6,7 +6,7 @@
 #    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/11/20 15:23:13 by ychalant         ###   ########.fr        #
+#    Updated: 2023/11/21 17:58:49 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,8 @@ SRC_FILES =	minishell.c \
 			minishell_grammar_symbols.c \
 			minishell_grammar_matching.c \
 			minishell_semantics.c \
-			minishell_execution.c
+			minishell_execution.c \
+			minishell_path.c
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
