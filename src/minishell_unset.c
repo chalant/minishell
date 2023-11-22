@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 18:31:09 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/21 16:57:03 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/22 19:14:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,19 @@
 
 static int ms_unset_core(t_shellshock *data, char *name)
 {
-	extern char	**environ;
-	int	i;
-	int	name_len;
+	char	**envp;
+	int		i;
 
-	i = 0;
-	name_len = ft_strlen(name);
-	while (environ[i])
-	{
-		if (!ft_strncmp(environ[i], name, name_len))
-			if (environ[i][name_len] == '=')
-				break ;
-		i++;
-	}
-	if (!environ[i])
+	envp = ms_get_var_envp(data, name);
+	if (!envp)
 		return (1);
-	free(environ[i]);
-	while (environ[i + 1])
+	free(envp[0]);
+	i = 0;
+	while (envp[i])
 	{
-		environ[i] = environ[i + 1];
+		envp[i] = envp[i + 1];
 		i++;
 	}
-	environ[i] = environ[i + 1];
 	data->env_excess++;
 	return (0);
 }
@@ -62,8 +53,8 @@ int	ms_unset(t_shellshock *data, char **arg)
 		if (!data->env)
 			return (ERR_MALLOC);
 // error: malloc failed
-		environ = data->env;
 		data->env_excess += i;
 	}
+	environ = data->env;
 	return (0);
 }
