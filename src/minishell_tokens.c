@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 16:58:31 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/22 14:43:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ static const char	*ms_handle_symbol(const char *end, t_darray *tokens, t_token *
 	return (end);
 }
 
+// NULL terminates tokens with a fresh initialised token
 // returns > 0 on failure, doesn't delete 'tokens'
 int	ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info)
 {

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/21 16:48:52 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/22 18:15:35 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,13 @@ void	ms_exit(t_shellshock *data, int exit_value)
 	exit(exit_value);
 }
 
+// 'tokens' should be terminated with a newly initialised token
 static char **ms_convert_tokens_arg(t_darray *tokens)
 {
 	char	**arg;
 	int		i;
 
-	arg = malloc(sizeof(char *) * (tokens->size + 1));
+	arg = malloc(sizeof(char *) * (tokens->size));
 	if (!arg)
 		return (NULL);
 	i = 0;
@@ -39,35 +40,26 @@ static char **ms_convert_tokens_arg(t_darray *tokens)
 		arg[i] = (((t_token *) tokens->contents) + i)->string;
 		i++;
 	}
-	arg[i] = NULL;
 	return (arg);
 }
 
 // returns 1 if something was executed
-int	ms_parse_builtins(t_shellshock *data, t_darray *tokens)
+int	ms_parse_builtins(t_shellshock *data, char **arg)
 {
-	char	**arg;
-
-	arg = ms_convert_tokens_arg(tokens);
-	// check malloc error here
-	if (!ft_strncmp((((t_token *) tokens->contents)->string), "cd", 3))
+	if (!ft_strncmp(*arg, "cd", 3))
 		ms_cd(arg);
-	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "pwd", 4))
+	else if (!ft_strncmp(*arg, "pwd", 4))
 		ms_pwd();
-	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "export", 7))
+	else if (!ft_strncmp(*arg, "export", 7))
 		ms_export(data, arg);
-	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "unset", 6))
+	else if (!ft_strncmp(*arg, "unset", 6))
 		ms_unset(data, arg);
-	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "env", 4))
+	else if (!ft_strncmp(*arg, "env", 4))
 		ms_env();
-	else if (!ft_strncmp((((t_token *) tokens->contents)->string), "echo", 5))
+	else if (!ft_strncmp(*arg, "echo", 5))
 		ms_echo(arg);
 	else
-	{
-		free(arg);
 		return (0);
-	}
-	free(arg);
 	return (1);
 }
 
@@ -102,30 +94,38 @@ static int	ms_add_herstory(char *line)
 // should free line
 int	ms_process_line(t_shellshock *data, char *line)
 {
-	t_darray		tokens;
 	t_token_info	info;
+	t_darray		tokens;
+	char			**arg;
 
 	if (!ft_strncmp(line, "exit", 5))
 	{
 		free(line);
 		ms_exit(data, 0);
 	}
-// TEST FT: SLEEP
-	if (!ft_strncmp(line, "sleep", 6))
-	{
-		ms_sleep(line);
-		return (ms_add_herstory(line));
-	}
+if (!ft_strncmp(line, "sleep", 6))
+{
+	ms_sleep(line);
+	return (ms_add_herstory(line));
+}
 	ft_darray_init(&tokens, sizeof(t_token), 20);
-	ms_tokeniser(line, &tokens, ms_token_info(&info,
-		RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP));
+	if (ms_tokeniser(line, &tokens, ms_token_info(&info,
+		RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP)))
+		{
+			ft_darray_delete(&tokens, ms_clear_token);
+			free(line);
+			return (1);
+		}
 // int i = 0;
 // while (i < tokens.size)
 // {
 // 	printf("%s\n", (((t_token *) tokens.contents) + i)->string);
 // 	i++;
 // }
-	ms_parse_builtins(data, &tokens);
+	arg = ms_convert_tokens_arg(&tokens);
+	// check malloc error here
+	ms_parse_builtins(data, arg);
+	free(arg);
 	ft_darray_delete(&tokens, ms_clear_token);
 	return (ms_add_herstory(line));
 	(void) data;
@@ -180,7 +180,8 @@ int	main(void)
 	line = readline(MS_PROMPT_MSG);
 	while (line)
 	{
-		ms_process_line(&data, line);
+		if (ms_process_line(&data, line))
+			ms_exit(&data, 1);
 		line = readline(MS_PROMPT_MSG);
 	}
 	ms_exit(&data, 0);

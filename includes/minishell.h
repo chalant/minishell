@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/21 16:48:49 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/22 19:37:01 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ int		ms_export(t_shellshock *data, char **arg);
 int		ms_unset(t_shellshock *data, char **arg);
 int		ms_envcpy(t_shellshock *data);
 char	**ms_realloc(char **ptr, int add);
-char	*ms_get_var_env(char *var);
+char	*ms_get_var_env(t_shellshock *data, char *var);
+char	**ms_get_var_envp(t_shellshock *data, char *var);
 int		ms_check_varname(char *var);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);

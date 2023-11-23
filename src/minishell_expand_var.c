@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 15:40:24 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/22 15:15:20 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static int	ms_join_str(t_token *token, char *str, char mask)
 	char	*new;
 	int		str_len;
 
-	if (!str || !*str)
+	if (!str)
 		return (0);
 	str_len = ft_strlen(str);
 	if (!token->string)
@@ -84,10 +84,12 @@ static int	ms_join_str(t_token *token, char *str, char mask)
 	return (ms_join_mask(token, str_len, mask));
 }
 
-static int	ms_append_tokens(t_darray *tokens, t_token *new, char **value, int i)
+static int	ms_append_tokens_var(t_darray *tokens, t_token *new, char **value, int i)
 {
 	int	err;
 
+	if (!new->string)
+		return (0);
 	err = 0;
 	ms_add_flags_str(new);
 	if (new->flags & IS_WILDCARD)
@@ -117,16 +119,20 @@ static char	**ms_handle_getenv(char *str, int *qt)
 	char	*value;
 
 	value = getenv(str);
+	if (!value || !*value)
+	{
+		ret = malloc(sizeof(char *));
+		if (ret)
+			*ret = NULL;
+		return (ret);
+	}
 	if (!*qt && value)
 		return (ft_split(value, ' '));
 	ret = malloc(sizeof(char *) * 2);
 	if (!ret)
 		return (NULL);
 	ret[1] = NULL;
-	if (value)
-		ret[0] = ft_strdup(value);
-	else
-		ret[0] = ft_strdup("");
+	ret[0] = ft_strdup(value);
 	if (!ret[0])
 	{
 		free(ret);
@@ -152,6 +158,11 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 		return (ERR_MALLOC);
 	*end = temp;
 	*str = end;
+	if (!*value)
+	{
+		free(value);
+		return (0);
+	}
 	if (ms_join_str(new, value[0], '1'))
 	{
 		ft_clear_ds(value);
@@ -161,7 +172,7 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 	i = 1;
 	while (value[i])
 	{
-		if (ms_append_tokens(tokens, new, value, i))
+		if (ms_append_tokens_var(tokens, new, value, i))
 			return (ERR_MALLOC);
 		ms_init_token(new);
 		new->string = value[i];
@@ -209,7 +220,7 @@ int	ms_expand_var(t_darray *tokens, t_token *token)
 		if (ms_add_str(&new, &str, &qt) || ms_add_var(tokens, &new, &str, &qt))
 			ret = ERR_MALLOC;
 	ms_clear_token(token);
-	if (!ret && ms_append_tokens(tokens, &new, NULL, 0))
+	if (!ret && ms_append_tokens_var(tokens, &new, NULL, 0))
 		ret = ERR_MALLOC;
 	if (ret)
 		ms_clear_token(&new);

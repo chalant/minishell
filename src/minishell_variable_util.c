@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:44:01 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/17 14:38:03 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/22 19:26:52 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,28 +26,37 @@ int	ms_check_varname(char *var)
 	return (0);
 }
 
-// NOT TESTED YET
-// 'var' is of type [name]=[value]
-// returns the ptr of a variable in env
-// (points to the name, unlike getenv() which points to the value)
+// 'var' is of type [name]=[value] or just [name]
+// returns an incremented copy of data->env, double-pointing to a name
 // returns NULL if no variable is found
-char	*ms_get_var_env(char *var)
+char	**ms_get_var_envp(t_shellshock *data, char *var)
 {
-	extern char	**environ;
-	int			i;
-	int			name_len;
+	char	**envp;
+	int		i;
+	int		name_len;
 
+	envp = data->env;
 	if (!var || !*var)
 		return (NULL);
 	name_len = 0;
-	while (var[name_len] != '=')
+	while (var[name_len] && var[name_len] != '=')
 		name_len++;
 	i = 0;
-	while (environ[i])
+	while (envp[i])
 	{
-		if (!ft_strncmp(environ[i], var, name_len + 1))
-			return (environ[i]);
+		if (!ft_strncmp(envp[i], var, name_len))
+			if (envp[i][name_len] == '=')
+				return (envp + i);
 		i++;
 	}
 	return (NULL);
+}
+
+// 'var' is of type [name]=[value] or just [name]
+// returns the ptr of a variable in data->env
+// (points to the name, unlike getenv() which points to the value)
+// returns NULL if no variable is found
+char	*ms_get_var_env(t_shellshock *data, char *var)
+{
+	return (*ms_get_var_envp(data, var));
 }

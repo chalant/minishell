@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/21 16:51:23 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/22 19:24:15 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static int	ms_env_alpha()
 // returns 1 if malloc failed
 static int	ms_add_var_env(t_shellshock *data, char *var)
 {
-	extern char	**environ;
+	char		**envp;
 	int			i;
 
 	if (!data->env_excess)
@@ -76,14 +76,15 @@ static int	ms_add_var_env(t_shellshock *data, char *var)
 		data->env = ms_realloc(data->env, 3);
 		if (!data->env)
 			return (ERR_MALLOC);
-		environ = data->env;
 		data->env_excess += 3;
 	}
+	envp = data->env;
 	i = 0;
-	while (environ[i])
+	while (envp[i])
 		i++;
-	environ[i] = var;
-	environ[i + 1] = NULL;
+	envp[i] = ft_strdup(var);
+// check malloc fail
+	envp[i + 1] = NULL;
 	data->env_excess--;
 	return (0);
 }
@@ -93,10 +94,11 @@ static int	ms_add_var_env(t_shellshock *data, char *var)
 // always returns 0 (even on bad arguments it seems like) (ok not true, e.g. "export =ab=c")
 int	ms_export(t_shellshock *data, char **arg)
 {
-	char	*ptr;
-	char	**temp;
-	int		i;
-	int		ret;
+	extern char	**environ;
+	char		*ptr;
+	char		**temp_envp;
+	int			i;
+	int			ret;
 
 	if (arg)
 		arg++;
@@ -108,12 +110,12 @@ int	ms_export(t_shellshock *data, char **arg)
 	{
 		if (!ms_check_varname(arg[i]))
 		{
-			ptr = ms_get_var_env(arg[i]);
-			temp = &ptr;
-			if (*temp)
+			temp_envp = ms_get_var_envp(data, arg[i]);
+			if (temp_envp)
 			{
-				free(*temp);
-				*temp = arg[i];
+				free(*temp_envp);
+				*temp_envp = ft_strdup(arg[i]);
+// check malloc fail, (do something with NULL hole in env)
 			}
 			else
 				if (ms_add_var_env(data, arg[i]))
@@ -124,5 +126,6 @@ int	ms_export(t_shellshock *data, char **arg)
 			ret = ms_perror("export", arg[i], "not a valid identifier", 0);
 		i++;
 	}
+	environ = data->env;
 	return (ret);
 }
