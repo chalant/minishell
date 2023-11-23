@@ -40,18 +40,14 @@ int	redirect_in(t_command *command)
 	// // todo: dup file errors
 	// fd = open(command->input->file_path, command->input->file_flags, 0666);
 	dup2(command->input, STDIN_FILENO);
-	close(command->input);
+	//close(command->input);
 	return (0);
 }
 
 int	redirect_out(t_command *command)
 {
-	// int	fd;
-	// // todo: handle file errors
-	// // todo: dup file errors
-	// fd = open(command->output->file_path, command->output->file_flags, 0666);
 	dup2(command->output, STDOUT_FILENO);
-	close(command->output);
+	//close(command->output);
 	return (0);
 }
 
@@ -59,6 +55,7 @@ int	pipe_out(t_command *command, int _pipe[2])
 {
 	if (command->output)
 		return (redirect_out(command));
+	//todo: report errors
 	dup2(_pipe[1], STDOUT_FILENO);
 	return (0);
 }
@@ -67,6 +64,7 @@ int	pipe_in(t_command *command, int _pipe[2])
 {
 	if (command->input)
 		return (redirect_in(command));
+	//todo: report errors
 	dup2(_pipe[0], STDIN_FILENO);
 	return (0);
 }
@@ -86,6 +84,7 @@ int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
+		//todo handle pipe errors.
 		pipe_in(command, in_pipe);
 		pipe_out(command, out_pipe);
 		status = execute_command(command, in_pipe, out_pipe);
@@ -131,8 +130,6 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	//todo: out_pipe could also be a redirection so we need to either create a pipe or open a file...
 	//read from in pipe of the parent
 	pid = execute_process(command->left, in_pipe, out_pipe);
-	close(in_pipe[0]);
-	close(in_pipe[1]);
 	copy_pipe(out_pipe, in_pipe);
 	pid = execute_process(command->right, in_pipe, out_pipe);
 	return (get_exit_status(pid));
@@ -161,12 +158,13 @@ int	launch_execve(t_command *command)
 	//todo handle errors
 	execve(command->command_name, arguments, environ);
 	perror("error HERE");
-	//todo: free arguments here.
+	//todo: free arguments here in cause of errors..
 	return (1);
 }
 
 int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 {
+	//todo: call builtins.
 	(void)command;
 	(void)in_pipe;
 	(void)out_pipe;
@@ -182,7 +180,6 @@ int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 		return (execute_builtin(command, in_pipe, out_pipe));
 	if (!(command->command_flags & MS_FORKED))
 	{
-		//todo: make a cleaner implementation of this
 		pid = fork();
 		if (pid == 0)
 		{
@@ -205,7 +202,6 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 		return (0);
 	if (command->command_flags & MS_OPERAND)
 		return (execute_simple_command(command, in_pipe, out_pipe));
-	//todo: if the operand have redirections, open them in append mode, and pass them to the write-end of the out_pipe.
 	else if (command->command_flags & MS_AND)
 		return (execute_and(command, in_pipe, out_pipe));
 	else if (command->command_flags & MS_OR)
@@ -237,6 +233,7 @@ void	print_commands(t_command *command, int depth)
 		while(++i < command->redirections->size)
 			printf("> %s ", ((t_redirection *)ft_darray_get(command->redirections, i))->file_path);
 	}
+	printf("input %d output %d\n", command->input, command->output);
 	printf("\n");
 	if (command->command_flags & MS_OPERAND)
 		return ;
@@ -255,5 +252,8 @@ int	minishell_execute(t_command *command)
 	if (pipe(in_pipe) < 0)
 		return (-1);
 	execute_command(command, in_pipe, out_pipe);
+	close(in_pipe[0]);
+	close(in_pipe[1]);
+	//todo: close all open file descriptors
 	return (0);
 }

@@ -10,6 +10,10 @@ int		ft_darray_exists(t_darray *darray, int index)
 {
 	unsigned char *target;
 
+	if (index >= darray->size)
+		return (0);
+	else if (index < 0)
+		return (0);
 	target = (unsigned char *)darray->contents + index * darray->type_size;
 	if (!*target)
 		return (0);

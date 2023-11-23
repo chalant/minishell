@@ -67,7 +67,7 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"command_operand:redirection_command\n"\
 
 	"command:command ='|' $'4'\n"\
-	"command:command ='|' command_operand\n"\
+	"command:command ='|' command\n"\
 	"command:command ='||' command\n"\
 	"command:command ='&&' command\n";
 

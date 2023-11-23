@@ -15,6 +15,10 @@ void	*ft_stack_pop(t_stack *stack)
 
 void	*ft_stack_peek(t_stack *stack)
 {
+	if (stack->size - 1 < 0 || stack->size - 1 >= stack->elements->size)
+		return (NULL);
+	if (!ft_darray_exists(stack->elements, stack->size - 1))
+		return (NULL);
 	return (ft_darray_get(stack->elements, stack->size - 1));
 }
 

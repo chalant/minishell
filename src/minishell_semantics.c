@@ -48,13 +48,9 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 int	create_files(t_command *command, t_darray *redirections)
 {
 	int				i;
-	// int				last_in;
-	// int				last_out;
 	t_redirection	*redirection;
 	int				fd;
 
-	// last_in = -1;
-	// last_out = -1;
 	i = redirections->size;
 	//todo: set proper permissions for file.
 	while (--i > -1)
@@ -72,25 +68,7 @@ int	create_files(t_command *command, t_darray *redirections)
 				close(fd);
 			
 		}
-		// if (redirection->redirection_flags & MS_READ && last_in == -1)
-		// 	last_in = i;
-		// if (redirection->redirection_flags & MS_WRITE && last_out == -1)
-		// 	last_out = i;
 	}
-	// //todo: store redirections as file descriptors instead.
-	// if (last_in != -1)
-	// {
-	// 	redirection = ft_darray_get(redirections, last_in);
-	// 	command->input = malloc(sizeof(t_redirection));
-	// 	ft_memcpy(command->input, redirection, sizeof(t_redirection));
-	// 	command->input = open
-	// }
-	// if (last_out != -1)
-	// {
-	// 	redirection = ft_darray_get(redirections, last_out);
-	// 	command->output = malloc(sizeof(t_redirection));
-	// 	ft_memcpy(command->output, redirection, sizeof(t_redirection));
-	// }
 	return (1);
 }
 
@@ -99,6 +77,8 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	t_parse_tree	*redir;
 
 	//todo: need to set the right file permissions.
+	if (!tree)
+		return (0);
 	redirection->redirection_flags = 0;
 	redirection->file_flags = 0;
 	redirection->file_path = NULL;
@@ -122,6 +102,7 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	}
 	else
 		return (-1);
+	//todo: maybe copy the word or set it to NULL in the tree.
 	redirection->file_path = *(char **)get_word(ft_darray_get(tree->children, 1));
 	return (0);
 }
@@ -153,7 +134,6 @@ int	create_simple_command_core(t_parse_tree *node, t_stack *stack, t_command *co
 		return (0);
 	if (strcmp(node->rule_name, "builtin") == 0)
 		command->command_flags |= MS_BUILTIN;
-	//command->command_name = ft_strdup(*get_word(node));
 	command->command_name = get_command(*get_word(node));
 	node = ft_darray_get(node->children, 1);
 	if (node->children)
@@ -220,21 +200,25 @@ int	build_operator(t_command *command, t_stack *commands)
 	if (right->command_flags & MS_OPERATOR)
 	{
 		//todo: these should be copies when we free later.
-		// right->redirections = command->redirections;
-		// right->input = command->input;
-		// right->output = command->output;
+		if (!(command->command_flags & MS_PIPE) && !right->redirections && command->redirections)
+		{
+			right->redirections = command->redirections;
+			right->input = command->input;
+			right->output = command->output;
+		}
 		build_operator(right, commands);
 	}
 	left = (t_command *)ft_stack_pop(commands);
 	if (left->command_flags & MS_OPERATOR)
 	{
-		//todo: these should be copies when we free later.
-		// left->redirections = command->redirections;
-		// left->input = command->input;
-		// left->output = command->output;
+		if (!left->redirections)
+		{
+			left->redirections = command->redirections;
+			left->input = command->input;
+			left->output = command->output;
+		}
 		build_operator(left, commands);
 	}
-	//todo: don't distribute for pipes!
 	if (command->redirections)
 	{
 		if (!left->output && !(command->command_flags & MS_PIPE))
@@ -242,10 +226,7 @@ int	build_operator(t_command *command, t_stack *commands)
 		if (!right->output)
 			right->output = command->output;
 		if (!left->input)
-		{
-			printf("Set input! %s %s\n", left->command_name, right->command_name);
 			left->input = command->input;
-		}
 		if (!right->input && !(command->command_flags & MS_PIPE))
 			right->input = command->input;
 	}
@@ -271,7 +252,7 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 		return (0);
 	if (!command->command_name)
 		return (0);
-	if (node->children->size == 4)
+	if (node->children->size >= 4 && ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name)
 	{
 		if (!command->redirections)
 		{
@@ -280,9 +261,9 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 				return (-1);
 			if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
 				return (-1);
+			set_redirections(command, ft_darray_get(node->children, 3));
+			create_files(command, command->redirections);
 		}
-		set_redirections(command, ft_darray_get(node->children, 3));
-		create_files(command, command->redirections);
 	}
 	return (1);
 }
@@ -326,8 +307,7 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *node)
 
 	if (ft_darray_init(command_array, sizeof(t_command), 10) < 0)
 		return (NULL);
-	if (ft_stack_init(&commands, command_array) < 0)
-		return (NULL);
+	ft_stack_init(&commands, command_array);
 	flatten_tree(node, &commands);
 	command = (t_command *)ft_stack_pop(&commands);
 	if (!command->command_name)

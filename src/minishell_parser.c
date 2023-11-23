@@ -102,7 +102,7 @@ int	ms_build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 		return (0);
 	end = -1;
 	parse_tree->children = malloc(sizeof(t_darray));
-	if (ft_darray_init(parse_tree->children, sizeof(t_parse_tree), data->tokens->size + 1) < 0)
+	if (ft_darray_init(parse_tree->children, sizeof(t_parse_tree), data->tokens->size) < 0)
 		return (-1);
 	while (++end < data->chart->adjacency_list[parse_tree->start]->size)
 	{

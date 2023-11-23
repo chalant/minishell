@@ -88,6 +88,8 @@ char	*get_command(char *command)
 	char	    *command_path;
     extern char **environ;
 
+	if (!command)
+		return (NULL);
 	if (ft_strchr(command, '/'))
 		return (command);
 	if (get_paths(&paths, environ) < 0)
@@ -96,10 +98,8 @@ char	*get_command(char *command)
 	if (!command_path)
 	{
 		delete_strings(paths);
-        free(command);
 		return (NULL);
 	}
-	free(command);
 	delete_strings(paths);
 	return (command_path);
 }
