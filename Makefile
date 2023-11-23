@@ -6,7 +6,7 @@
 #    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/11/21 17:58:49 by ychalant         ###   ########.fr        #
+#    Updated: 2023/11/23 17:17:28 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,8 @@ INCLUDES_FILES = minishell.h \
 				 minishell_graph.h \
 				 minishell_parsing.h \
 				 minishell_grammar.h \
-				 minishell_commands.h
+				 minishell_commands.h \
+				 minishell_semantics.h
 
 SRC_FILES =	minishell.c \
 			minishell_cd.c \
@@ -45,7 +46,11 @@ SRC_FILES =	minishell.c \
 			minishell_grammar_matching.c \
 			minishell_semantics.c \
 			minishell_execution.c \
-			minishell_path.c
+			minishell_path.c \
+			minishell_commands.c \
+			minishell_redirections.c \
+			minishell_semantic_operators.c \
+			minishell_semantics_utils.c
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))

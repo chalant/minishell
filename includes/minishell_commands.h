@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/21 16:12:07 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/23 14:27:10 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,18 @@ typedef struct	s_redirection
 typedef struct	s_command
 {
 	int					command_flags;
-	char				*command_name;
-	struct	s_command	*left;
-	struct	s_command	*right;
-	t_darray			*redirections;
 	int					input;
 	int					output;
+	char				*command_name;
+	t_darray			*redirections;
 	t_darray			*arguments;
+	struct	s_command	*left;
+	struct	s_command	*right;
 }				t_command;
+
+int	init_command(t_command *command);
+int	create_redirection_command(t_parse_tree *node, t_stack *stack);
+int	create_simple_command(t_parse_tree *node, t_stack *stack);
 
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2]);
 int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2]);
