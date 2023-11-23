@@ -6,20 +6,20 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 18:31:09 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/22 19:14:19 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/23 17:28:16 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int ms_unset_core(t_shellshock *data, char *name)
+void	ms_unset_var(t_shellshock *data, char *name)
 {
 	char	**envp;
 	int		i;
 
 	envp = ms_get_var_envp(data, name);
 	if (!envp)
-		return (1);
+		return ;
 	free(envp[0]);
 	i = 0;
 	while (envp[i])
@@ -28,7 +28,7 @@ static int ms_unset_core(t_shellshock *data, char *name)
 		i++;
 	}
 	data->env_excess++;
-	return (0);
+	return ;
 }
 
 // free's args
@@ -43,7 +43,7 @@ int	ms_unset(t_shellshock *data, char **arg)
 		arg++;
 	while (arg && arg[i])
 	{
-		ms_unset_core(data, arg[i]);
+		ms_unset_var(data, arg[i]);
 		i++;
 	}
 	if (data->env_excess > 20)

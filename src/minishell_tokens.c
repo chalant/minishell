@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/22 14:43:19 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/23 15:05:43 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,8 @@ int	ms_tokeniser(const char *input, t_darray *tokens, t_token_info *info)
 			if (*end == '"' || *end == '\'')
 			{
 				//todo: handle error: quote unclosed
-				ms_skip_quoted(&token, &end);
+				if (ms_skip_quoted(&token, &end))
+					return (ERR_QUOTE_UNCLOSED);
 			}
 			ms_add_flags_char(&token, *end);
 			end++;
