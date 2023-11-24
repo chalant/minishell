@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:34 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/21 18:11:37 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/24 16:36:54 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ int	earley_safe_append(t_earley_set *set, t_earley_item *item)
 
 int	earley_complete(t_earley_set **sets, t_ms_grammar *grammar, int j, int state_id)
 {
-	t_earley_set	*set;
 	t_earley_item	new_item;
 	t_earley_item	*old_item;
 	t_earley_item	*item;

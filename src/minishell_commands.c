@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/23 17:22:31 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/24 16:41:19 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ static int	create_command(t_parse_tree *node, t_stack *stack, t_command *command
 int	create_simple_command(t_parse_tree *node, t_stack *stack)
 {
 	t_command		command;
-	t_parse_tree	*element_type;
 
 	init_command(&command);
 	//todo: no need to create redirections if there aren't any!
@@ -93,7 +92,6 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 {
 	t_command		command;
-	t_parse_tree	*element_type;
 
 	init_command(&command);
 	command.redirections = malloc(sizeof(t_darray));

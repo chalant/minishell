@@ -49,8 +49,7 @@ typedef struct	s_parser_state
 {
 	int				depth;
 	int				node;
-	int				symbol_type;
-	t_ms_rule		*rule;
+	t_ms_rule		*rule;;
 }				t_parser_state;
 
 typedef struct	s_parse_tree
@@ -65,6 +64,7 @@ typedef struct	s_parse_tree
 }				t_parse_tree;
 
 int	build_earley_items(t_earley_set **sets, t_ms_grammar *grammar, int n_sets, t_darray *tokens);
-int	ms_build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
+int	build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
+int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state state);
 
 #endif
