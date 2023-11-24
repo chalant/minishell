@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/22 19:24:15 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/23 15:53:31 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static int	ms_env_alpha()
 	return (0);
 }
 
-// returns 1 if malloc failed
+// returns 1 if malloc in ms_realloc failed
 static int	ms_add_var_env(t_shellshock *data, char *var)
 {
 	char		**envp;
@@ -82,21 +82,40 @@ static int	ms_add_var_env(t_shellshock *data, char *var)
 	i = 0;
 	while (envp[i])
 		i++;
-	envp[i] = ft_strdup(var);
-// check malloc fail
+	envp[i] = var;
 	envp[i + 1] = NULL;
 	data->env_excess--;
 	return (0);
 }
 
-// free's arg (unless *arg == NULL)
-// no arguments: prints env in alphabetical order (all uppercase before any lowercase)
-// always returns 0 (even on bad arguments it seems like) (ok not true, e.g. "export =ab=c")
-int	ms_export(t_shellshock *data, char **arg)
+// 'var' is an allocated string of valid format [name]=[value]
+// on error, 'var' is free'd
+int	ms_export_var(t_shellshock *data, char *var)
 {
 	extern char	**environ;
-	char		*ptr;
 	char		**temp_envp;
+
+	temp_envp = ms_get_var_envp(data, var);
+	if (temp_envp)
+	{
+		free(*temp_envp);
+		*temp_envp = var;
+	}
+	else
+		if (ms_add_var_env(data, var))
+		{
+			free(var);
+			return (ERR_MALLOC);
+		}
+// malloc failed
+	environ = data->env;
+	return (0);
+}
+
+// no arguments: prints env in alphabetical order (all uppercase before any lowercase)
+int	ms_export(t_shellshock *data, char **arg)
+{
+	char		*var;
 	int			i;
 	int			ret;
 
@@ -110,22 +129,17 @@ int	ms_export(t_shellshock *data, char **arg)
 	{
 		if (!ms_check_varname(arg[i]))
 		{
-			temp_envp = ms_get_var_envp(data, arg[i]);
-			if (temp_envp)
-			{
-				free(*temp_envp);
-				*temp_envp = ft_strdup(arg[i]);
-// check malloc fail, (do something with NULL hole in env)
-			}
-			else
-				if (ms_add_var_env(data, arg[i]))
-					return (ERR_MALLOC);
+			var = ft_strdup(arg[i]);
+			if (!var)
+				return (ERR_MALLOC);
+// malloc failed
+			if (ms_export_var(data, var))
+				return (ERR_MALLOC);
 // malloc failed
 		}
 		else
 			ret = ms_perror("export", arg[i], "not a valid identifier", 0);
 		i++;
 	}
-	environ = data->env;
 	return (ret);
 }

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/22 18:15:35 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/23 16:31:13 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static char **ms_convert_tokens_arg(t_darray *tokens)
 int	ms_parse_builtins(t_shellshock *data, char **arg)
 {
 	if (!ft_strncmp(*arg, "cd", 3))
-		ms_cd(arg);
+		ms_cd(data, arg);
 	else if (!ft_strncmp(*arg, "pwd", 4))
 		ms_pwd();
 	else if (!ft_strncmp(*arg, "export", 7))

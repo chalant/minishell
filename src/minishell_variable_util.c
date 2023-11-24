@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:44:01 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/22 19:26:52 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/23 17:32:27 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,10 @@ char	**ms_get_var_envp(t_shellshock *data, char *var)
 // returns NULL if no variable is found
 char	*ms_get_var_env(t_shellshock *data, char *var)
 {
-	return (*ms_get_var_envp(data, var));
+	char	**envp;
+
+	envp = ms_get_var_envp(data, var);
+	if (!envp)
+		return (NULL);
+	return (*envp);
 }
