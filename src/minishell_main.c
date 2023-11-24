@@ -6,24 +6,13 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/23 16:31:13 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/24 16:59:14 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 pid_t	pid;
-
-// if exit_value == -5, flushes all then just returns (not in use i think)
-void	ms_exit(t_shellshock *data, int exit_value)
-{
-	rl_clear_history();
-	ft_clear_ds(data->env);
-	if (exit_value == -5)
-		return ;
-	write(STDOUT_FILENO, "exit\n", 5);
-	exit(exit_value);
-}
 
 // 'tokens' should be terminated with a newly initialised token
 static char **ms_convert_tokens_arg(t_darray *tokens)
@@ -35,17 +24,27 @@ static char **ms_convert_tokens_arg(t_darray *tokens)
 	if (!arg)
 		return (NULL);
 	i = 0;
-	while (i < tokens->size)
+	while (i + 1 < tokens->size)
 	{
-		arg[i] = (((t_token *) tokens->contents) + i)->string;
+		arg[i] = ft_strdup((((t_token *) tokens->contents) + i)->string);
+		if (!arg[i])
+		{
+			ft_clear_ds(arg);
+			return (NULL);
+		}
 		i++;
 	}
+	arg[i] = NULL;
 	return (arg);
 }
 
 // returns 1 if something was executed
-int	ms_parse_builtins(t_shellshock *data, char **arg)
+int	ms_parse_builtins(t_shellshock *data, char **arg, char *line)
 {
+	if (!ft_strncmp(*arg, "exit", 3))
+	{
+		ms_exit(data, arg, line);
+	}
 	if (!ft_strncmp(*arg, "cd", 3))
 		ms_cd(data, arg);
 	else if (!ft_strncmp(*arg, "pwd", 4))
@@ -83,6 +82,7 @@ static void	ms_sleep(char *line)
 	pid = 0;
 }
 
+// free's 'line'
 static int	ms_add_herstory(char *line)
 {
 	if (*line)
@@ -91,18 +91,13 @@ static int	ms_add_herstory(char *line)
 	return (0);
 }
 
-// should free line
+// should free 'line'
 int	ms_process_line(t_shellshock *data, char *line)
 {
 	t_token_info	info;
 	t_darray		tokens;
 	char			**arg;
 
-	if (!ft_strncmp(line, "exit", 5))
-	{
-		free(line);
-		ms_exit(data, 0);
-	}
 if (!ft_strncmp(line, "sleep", 6))
 {
 	ms_sleep(line);
@@ -123,10 +118,12 @@ if (!ft_strncmp(line, "sleep", 6))
 // 	i++;
 // }
 	arg = ms_convert_tokens_arg(&tokens);
-	// check malloc error here
-	ms_parse_builtins(data, arg);
-	free(arg);
 	ft_darray_delete(&tokens, ms_clear_token);
+	if (!arg)
+		return (ms_perror("create arg", NULL, NULL, errno));
+// malloc error
+	ms_parse_builtins(data, arg, line);
+	ft_clear_ds(arg);
 	return (ms_add_herstory(line));
 	(void) data;
 }
@@ -181,8 +178,8 @@ int	main(void)
 	while (line)
 	{
 		if (ms_process_line(&data, line))
-			ms_exit(&data, 1);
+			ms_flush_exit(&data, 1);
 		line = readline(MS_PROMPT_MSG);
 	}
-	ms_exit(&data, 0);
+	ms_flush_exit(&data, 0);
 }

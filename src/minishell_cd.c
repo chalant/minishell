@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 17:20:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/23 17:29:28 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/24 15:21:59 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,18 +51,18 @@ int	ms_cd(t_shellshock *data, char **arg)
 {
 	char	*path;
 
+	if (arg[1] && arg[2])
+		return (ms_perror("cd", NULL, "too many arguments", 0));
 	path = arg[1];
-	if (!path)
+	if (!path || !ft_strncmp(path, "~", 2))
 	{
 		path = getenv("HOME");
 		if (!path)
 			return (ms_perror("cd", NULL, "HOME not set", 0));
 	}
-	else if (arg[2])
-		return (ms_perror("cd", NULL, "too many arguments", 0));
 	if (!*path)
 		return (0);
-	if (arg[1] && !ft_strncmp(arg[1], "-", 2))
+	if (!ft_strncmp(path, "-", 2))
 		path = getenv("OLDPWD");
 	if (!path)
 		return (ms_perror("cd", NULL, "OLDPWD not set", 0));

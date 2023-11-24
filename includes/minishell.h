@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/23 17:28:24 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/24 16:59:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ typedef struct s_shellshock
 
 # define MS_PROMPT_MSG "shellshock$ "
 
+int		ms_exit(t_shellshock *data, char **arg, char *line);
+void	ms_flush_exit(t_shellshock *data, int exit_value);
 int		ms_echo(char **arg);
 int		ms_cd(t_shellshock *data, char **arg);
 int		ms_pwd(void);
