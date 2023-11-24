@@ -181,15 +181,12 @@ int	main(int ac, char **av, char **env)
 	info.reserved_single = RESERVED_SINGLE;
 	info.reserved_skip = RESERVED_SKIP;
 	ms_tokeniser(av[1], &tokens, &info);
-	//ms_print_tokens(&tokens);
-	//ft_darray_delete(&tokens, ms_clear_token);
 
 	size = tokens.size;
 	//todo: store sets into dynamic array.
-	//todo: fix the set size BUG!
 	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size));
-	ft_bzero(sets, tokens.size);
 	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size));
+	ft_bzero(sets, tokens.size);
 	ft_bzero(reversed, tokens.size);
 	t_ms_grammar	grammar;
 	t_graph			graph;
@@ -214,6 +211,8 @@ int	main(int ac, char **av, char **env)
 	build_earley_items(sets, &grammar, size, &tokens);
 	//print_earley(sets, &grammar, size);
 	build_chart(sets, &graph, size);
+	//todo: interrupt the program if we haven't reached the last
+	//state.
 	reverse_earley(sets, reversed, size);
 	print_earley(reversed, &grammar, size);
 	data.chart = &graph;
@@ -227,7 +226,7 @@ int	main(int ac, char **av, char **env)
 	ms_start_rule(&tree, &data);
 	tree.terminal = 0;
 	tree.children = NULL;
-	ms_build_parse_tree(&tree, &data);
+	build_parse_tree(&tree, &data);
 	print_parse_tree(&tree, 0);
 	command = build_command(&command_array, &tree);
 	minishell_execute(command);
