@@ -63,8 +63,9 @@ typedef struct	s_parse_tree
 	t_darray	*children;
 }				t_parse_tree;
 
-int	build_earley_items(t_earley_set **sets, t_ms_grammar *grammar, int n_sets, t_darray *tokens);
+int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, int n_sets, t_darray *tokens);
 int	build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
+int add_earley_set(t_darray *sets, int size);
 int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state state);
 
 #endif

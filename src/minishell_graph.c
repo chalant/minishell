@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell_graph.h"
+#include "minishell.h"
 
 int	init_graph(t_graph *graph, int num_vertices, int type_size)
 {

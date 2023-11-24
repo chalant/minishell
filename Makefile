@@ -50,7 +50,8 @@ SRC_FILES =	minishell.c \
 			minishell_commands.c \
 			minishell_redirections.c \
 			minishell_semantic_operators.c \
-			minishell_semantics_utils.c
+			minishell_semantics_utils.c \
+			minishell_earley_set.c
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
@@ -61,6 +62,7 @@ LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 C_FLAGS = -Wall -Wextra -Werror -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
+#C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 READLINE = -lreadline -lhistory -L/Users/bvercaem/homebrew/opt/readline/lib
 
 all:

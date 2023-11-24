@@ -12,21 +12,23 @@
 
 # include "minishell.h"
 
-int	print_earley(t_earley_set **sets, t_ms_grammar *grammar, int size)
+int	print_earley(t_darray *sets, t_ms_grammar *grammar, int size)
 {
 	int				i;
 	int				j;
 	int				k;
 	t_earley_item	*item;
+	t_earley_set	*set;
 
 	i = -1;
 	while (++i < size)
 	{
 		j = -1;
+		set = ft_darray_get(sets, i);
 		printf("=================(%d)==================\n\n", i);
-		while (++j < sets[i]->items->size)
+		while (++j < set->items->size)
 		{
-			item = (t_earley_item *)sets[i]->items->contents + j;
+			item = (t_earley_item *)set->items->contents + j;
 			printf("%s -> ", grammar->rules[item->rule]->name);
 			k = -1;
 			while (++k < grammar->rules[item->rule]->length)
@@ -69,31 +71,30 @@ int	reverse_earley(t_earley_set **sets, t_earley_set **reversed, int size)
 	return (0);
 }
 
-int	build_chart(t_earley_set **sets, t_graph *graph, int size)
+int	build_chart(t_darray *sets, t_graph *graph, int size)
 {
 	int				i;
 	int				j;
-	int				k;
 	t_ms_edge		edge;
 	t_earley_item	*item;
+	t_earley_set	*set;
 
 	if (init_graph(graph, size, sizeof(t_ms_edge)) < 0)
 		return (-1);
 	i = -1;
-	k = 0;
 	while (++i < size)
 	{
 		j = -1;
-		while (++j < sets[i]->items->size)
+		set = ft_darray_get(sets, i);
+		while (++j < set->items->size)
 		{
-			item = (t_earley_item *)sets[i]->items->contents + j;
+			item = ft_darray_get(set->items, j);
 			if (item->completed)
 			{
 				edge.finish = i;
 				edge.start = item->start;
 				edge.rule = item->rule;
 				add_edge(graph, edge.start, &edge);
-				k++;
 			}
 		}
 	}
@@ -182,10 +183,10 @@ int	main(int ac, char **av, char **env)
 
 	size = tokens.size;
 	//todo: store sets into dynamic array.
-	t_earley_set	**sets = malloc(sizeof(t_earley_set *) * (tokens.size));
+	t_darray		*sets = malloc(sizeof(t_darray));
 	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size));
 
-	ft_bzero(sets, tokens.size);
+	//ft_bzero(sets, tokens.size);
 	ft_bzero(reversed, tokens.size);
 	t_ms_grammar	grammar;
 	t_graph			graph;
@@ -198,17 +199,19 @@ int	main(int ac, char **av, char **env)
 	set_grammar(&grammar, grammar_definition);
 	//print_grammar(&grammar);
 	//printf("\n");
+	ft_darray_init(sets, sizeof(t_darray), size);
 	while (++i < tokens.size)
 	{
-		sets[i] = malloc(sizeof(t_earley_set));
+		add_earley_set(sets, size);
+		//sets[i] = malloc(sizeof(t_earley_set));
 		reversed[i] = malloc(sizeof(t_earley_set));
-		sets[i]->items = malloc(sizeof(t_darray));
+		//sets[i]->items = malloc(sizeof(t_darray));
 		reversed[i]->items = malloc(sizeof(t_darray));
-		ft_darray_init(sets[i]->items, sizeof(t_earley_item), size + 1);
+		//ft_darray_init(sets[i]->items, sizeof(t_earley_item), size + 1);
 		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size + 1);
 	}
 	build_earley_items(sets, &grammar, size, &tokens);
-	//print_earley(sets, &grammar, size);
+	print_earley(sets, &grammar, size);
 	build_chart(sets, &graph, size);
 	//todo: interrupt the program if we haven't reached the last
 	//state.
