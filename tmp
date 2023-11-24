@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                        :+:      :+:    :+:   */
+/*   tmp                                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 17:34:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/24 17:25:51 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,8 +212,8 @@ int	main(int ac, char **av, char **env)
 	build_chart(sets, &graph, size);
 	//todo: interrupt the program if we haven't reached the last
 	//state.
-	//reverse_earley(sets, reversed, size);
-	//print_earley(reversed, &grammar, size);
+	reverse_earley(sets, reversed, size);
+	print_earley(reversed, &grammar, size);
 	data.chart = &graph;
 	data.grammar = &grammar;
 	data.tokens = &tokens;

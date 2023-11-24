@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:34 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 16:36:54 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/24 17:41:24 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,10 @@ int	earley_scan(t_earley_set **sets, t_ms_symbol *symbol, int state_id, int item
 	t_earley_item	*item;
 	t_earley_item	*items;
 
-	items = (t_earley_item *)sets[state_id]->items->contents;
+	items = sets[state_id]->items->contents;
 	item = items + item_idx;
 	//todo: add prompting
-	if (symbol->match(symbol, (t_token *)ft_darray_get(tokens, state_id)))
+	if (symbol->match(symbol, ft_darray_get(tokens, state_id)))
 	{
 		new_item.next = item->next + 1;
 		new_item.start = item->start;

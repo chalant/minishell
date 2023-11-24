@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:26 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 16:40:12 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/24 16:43:30 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ t_parser_state	next_state(int depth, int node, t_ms_rule *rule)
 
 void set_subtree(t_parse_tree *subtree, char *rule_name, int start, int end)
 {
-	//todo: must make a copy of this
 	init_tree(subtree);
 	subtree->rule_name = rule_name;
 	subtree->start = start;
@@ -142,7 +141,8 @@ int	build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 		return (-1);
 	if (ft_darray_init(parse_tree->children, sizeof(t_parse_tree), data->tokens->size) < 0)
 		return (-1);
-	fill_parse_tree(parse_tree, data);
+	if (fill_parse_tree(parse_tree, data) < 0)
+		return (-1);
 	i = -1;
 	while (++i < parse_tree->children->size)
 	{
