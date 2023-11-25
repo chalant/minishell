@@ -66,15 +66,16 @@ int	process_non_terminal(t_parse_tree *tree, t_parsing_data *data, t_parser_stat
 	t_parser_state	nstate;
 	t_parse_tree	subtree;
 	t_ms_edge		*item;
+	t_darray		*edges;
 
-	item = (t_ms_edge *)data->chart->adjacency_list[state.node]->contents;
+	edges = get_edges(data->chart, state.node);
+	item = (t_ms_edge *)edges->contents;
 	i = -1;
-	while (++i < data->chart->adjacency_list[state.node]->size)
+	while (++i < edges->size)
 	{
 		if (strcmp(data->grammar->rules[(item + i)->rule]->name, symbol->name) == 0)
 		{
-			nstate = next_state(state.depth + 1,
-				((t_ms_edge *)data->chart->adjacency_list[state.node]->contents + i)->finish, state.rule);
+			nstate = next_state(state.depth + 1, (item + i)->finish, state.rule);
 			if (ms_search_core(tree, data, nstate) > 0)
 			{
 				set_subtree(&subtree, symbol->name, state.node, nstate.node);
@@ -116,11 +117,13 @@ int	fill_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 {
 	int				i;
 	t_ms_edge		*edge;
+	t_darray		*edges;
 
 	i = -1;
-	while (++i < data->chart->adjacency_list[parse_tree->start]->size)
+	edges =	get_edges(data->chart, parse_tree->start);
+	while (++i < edges->size)
 	{
-		edge = ((t_ms_edge *)data->chart->adjacency_list[parse_tree->start]->contents + i);
+		edge = (t_ms_edge *)edges->contents + i;
 		if (edge->finish == parse_tree->end && strcmp(parse_tree->rule_name, data->grammar->rules[edge->rule]->name) == 0)
 			if (ms_search(parse_tree, data, edge->rule) < 0)
 				return (-1);

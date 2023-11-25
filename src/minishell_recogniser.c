@@ -112,13 +112,11 @@ int	earley_scan(t_darray *sets, t_ms_symbol *symbol, int state_id, int item_idx,
 	return (0);
 }
 
-int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, int n_sets, t_darray *tokens)
+int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
 {
-	(void)n_sets;
 	int				i;
 	int				j;
 	t_earley_item	earley_item;
-	//t_earley_item	*items;
 	t_ms_symbol		*symbol;
 	t_earley_set	*set;
 
@@ -143,7 +141,6 @@ int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, int n_sets, t_darr
 		set = ft_darray_get(sets, i);
 		while (++j < set->items->size)
 		{
-			//items = (t_earley_item *)sets[i]->items->contents;
 			symbol = ms_next_symbol(grammar, ft_darray_get(set->items, j));
 			if (symbol->symbol_type == MS_NON_TERMINAL_SYMBOL)
 				earley_predict(sets, grammar, symbol, i);

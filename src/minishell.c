@@ -12,7 +12,7 @@
 
 # include "minishell.h"
 
-int	print_earley(t_darray *sets, t_ms_grammar *grammar, int size)
+int	print_earley(t_earley_set **sets, t_ms_grammar *grammar, int size)
 {
 	int				i;
 	int				j;
@@ -24,7 +24,7 @@ int	print_earley(t_darray *sets, t_ms_grammar *grammar, int size)
 	while (++i < size)
 	{
 		j = -1;
-		set = ft_darray_get(sets, i);
+		set = sets[i];
 		printf("=================(%d)==================\n\n", i);
 		while (++j < set->items->size)
 		{
@@ -45,20 +45,33 @@ int	print_earley(t_darray *sets, t_ms_grammar *grammar, int size)
 	return (0);
 }
 
-int	reverse_earley(t_earley_set **sets, t_earley_set **reversed, int size)
+int	reverse_earley(t_darray *sets, t_ms_grammar *grammar)
 {
 	int				i;
 	int				j;
 	int				k;
 	t_earley_item	*item;
+    t_earley_set    *set;
+	t_earley_set	**reversed;
 
 	i = -1;
-	while (++i < size)
+	reversed = malloc(sizeof(t_earley_set *) * (sets->size));
+	ft_bzero(reversed, sets->size);
+	while (++i < sets->size)
+	{
+		reversed[i] = malloc(sizeof(t_earley_set));
+		reversed[i]->items = malloc(sizeof(t_darray));
+		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), sets->size);
+	}
+    item = malloc(sizeof(t_earley_item));
+	i = -1;
+	while (++i < sets->size)
 	{
 		j = -1;
-		while (++j < sets[i]->items->size)
+        set = ft_darray_get(sets, i);
+		while (++j < set->items->size)
 		{
-			item = (t_earley_item *)sets[i]->items->contents + j;
+            ft_memcpy(item, ft_darray_get(set->items, j), sizeof(t_earley_item));
 			if (item->completed)
 			{
 				k = item->start;
@@ -68,6 +81,7 @@ int	reverse_earley(t_earley_set **sets, t_earley_set **reversed, int size)
 		}
 		reversed[i]->size = j;
 	}
+	print_earley(reversed, grammar, sets->size);
 	return (0);
 }
 
@@ -130,13 +144,15 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 	int				end;
 	t_ms_edge		*edge;
 	t_ms_edge		*longest;
+	t_darray		*edges;
 
 	end = 0;
-	edge = ((t_ms_edge *)data->chart->adjacency_list[tree->start]->contents + end);
+	edges = get_edges(data->chart, tree->start);
+	edge = ((t_ms_edge *)edges->contents + end);
 	longest = edge;
-	while (++end < data->chart->adjacency_list[tree->start]->size)
+	while (++end < edges->size)
 	{
-		edge = ((t_ms_edge *)data->chart->adjacency_list[tree->start]->contents + end);
+		edge = ((t_ms_edge *)edges->contents + end);
 		if (edge->finish >= longest->finish)
 			longest = edge;
 	}
@@ -173,7 +189,6 @@ int	main(int ac, char **av, char **env)
 	if (ac != 2)
 		return (1);
 	printf("INPUT: \"%s\"\n", av[1]);
-
 	if (ft_darray_init(&tokens, sizeof(t_token), 20) == -1)
 		return (1);
 	info.reserved_double = RESERVED_DOUBLE;
@@ -184,10 +199,7 @@ int	main(int ac, char **av, char **env)
 	size = tokens.size;
 	//todo: store sets into dynamic array.
 	t_darray		*sets = malloc(sizeof(t_darray));
-	t_earley_set	**reversed = malloc(sizeof(t_earley_set *) * (tokens.size));
 
-	//ft_bzero(sets, tokens.size);
-	ft_bzero(reversed, tokens.size);
 	t_ms_grammar	grammar;
 	t_graph			graph;
 	t_parse_tree	tree;
@@ -201,21 +213,13 @@ int	main(int ac, char **av, char **env)
 	//printf("\n");
 	ft_darray_init(sets, sizeof(t_darray), size);
 	while (++i < tokens.size)
-	{
 		add_earley_set(sets, size);
-		//sets[i] = malloc(sizeof(t_earley_set));
-		reversed[i] = malloc(sizeof(t_earley_set));
-		//sets[i]->items = malloc(sizeof(t_darray));
-		reversed[i]->items = malloc(sizeof(t_darray));
-		//ft_darray_init(sets[i]->items, sizeof(t_earley_item), size + 1);
-		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), size + 1);
-	}
-	build_earley_items(sets, &grammar, size, &tokens);
-	print_earley(sets, &grammar, size);
+	build_earley_items(sets, &grammar, &tokens);
+	//print_earley(sets, &grammar, size);
 	build_chart(sets, &graph, size);
 	//todo: interrupt the program if we haven't reached the last
 	//state.
-	//reverse_earley(sets, reversed, size);
+	reverse_earley(sets, &grammar);
 	//print_earley(reversed, &grammar, size);
 	data.chart = &graph;
 	data.grammar = &grammar;
