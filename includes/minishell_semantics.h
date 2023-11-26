@@ -1,6 +1,5 @@
 #ifndef MINISHELL_SEMANTICS_H
 # define MINISHELL_SEMANTICS_H
-
 # include "minishell.h"
 
 int			flatten_tree(t_parse_tree *root, t_stack *stack);

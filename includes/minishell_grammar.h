@@ -15,6 +15,8 @@ typedef struct	s_ms_symbol
 	int			symbol_type;
 	int			rule;
 	int			skip;
+	t_darray	*earley_sets;
+	t_darray	*tokens;
 	int			(*match)(struct s_ms_symbol*, t_token *);
 }				t_ms_symbol;
 

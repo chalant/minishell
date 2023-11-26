@@ -32,7 +32,7 @@ int	earley_safe_append(t_earley_set *set, t_earley_item *item)
 		if (current_item->next == item->next
 			&& current_item->rule == item->rule
 			&& current_item->start == item->start)
-				return (0);
+			return (0);
 	}
 	if (ft_darray_append(set->items, item) < 0)
 		return (-1);
@@ -44,11 +44,14 @@ int	earley_complete(t_darray *sets, t_ms_grammar *grammar, int j, int state_id)
 	t_earley_item	new_item;
 	t_earley_item	*old_item;
 	t_earley_item	*item;
+	t_earley_set	*set;
 	int				i;
 
 	i = -1;
-	item = ft_darray_get(((t_earley_set *)(ft_darray_get(sets, state_id)))->items, j);
-	while (++i < ((t_earley_set *)(ft_darray_get(sets, item->start)))->items->size)
+	set = ft_darray_get(sets, state_id);
+	item = ft_darray_get(set->items, j);
+	while (++i < ((t_earley_set *)(ft_darray_get(sets,
+				item->start)))->items->size)
 	{
 		item->completed = 1;
 		old_item = ft_darray_get(((t_earley_set *)(ft_darray_get(sets, item->start)))->items, i);
@@ -61,13 +64,14 @@ int	earley_complete(t_darray *sets, t_ms_grammar *grammar, int j, int state_id)
 			if (earley_safe_append(ft_darray_get(sets, state_id), &new_item) < 0)
 				return (-1);
 		}
-		item = ft_darray_get(((t_earley_set *)(ft_darray_get(sets, state_id)))->items, j);
+		item = ft_darray_get(set->items, j);
 	}
 	return (0);
 }
 
 //adds an item to the set
-int	earley_predict(t_darray *sets, t_ms_grammar *grammar, t_ms_symbol *symbol, int state_id)
+int	earley_predict(t_darray *sets, t_ms_grammar *grammar,
+	t_ms_symbol *symbol, int state_id)
 {
 	int				i;
 	t_earley_item	item;
@@ -91,7 +95,8 @@ int	earley_predict(t_darray *sets, t_ms_grammar *grammar, t_ms_symbol *symbol, i
 }
 
 //add items to the next state if they match
-int	earley_scan(t_darray *sets, t_ms_symbol *symbol, int state_id, int item_idx, t_darray *tokens)
+int	earley_scan(t_darray *sets, t_ms_symbol *symbol,
+	int state_id, int item_idx, t_darray *tokens)
 {
 	t_earley_item	new_item;
 	t_earley_item	*item;
@@ -112,6 +117,26 @@ int	earley_scan(t_darray *sets, t_ms_symbol *symbol, int state_id, int item_idx,
 	return (0);
 }
 
+int	set_parsing_info(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
+{
+	int			i;
+	int			j;
+	t_ms_symbol *symbol;
+
+	i = -1;
+	while (++i < grammar->length)
+	{
+		j = -1;
+		while (++j < grammar->rules[i]->length)
+		{
+			symbol = grammar->rules[i]->symbols[j];
+			symbol->earley_sets = sets;
+			symbol->tokens = tokens;
+		}
+	}
+	return (1);
+}
+
 int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
 {
 	int				i;
@@ -122,6 +147,7 @@ int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
 
 	i = -1;
 	set = ft_darray_get(sets, 0);
+	set_parsing_info(sets, grammar, tokens);
 	while (++i < grammar->length)
 	{
 		if (strcmp(grammar->start_rule, grammar->rules[i]->name) == 0)
@@ -150,6 +176,7 @@ int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
 				earley_complete(sets, grammar, j, i);
 			else
 				printf("Illegal rule");
+			set = ft_darray_get(sets, i);
 		}
 	}
 	return (0);

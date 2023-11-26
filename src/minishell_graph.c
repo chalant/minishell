@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell_graph.h"
 #include "minishell.h"
+#include "minishell_graph.h"
 
 int	init_graph(t_graph *graph, int num_vertices, int type_size)
 {
@@ -49,7 +49,7 @@ t_darray	*get_edges(t_graph *graph, int index)
 	return (ft_darray_get(graph->adjacency_list, index));
 }
 
-int	add_edge(t_graph *graph, int start, void* data)
+int	add_edge(t_graph *graph, int start, void *data)
 {
 	t_darray	*edges;
 

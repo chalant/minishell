@@ -13,20 +13,23 @@
 #ifndef MINISHELL_COMMANDS_H
 # define MINISHELL_COMMANDS_H
 
-#include <fcntl.h>
-#include "minishell.h"
+# include <fcntl.h>
+# include "minishell.h"
 
-#define MS_PIPE 1 << 0
-#define MS_OR 1 << 1
-#define MS_AND 1 << 2
-#define	MS_OPERATOR 1 << 3
-#define MS_OPERAND 1 << 4
-#define MS_BUILTIN 1 << 5
-#define MS_FORKED 1 << 6
+# define MS_PIPE 1 << 0
+# define MS_OR 1 << 1
+# define MS_AND 1 << 2
+# define	MS_OPERATOR 1 << 3
+# define MS_OPERAND 1 << 4
+# define MS_BUILTIN 1 << 5
+# define MS_FORKED 1 << 6
 
-#define MS_HEREDOC 1 << 0
-#define MS_READ 1 << 1
-#define MS_WRITE 1 << 2
+# define MS_HEREDOC 1 << 0
+# define MS_READ 1 << 1
+# define MS_WRITE 1 << 2
+
+//todo: this might not work on mac.
+# define MS_HEREDOC_PATH "/tmp/ms_heredoc"
 
 typedef struct	s_redirection
 {

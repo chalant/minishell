@@ -34,20 +34,16 @@ void	copy_pipe(int src_pipe[2], int dest_pipe[2])
 
 int	redirect_in(t_command *command)
 {
-	// int	fd;
-
-	// // todo: handle file errors
 	// // todo: dup file errors
-	// fd = open(command->input->file_path, command->input->file_flags, 0666);
-	dup2(command->input, STDIN_FILENO);
-	//close(command->input);
+	if (dup2(command->input, STDIN_FILENO) < 0)
+		return (1);
 	return (0);
 }
 
 int	redirect_out(t_command *command)
 {
-	dup2(command->output, STDOUT_FILENO);
-	//close(command->output);
+	if (dup2(command->output, STDOUT_FILENO) < 0)
+		return (1);
 	return (0);
 }
 

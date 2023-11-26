@@ -40,11 +40,6 @@ int make_paths(char **paths)
 	{
 		tmp = paths[i];
 		paths[i] = ft_strjoin(tmp, "/");
-		if (!paths[i])
-		{
-			delete_strings(paths);
-            return (-1);
-		}
 		free(tmp);
 		i++;
 	}

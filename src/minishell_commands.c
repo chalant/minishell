@@ -46,7 +46,8 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 	return (1);
 }
 
-static int	create_command(t_parse_tree *node, t_stack *stack, t_command *command)
+static int	create_command(t_parse_tree *node, t_stack *stack,
+	t_command *command)
 {
 	int				i;
 	t_parse_tree	*element_type;
@@ -55,6 +56,7 @@ static int	create_command(t_parse_tree *node, t_stack *stack, t_command *command
 		return (0);
 	if (strcmp(node->rule_name, "builtin") == 0)
 		command->command_flags |= MS_BUILTIN;
+	//todo: need an error when the command is not found.
 	command->command_name = get_command(*get_word(node));
 	node = ft_darray_get(node->children, 1);
 	if (node->children)
@@ -101,7 +103,8 @@ int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 		return (-1);
 	set_redirections(&command, ft_darray_get(node->children, 0));
 	if (node->children->size >= 2)
-		return (create_command(ft_darray_get(node->children, 1), stack, &command));
+		return (create_command(ft_darray_get(node->children, 1),
+				stack, &command));
 	create_files(&command, command.redirections);
 	return (ft_stack_push(stack, &command));
 }

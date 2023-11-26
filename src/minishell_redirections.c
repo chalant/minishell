@@ -25,7 +25,11 @@ static int	set_redirection_flags(t_redirection *redirection, char *rule_name)
 		redirection->redirection_flags |= MS_READ;
 	}
 	else if (strcmp(rule_name, "<<") == 0)
+	{
 		redirection->redirection_flags |= MS_HEREDOC;
+		redirection->redirection_flags |= MS_READ;
+		redirection->file_flags = O_RDONLY;
+	}
 	else if (strcmp(rule_name, ">>") == 0)
 	{
 		redirection->file_flags = O_CREAT | O_APPEND | O_RDWR;
@@ -75,29 +79,64 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	return (0);
 }
 
+int	ms_heredoc(t_darray *redirections)
+{
+	int				i;
+	t_redirection	*redirection;
+
+	i = -1;
+	while (++i < redirections->size)
+	{
+		redirection = ft_darray_get(redirections, i);
+		if (redirection->redirection_flags & MS_HEREDOC)
+			ms_heredoc_prompt(redirection);
+	}
+}
+
+int	ms_heredoc_prompt(t_redirection *redirection)
+{
+	char	*line;
+	int		fd;
+
+	fd = open(MS_HEREDOC_PATH,
+			O_TRUNC | O_CREAT | O_RDWR, redirection->mode);
+	line = readline("> ");
+	while (line && strcmp(line, redirection->file_path) != 0)
+	{
+		
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+		free(line);
+		line = readline("> ");
+	}
+	close(fd);
+	return (1);
+}
+
 int	create_files(t_command *command, t_darray *redirections)
 {
 	int				i;
 	int				fd;
 	t_redirection	*redirection;
 
+	ms_heredoc(redirections);
 	i = redirections->size;
 	while (--i > -1)
 	{
 		redirection = ft_darray_get(redirections, i);
+		//todo: handle errors
 		if (!(redirection->redirection_flags & MS_HEREDOC))
-		{
-			//todo: handle errors
 			fd = open(redirection->file_path, redirection->file_flags, redirection->mode);
-			if (fd < 0)
-				return (-1);
-			if (redirection->redirection_flags & MS_READ && !command->input)
-				command->input = fd;
-			else if (redirection->redirection_flags & MS_WRITE && !command->output)
-				command->output = fd;
-			else
-				close(fd);
-		}
+		else
+			fd = open(MS_HEREDOC_PATH, redirection->file_flags, redirection->mode);
+		if (fd < 0)
+			return (-1);
+		if (redirection->redirection_flags & MS_READ && !command->input)
+			command->input = fd;
+		else if (redirection->redirection_flags & MS_WRITE && !command->output)
+			command->output = fd;
+		else
+			close(fd);
 	}
 	return (1);
 }

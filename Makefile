@@ -62,15 +62,16 @@ LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 C_FLAGS = -Wall -Wextra -Werror -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
-# C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
+#C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 READLINE = -lreadline -lhistory -L/Users/bvercaem/homebrew/opt/readline/lib
+#READLINE = -lreadline -lhistory
 
 all:
 	mkdir -p $(OBJ_DIR)
 	make $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	cc $(C_FLAGS) $(OBJ) $(LIBFT) -o $(NAME)
+	cc $(C_FLAGS) $(OBJ) $(LIBFT) -o $(NAME) $(READLINE)
 
 $(LIBFT):
 	make -C $(LIBFT_DIR)

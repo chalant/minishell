@@ -39,13 +39,28 @@ char *ms_strcdup(const char *src, char c)
 
 int	ms_prompt(t_ms_symbol *symbol, t_token *token)
 {
-	(void)symbol;
+	int				i;
+	int				init_size;
+	char			*line;
+	t_token_info	info;
+	t_token			*tok;
 
-	if (!token->string)
+	//only accept when the token is null (empty), which means there's nothing
+	//after.
+	if (token->string)
 		return (0);
-	printf("Matcing space %s\n", symbol->name);
-	symbol->skip = 1;
-	return (ft_strncmp(token->string, " ", ft_strlen(token->string)) == 0);
+	ms_token_info(&info,
+		RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
+	line = readline("> ");
+	//todo: free the last token.
+	symbol->tokens->size -= 1;
+	init_size = symbol->tokens->size;
+	ms_tokeniser(line, symbol->tokens, &info);
+	i = -1;
+	while (++i < symbol->tokens->size - init_size)
+		add_earley_set(symbol->earley_sets, 5);
+	free(line);
+	return (1);
 }
 
 int	handle_special(t_ms_symbol *symbol, char *input)
@@ -59,10 +74,7 @@ int	handle_special(t_ms_symbol *symbol, char *input)
 		set_symbol(symbol, "<NL>", ms_match_newline);
 	//todo: prompt and call tokenizer here.
 	else if (*ptr == MS_PROMPTING)
-	{
-		printf("PROMPT!\n");
-		set_symbol(symbol, "<>", ms_prompt);
-	}
+		set_symbol(symbol, "<PROMPT>", ms_prompt);
 	else if (*ptr == MS_INTEGER)
 		set_symbol(symbol, "<NUMBER>", ms_match_integer);
 	else if (*ptr == MS_EQUAL)

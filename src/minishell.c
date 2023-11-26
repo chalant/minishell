@@ -148,7 +148,7 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 
 	end = 0;
 	edges = get_edges(data->chart, tree->start);
-	edge = ((t_ms_edge *)edges->contents + end);
+	edge = (t_ms_edge *)edges->contents + end;
 	longest = edge;
 	while (++end < edges->size)
 	{
@@ -216,7 +216,7 @@ int	main(int ac, char **av, char **env)
 		add_earley_set(sets, size);
 	build_earley_items(sets, &grammar, &tokens);
 	//print_earley(sets, &grammar, size);
-	build_chart(sets, &graph, size);
+	build_chart(sets, &graph, tokens.size);
 	//todo: interrupt the program if we haven't reached the last
 	//state.
 	reverse_earley(sets, &grammar);
