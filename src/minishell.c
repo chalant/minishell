@@ -183,7 +183,7 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	tree->terminal = 0;
 	tree->children = NULL;
 	ms_start_rule(tree, data);
-	if (build_parse_tree(tree, data))
+	if (build_parse_tree(tree, data) < 0)
 		return (-1);
 	//todo: remove this since it is for debugging.
 	print_parse_tree(tree, 0);
@@ -266,23 +266,32 @@ int	main(int ac, char **av, char **env)
 	int					status;
 	t_parsing_data		data;
 	t_parse_tree		tree;
+	char				*line;
 
 	(void)ac;
 	(void)av;
 	(void)env;
-	if (ac != 2)
-		return (1);
-	printf("INPUT: \"%s\"\n", av[1]);
+	// if (ac != 2)
+	// 	return (1);
+	status = 0;
+	//printf("INPUT: \"%s\"\n", av[1]);
 	if (init_parsing_data(&data) < 0)
 		return (1);
 	//set the grammar only once.
 	set_minishell_grammar(data.grammar);
-	// this should be ran at each loop.
-	tokenize_input(&data, av[1]);
-	//print_grammar(&grammar);
-	recognize_input(&data);
-	parse_input(&data, &tree);
-	status = execute(&tree);
+	line = readline(MS_PROMPT_MSG);
+	while (line)
+	{
+		// this should be ran at each loop.
+		tokenize_input(&data, line);
+		//print_grammar(&grammar);
+		recognize_input(&data);
+		parse_input(&data, &tree);
+		status = execute(&tree);
+		free(line);
+		line = readline(MS_PROMPT_MSG);
+	}
+	//ms_flush_exit(&data, 0);
 	//todo: free data and tree; -> note: no need to free the grammar at each loop.
 	return (status);
 }

@@ -54,6 +54,7 @@ static int	create_command(t_parse_tree *node, t_stack *stack,
 
 	if (!node->rule_name)
 		return (0);
+	//printf("RULE NAME! %s\n", node->rule_name);
 	if (strcmp(node->rule_name, "builtin") == 0)
 		command->command_flags |= MS_BUILTIN;
 	//todo: need an error when the command is not found.
@@ -65,10 +66,14 @@ static int	create_command(t_parse_tree *node, t_stack *stack,
 		while (++i < node->children->size)
 		{
 			element_type = ft_darray_get(node->children, i);
-			if (strcmp(element_type->rule_name, "command_argument") == 0)
-				set_arguments(command, element_type);
-			if (strcmp(element_type->rule_name, "redirection_list") == 0)
-				set_redirections(command, element_type);
+			if (element_type->rule_name)
+			{
+				printf("INTEGER %i %s\n", i, element_type->rule_name);
+				if (strcmp(element_type->rule_name, "command_argument") == 0)
+					set_arguments(command, element_type);
+				if (strcmp(element_type->rule_name, "redirection_list") == 0)
+					set_redirections(command, element_type);
+			}
 		}
 	}
 	if (command->redirections)
