@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/11/20 14:07:48 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/27 20:15:24 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ char				*ft_itoa(int n);
 char				*ft_substr(char const *s, unsigned int start, size_t len);
 
 char				**ft_split(char const *s, char c);
+char				**ft_setsplit(char *str, char *charset);
 char				**ft_clear_ds(char **s);
 
 size_t				ft_strlcat(char *dst, const char *src, size_t size);

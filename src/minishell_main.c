@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/24 16:59:14 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/27 20:21:58 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ if (!ft_strncmp(line, "sleep", 6))
 	return (ms_add_herstory(line));
 }
 	ft_darray_init(&tokens, sizeof(t_token), 20);
-	if (ms_tokeniser(line, &tokens, ms_token_info(&info,
+	if (ms_tokeniser(&line, &tokens, ms_token_info(&info,
 		RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP)))
 		{
 			ft_darray_delete(&tokens, ms_clear_token);
@@ -114,7 +114,7 @@ if (!ft_strncmp(line, "sleep", 6))
 // int i = 0;
 // while (i < tokens.size)
 // {
-// 	printf("%s\n", (((t_token *) tokens.contents) + i)->string);
+// 	printf("|%s|\n", (((t_token *) tokens.contents) + i)->string);
 // 	i++;
 // }
 	arg = ms_convert_tokens_arg(&tokens);
@@ -155,25 +155,29 @@ void	ms_kill_pid(int sig)
 	}
 }
 
+static void	ms_set_signals(t_shellshock *data)
+{
+	extern int			rl_catch_signals;
+
+	rl_catch_signals = 0;
+	ft_bzero(&(data->act_sigint), sizeof(struct sigaction));
+	ft_bzero(&(data->act_sigquit), sizeof(struct sigaction));
+	data->act_sigint.__sigaction_u.__sa_handler = ms_new_prompt;
+	data->act_sigquit.__sigaction_u.__sa_handler = ms_kill_pid;
+	sigaction(SIGINT, &(data->act_sigint), NULL);
+	sigaction(SIGQUIT, &(data->act_sigquit), NULL);
+}
+
 int	main(void)
 {
 	t_shellshock		data;
 	char				*line;
-	extern int			rl_catch_signals;
-	struct sigaction	act_sigint;
-	struct sigaction	act_sigquit;
 
-	rl_catch_signals = 0;
 	data.env_excess = 0;
 	if (ms_envcpy(&data))
 		return (1);
 // malloc fail
-	ft_bzero(&act_sigint, sizeof(struct sigaction));
-	ft_bzero(&act_sigquit, sizeof(struct sigaction));
-	act_sigint.__sigaction_u.__sa_handler = ms_new_prompt;
-	act_sigquit.__sigaction_u.__sa_handler = ms_kill_pid;
-	sigaction(SIGINT, &act_sigint, NULL);
-	sigaction(SIGQUIT, &act_sigquit, NULL);
+	ms_set_signals(&data);
 	line = readline(MS_PROMPT_MSG);
 	while (line)
 	{

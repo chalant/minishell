@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_expand_var.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/27 13:50:06 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/27 20:21:14 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ static char	**ms_handle_getenv(char *str, int *qt)
 		return (ret);
 	}
 	if (!*qt && value)
-		return (ft_split(value, ' '));
+		return (ft_setsplit(value, " \n"));
 	ret = malloc(sizeof(char *) * 2);
 	if (!ret)
 		return (NULL);
