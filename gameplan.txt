@@ -14,3 +14,6 @@ Parser:
 	- quote removal (include empty strings ("" and ''))
 	- var expansion
 
+Notes:
+	if the a special character is the result of an expansion, should we
+	mark it as not reserved ? that way the recogniser will exclude them?
