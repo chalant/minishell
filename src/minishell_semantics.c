@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/23 17:22:42 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/27 15:42:57 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,6 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *node)
 	t_stack		commands;
 	t_command	*command;
 
-	if (ft_darray_init(command_array, sizeof(t_command), 10) < 0)
-		return (NULL);
 	ft_stack_init(&commands, command_array);
 	flatten_tree(node, &commands);
 	command = (t_command *)ft_stack_pop(&commands);

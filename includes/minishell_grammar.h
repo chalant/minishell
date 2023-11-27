@@ -47,8 +47,8 @@ int			handle_terminal_symbol(t_ms_symbol *symbol, char *input);
 
 int			set_grammar(t_ms_grammar *grammar, char **definition);
 int			print_grammar(t_ms_grammar *grammar);
+int			set_minishell_grammar(t_ms_grammar *grammar);
 
 char		**get_test_definition(void);
-char		**get_minishell_definition(void);
 
 #endif

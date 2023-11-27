@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 17:34:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/27 16:38:23 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,80 +161,128 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 	return (0);
 }
 
-int	print_execution_stack(t_darray *stack)
+int	init_parsing_data(t_parsing_data *data)
 {
-	int	i;
-
-	printf("[ ");
-	i = -1;
-	while (++i < stack->size - 1)
-		printf("%s, ", ((t_command *)ft_darray_get(stack, i))->command_name);
-	printf("%s ", ((t_command *)ft_darray_get(stack, i))->command_name);
-	printf("]\n");
+	data->tokens = malloc(sizeof(t_darray));
+	if (!data->tokens)
+		return (-1);
+	data->chart = malloc(sizeof(t_graph));
+	if (!data->chart)
+		return (-1);
+	data->grammar = malloc(sizeof(t_ms_grammar));
+	if (!data->grammar)
+		return (-1);
 	return (1);
 }
 
-int	main(int ac, char **av, char **env)
+int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 {
-	(void)ac;
-	(void)av;
-	(void)env;
-	int		i = -1;
-	int					size;
-	char				**grammar_definition;
-	t_token_info		info;
-	t_darray			tokens;
-	t_darray			command_array;
+	tree->start = 0;
+	tree->rule_name = (char *)data->grammar->start_rule;
+	tree->end = data->input_length - 1;
+	tree->terminal = 0;
+	tree->children = NULL;
+	ms_start_rule(tree, data);
+	if (build_parse_tree(tree, data))
+		return (-1);
+	//todo: remove this since it is for debugging.
+	print_parse_tree(tree, 0);
+	return (0);
+}
 
-	if (ac != 2)
-		return (1);
-	printf("INPUT: \"%s\"\n", av[1]);
-	if (ft_darray_init(&tokens, sizeof(t_token), 20) == -1)
-		return (1);
+int	tokenize_input(t_parsing_data *data, const char *input)
+{
+	t_token_info		info;
+
+	if (ft_darray_init(data->tokens, sizeof(t_token), 20) == -1)
+		return (-1);
 	info.reserved_double = RESERVED_DOUBLE;
 	info.reserved_single = RESERVED_SINGLE;
 	info.reserved_skip = RESERVED_SKIP;
-	ms_tokeniser(av[1], &tokens, &info);
-
-	size = tokens.size;
-	//todo: store sets into dynamic array.
-	t_darray		*sets = malloc(sizeof(t_darray));
-
-	t_ms_grammar	grammar;
-	t_graph			graph;
-	t_parse_tree	tree;
-	t_command		*command;
-	//todo: this should store everything.
-	t_parsing_data	data;
-
-	grammar_definition = get_minishell_definition();
-	set_grammar(&grammar, grammar_definition);
-	//print_grammar(&grammar);
-	//printf("\n");
-	ft_darray_init(sets, sizeof(t_darray), size);
-	while (++i < tokens.size)
-		add_earley_set(sets, size);
-	build_earley_items(sets, &grammar, &tokens);
-	//print_earley(sets, &grammar, size);
-	build_chart(sets, &graph, tokens.size);
-	//todo: interrupt the program if we haven't reached the last
-	//state.
-	reverse_earley(sets, &grammar);
-	//print_earley(reversed, &grammar, size);
-	data.chart = &graph;
-	data.grammar = &grammar;
-	data.tokens = &tokens;
-	data.input_length = tokens.size;
-	data.chart_size = tokens.size;
-	tree.start = 0;
-	tree.rule_name = (char *)data.grammar->start_rule;
-	tree.end = data.input_length - 1;
-	tree.terminal = 0;
-	tree.children = NULL;
-	ms_start_rule(&tree, &data);
-	build_parse_tree(&tree, &data);
-	print_parse_tree(&tree, 0);
-	command = build_command(&command_array, &tree);
-	minishell_execute(command);
+	if (ms_tokeniser(input, data->tokens, &info) > 1)
+	{
+		//todo: free tokens
+		return (-1);
+	}
 	return (0);
+}
+
+int	recognize_input(t_parsing_data *data)
+{
+	int				i;
+	t_darray		*sets;
+
+	sets = malloc(sizeof(t_darray));
+	if (!sets)
+		return (-1);
+	if (ft_darray_init(sets, sizeof(t_darray), data->tokens->size) < 0)
+		return (-1);
+	i = -1;
+	while (++i < data->tokens->size)
+		add_earley_set(sets, data->tokens->size);
+	if (build_earley_items(sets, data->grammar, data->tokens) < 0)
+		return (-1);
+	//todo: remove the reverse_earley since it is for debugging
+	reverse_earley(sets, data->grammar);
+	//todo: interrupt the program if we haven't reached the last
+	//state and print where the error occured
+	if (build_chart(sets, data->chart, data->tokens->size) < 0)
+		return (-1);
+	data->input_length = data->tokens->size;
+	data->chart_size = data->tokens->size;
+	//todo: free sets.
+	return (0);
+}
+
+int	execute(t_parse_tree *tree)
+{
+	t_darray	command_array;
+	t_command	*command;
+
+	if (ft_darray_init(&command_array, sizeof(t_command), 10) < 0)
+		return (1);
+	command = build_command(&command_array, tree);
+	if (!command)
+	{
+		//todo: free command_array.
+		return (1);
+	}
+	return (minishell_execute(command));
+}
+
+// int	free_on_error(t_parsing_data *data, t_parse_tree *tree)
+// {
+// 	return (1);
+// }
+
+// int	free_on_success(t_parsing_data *data, t_parse_tree *tree, int status)
+// {
+	
+// 	return (1);
+// }
+
+int	main(int ac, char **av, char **env)
+{
+	int					status;
+	t_parsing_data		data;
+	t_parse_tree		tree;
+
+	(void)ac;
+	(void)av;
+	(void)env;
+	if (ac != 2)
+		return (1);
+	printf("INPUT: \"%s\"\n", av[1]);
+	if (init_parsing_data(&data) < 0)
+		return (1);
+	//set the grammar only once.
+	set_minishell_grammar(data.grammar);
+	// this should be ran at each loop.
+	tokenize_input(&data, av[1]);
+	//print_grammar(&grammar);
+	recognize_input(&data);
+	parse_input(&data, &tree);
+	status = execute(&tree);
+	//todo: free data and tree; -> note: no need to free the grammar at each loop.
+	return (status);
 }

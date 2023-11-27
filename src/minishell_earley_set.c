@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 16:59:20 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 17:46:13 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/27 11:33:37 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 int add_earley_set(t_darray *sets, int size)
 {
     t_earley_set    set;
-	t_earley_set	*mset;
 
     set.items = malloc(sizeof(t_darray));
     if (ft_darray_init(set.items, sizeof(t_earley_item), size) < 0)

@@ -6,7 +6,7 @@
 #    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/11/24 16:36:21 by ychalant         ###   ########.fr        #
+#    Updated: 2023/11/27 11:59:19 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,7 +63,7 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 C_FLAGS = -Wall -Wextra -Werror -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 #C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
-READLINE = -lreadline -lhistory -L/Users/bvercaem/homebrew/opt/readline/lib
+READLINE = -lreadline -lhistory -L/Users/$(USER)/homebrew/opt/readline/lib
 #READLINE = -lreadline -lhistory
 
 all:

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/23 17:19:38 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/27 11:33:19 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,20 +79,6 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	return (0);
 }
 
-int	ms_heredoc(t_darray *redirections)
-{
-	int				i;
-	t_redirection	*redirection;
-
-	i = -1;
-	while (++i < redirections->size)
-	{
-		redirection = ft_darray_get(redirections, i);
-		if (redirection->redirection_flags & MS_HEREDOC)
-			ms_heredoc_prompt(redirection);
-	}
-}
-
 int	ms_heredoc_prompt(t_redirection *redirection)
 {
 	char	*line;
@@ -110,6 +96,21 @@ int	ms_heredoc_prompt(t_redirection *redirection)
 		line = readline("> ");
 	}
 	close(fd);
+	return (1);
+}
+
+int	ms_heredoc(t_darray *redirections)
+{
+	int				i;
+	t_redirection	*redirection;
+
+	i = -1;
+	while (++i < redirections->size)
+	{
+		redirection = ft_darray_get(redirections, i);
+		if (redirection->redirection_flags & MS_HEREDOC)
+			ms_heredoc_prompt(redirection);
+	}
 	return (1);
 }
 

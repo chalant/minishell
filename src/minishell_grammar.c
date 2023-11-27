@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/20 16:53:44 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/27 14:56:25 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,16 @@ char	**get_test_definition(void)
 	return (ft_split(g_test_grammar, '\n'));
 }
 
-char	**get_minishell_definition(void)
+int	set_minishell_grammar(t_ms_grammar *grammar)
 {
-	return (ft_reverse_strings(ft_split(g_minishell_grammar, '\n')));
+	char	**definition;
+
+	definition = ft_reverse_strings(ft_split(g_minishell_grammar, '\n'));
+	if (!definition)
+		return (-1);
+	return (set_grammar(grammar, definition));
 }
 
-//todo use t_darray for splits, symbols and rules.
 int	set_grammar(t_ms_grammar *grammar, char **definition)
 {
 	int	i;

@@ -38,11 +38,11 @@ typedef	struct	s_ms_chart
 
 typedef struct	s_parsing_data
 {
+	int				input_length;
+	int				chart_size;
 	t_ms_grammar	*grammar;
 	t_graph			*chart;
 	t_darray		*tokens;
-	int				input_length;
-	int				chart_size;
 }				t_parsing_data;
 
 typedef struct	s_parser_state
@@ -54,12 +54,12 @@ typedef struct	s_parser_state
 
 typedef struct	s_parse_tree
 {
-	char		*rule_name;
 	int			start_rule;
 	int			rule;
 	int			terminal;
 	int			start;
 	int			end;
+	char		*rule_name;
 	t_darray	*children;
 }				t_parse_tree;
 

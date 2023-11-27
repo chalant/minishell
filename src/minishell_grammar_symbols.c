@@ -43,7 +43,6 @@ int	ms_prompt(t_ms_symbol *symbol, t_token *token)
 	int				init_size;
 	char			*line;
 	t_token_info	info;
-	t_token			*tok;
 
 	//only accept when the token is null (empty), which means there's nothing
 	//after.
