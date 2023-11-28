@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/27 20:39:35 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/28 17:41:18 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,9 +309,11 @@ int	main(int ac, char **av, char **env)
 		recognize_input(&data);
 		parse_input(&data, &tree);
 		status = execute(&tree);
+		add_history(line);
 		free(line);
 		line = readline(MS_PROMPT_MSG);
 	}
+	clear_history();
 	//ms_flush_exit(&data, 0);
 	//todo: free data and tree; -> note: no need to free the grammar at each loop.
 	return (status);

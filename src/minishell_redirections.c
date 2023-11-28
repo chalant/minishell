@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/27 11:33:19 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/28 17:36:34 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	set_redirection_flags(redirection, redir->rule_name);
 	//todo: maybe copy the word or set it to NULL in the tree.
 	//might be safer to copy instead.
-	redirection->file_path = *(char **)get_word(
+	redirection->file_path = *get_word(
 			ft_darray_get(tree->children, 1));
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/21 16:17:24 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/28 17:15:30 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,10 @@ int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 	(void)command;
 	(void)in_pipe;
 	(void)out_pipe;
+	// if (strcmp(command->command_name, "echo") == 0)
+	// 	ms_echo(command->arguments);
+	// else if (strcmp(command->command_name, "echo") == 0)
+	// 	ms_cd(command->data,)
 	return (0);
 }
 

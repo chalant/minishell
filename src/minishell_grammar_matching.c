@@ -34,8 +34,10 @@ int ms_match_equal(t_ms_symbol *symbol, t_token *token)
 
 	if (!token->string)
 		return (0);
+	if (!(token->flags & IS_RESERVED))
+		return (0);
 	//means it is the result of an expansion
-	// if (token->mask_exp)
+	// if (token->mask_exp && ft_strchr(token->mask_exp, '1'))
 	// 	return (0);
 	len = ft_strlen(symbol->name);
 	if (ft_strlen(token->string) != len)
@@ -62,8 +64,8 @@ int	is_builtin(t_token *token)
 		return (1);
 	else if (strcmp(token->string, "pwd") == 0)
 		return (1);
-	// else if (strcmp(token->string, "export") == 0)
-	// 	return (1);
+	else if (strcmp(token->string, "export") == 0)
+		return (1);
 	else if (strcmp(token->string, "env") == 0)
 		return (1);
 	else if (strcmp(token->string, "unset") == 0)

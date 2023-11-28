@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 16:41:19 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/28 17:44:03 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,32 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 	return (1);
 }
 
+int	set_command_elements(t_command *command, t_parse_tree *tree)
+{
+	t_redirection	redirection;
+	t_parse_tree	*node;
+
+	while (tree->children)
+	{
+		//todo: handle errors
+		node = ft_darray_get(tree->children, 0);
+		if (strcmp(node->rule_name, "redirection") == 0)
+		{
+			set_redirection(&redirection, node);
+			ft_darray_append(command->redirections, &redirection);
+		}
+		else if (strcmp(node->rule_name, "word") == 0)
+			ft_darray_append(command->arguments, get_word(node));
+		tree = ft_darray_get(tree->children, 1);
+	}
+	return (1);
+}
+
 static int	create_command(t_parse_tree *node, t_stack *stack,
 	t_command *command)
 {
-	int				i;
-	t_parse_tree	*element_type;
+	//int				i;
+	//t_parse_tree	*element_type;
 
 	if (!node->rule_name)
 		return (0);
@@ -60,21 +81,20 @@ static int	create_command(t_parse_tree *node, t_stack *stack,
 	//todo: need an error when the command is not found.
 	command->command_name = get_command(*get_word(node));
 	node = ft_darray_get(node->children, 1);
+
+	//todo: only create arguments if there is any.
+	command->arguments = malloc(sizeof(t_darray));
+	command->redirections = malloc(sizeof(t_darray));
+	if (!command->arguments)
+		return (-1);
+	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
+		return (-1);
+	if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
+		return (-1);
 	if (node->children)
 	{
-		i = -1;
-		while (++i < node->children->size)
-		{
-			element_type = ft_darray_get(node->children, i);
-			if (element_type->rule_name)
-			{
-				printf("INTEGER %i %s\n", i, element_type->rule_name);
-				if (strcmp(element_type->rule_name, "command_argument") == 0)
-					set_arguments(command, element_type);
-				if (strcmp(element_type->rule_name, "redirection_list") == 0)
-					set_redirections(command, element_type);
-			}
-		}
+		//todo: set redirections and arguments here.
+		set_command_elements(command, node);
 	}
 	if (command->redirections)
 		create_files(command, command->redirections);
