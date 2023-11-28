@@ -28,6 +28,7 @@ int	ms_match_subset(t_ms_symbol *symbol, t_token *token)
 	return (1);
 }
 
+// only works for reserved symbols (IS_RESERVED flag is the expansion check)
 int ms_match_equal(t_ms_symbol *symbol, t_token *token)
 {
 	size_t	len;
@@ -36,9 +37,6 @@ int ms_match_equal(t_ms_symbol *symbol, t_token *token)
 		return (0);
 	if (!(token->flags & IS_RESERVED))
 		return (0);
-	//means it is the result of an expansion
-	// if (token->mask_exp && ft_strchr(token->mask_exp, '1'))
-	// 	return (0);
 	len = ft_strlen(symbol->name);
 	if (ft_strlen(token->string) != len)
 		return (0);
