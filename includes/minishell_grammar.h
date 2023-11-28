@@ -36,19 +36,20 @@ typedef struct	s_ms_grammar
 	int				length;
 }				t_ms_grammar;
 
-int			ms_match_subset(t_ms_symbol *symbol, t_token *token);
-int 		ms_match_equal(t_ms_symbol *symbol, t_token *token);
-int			ms_match_integer(t_ms_symbol *symbol, t_token *token);
-int			ms_match_string(t_ms_symbol *symbol, t_token *token);
-int			ms_match_newline(t_ms_symbol *symbol, t_token *token);
+int		ms_match_subset(t_ms_symbol *symbol, t_token *token);
+int 	ms_match_equal(t_ms_symbol *symbol, t_token *token);
+int		ms_match_integer(t_ms_symbol *symbol, t_token *token);
+int		ms_match_string(t_ms_symbol *symbol, t_token *token);
+int		ms_match_newline(t_ms_symbol *symbol, t_token *token);
 
-int			add_rule(t_ms_grammar *grammar, char **rules, int i);
-int			handle_terminal_symbol(t_ms_symbol *symbol, char *input);
+int		add_rule(t_ms_grammar *grammar, char **rules, int i);
+int		handle_terminal_symbol(t_ms_symbol *symbol, char *input);
 
-int			set_grammar(t_ms_grammar *grammar, char **definition);
-int			print_grammar(t_ms_grammar *grammar);
-int			set_minishell_grammar(t_ms_grammar *grammar);
+int		set_grammar(t_ms_grammar *grammar, char **definition);
+void	delete_grammar(t_ms_grammar *grammar);
+int		print_grammar(t_ms_grammar *grammar);
+int		set_minishell_grammar(t_ms_grammar *grammar);
 
-char		**get_test_definition(void);
+char	**get_test_definition(void);
 
 #endif
