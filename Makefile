@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
+#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/11/24 16:36:21 by ychalant         ###   ########.fr        #
+#    Updated: 2023/11/27 17:26:59 by bvercaem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,9 @@ INCLUDES_FILES = minishell.h \
 				 minishell_commands.h \
 				 minishell_semantics.h
 
-SRC_FILES =	minishell.c \
+SRC_FILES =	minishell_main.c \
+			minishell.c \
+			minishell_exit.c \
 			minishell_cd.c \
 			minishell_pwd.c \
 			minishell_export.c \
@@ -61,23 +63,24 @@ NAME = minishell
 LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-#C_FLAGS = -Wall -Wextra -Werror -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
-C_FLAGS = -g -Wall -Wextra -Werror -Wno-unused-result -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
-#READLINE = -lreadline -lhistory -L/Users/bvercaem/homebrew/opt/readline/lib
-READLINE = -lreadline -lhistory
+C_FLAGS = -Wall -Wextra -Werror -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
+#C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
+READLINE = -lreadline -lhistory -L/Users/$(USER)/homebrew/opt/readline/lib
+IREADLINE = -I/Users/$(USER)/homebrew/opt/readline/include
+#READLINE = -lreadline -lhistory
 
 all:
 	mkdir -p $(OBJ_DIR)
 	make $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	cc $(C_FLAGS) $(OBJ) $(LIBFT) -o $(NAME) $(READLINE)
+	cc $(C_FLAGS) $(OBJ) $(LIBFT) $(READLINE) -o $(NAME)
 
 $(LIBFT):
 	make -C $(LIBFT_DIR)
 
 $(OBJ_DIR)/%.o:$(SRC_DIR)/%.c $(INCLUDES)
-	cc $(C_FLAGS) -c $< -o $@
+	cc $(C_FLAGS) $(IREADLINE) -c $< -o $@
 
 clean:
 	make -C $(LIBFT_DIR) clean

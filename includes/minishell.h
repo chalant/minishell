@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/24 16:59:19 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/27 17:39:53 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,10 @@
 
 typedef struct s_shellshock
 {
-	int		env_excess;
-	char	**env;
+	int					env_excess;
+	char				**env;
+	struct sigaction	act_sigint;
+	struct sigaction	act_sigquit;
 }			t_shellshock;
 
 # define MS_PROMPT_MSG "shellshock$ "

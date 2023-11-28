@@ -6,12 +6,11 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:32:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/10/27 14:31:34 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/27 17:28:18 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-//#include <crt_externs.h>
 
 // prints out env on std_out and returns 0
 int	ms_env(void)

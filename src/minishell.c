@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/27 16:38:23 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/27 20:39:35 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,10 +168,17 @@ int	init_parsing_data(t_parsing_data *data)
 		return (-1);
 	data->chart = malloc(sizeof(t_graph));
 	if (!data->chart)
+	{
+		free(data->tokens);
 		return (-1);
+	}
 	data->grammar = malloc(sizeof(t_ms_grammar));
 	if (!data->grammar)
+	{
+		free(data->tokens);
+		free(data->chart);
 		return (-1);
+	}
 	return (1);
 }
 
@@ -190,7 +197,7 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	return (0);
 }
 
-int	tokenize_input(t_parsing_data *data, const char *input)
+int	tokenize_input(t_parsing_data *data, char *input)
 {
 	t_token_info		info;
 
@@ -199,7 +206,7 @@ int	tokenize_input(t_parsing_data *data, const char *input)
 	info.reserved_double = RESERVED_DOUBLE;
 	info.reserved_single = RESERVED_SINGLE;
 	info.reserved_skip = RESERVED_SKIP;
-	if (ms_tokeniser(input, data->tokens, &info) > 1)
+	if (ms_tokeniser(&input, data->tokens, &info) > 1)
 	{
 		//todo: free tokens
 		return (-1);

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 15:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/24 17:00:18 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/27 19:37:08 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,10 @@ int	ms_exit(t_shellshock *data, char **arg, char *line)
 	if (!arg || !arg[1])
 	{
 		if (arg)
+		{
+			free(arg[0]);
 			free(arg);
+		}
 		free(line);
 		ms_flush_exit(data, 0);
 		// return return of last cmd

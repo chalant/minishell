@@ -54,7 +54,7 @@ int	ms_prompt(t_ms_symbol *symbol, t_token *token)
 	//todo: free the last token.
 	symbol->tokens->size -= 1;
 	init_size = symbol->tokens->size;
-	ms_tokeniser(line, symbol->tokens, &info);
+	ms_tokeniser(&line, symbol->tokens, &info);
 	i = -1;
 	while (++i < symbol->tokens->size - init_size)
 		add_earley_set(symbol->earley_sets, 5);
