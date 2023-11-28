@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/28 17:41:18 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/28 18:12:24 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,7 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 	t_darray		*edges;
 
 	end = 0;
+	tree->start_rule = 0;
 	edges = get_edges(data->chart, tree->start);
 	edge = (t_ms_edge *)edges->contents + end;
 	longest = edge;
@@ -156,7 +157,7 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 		if (edge->finish >= longest->finish)
 			longest = edge;
 	}
-	tree->rule_name = (char *)data->grammar->rules[longest->rule]->name;
+	tree->rule_name = data->grammar->rules[longest->rule]->name;
 	tree->end = longest->finish;
 	return (0);
 }
@@ -185,7 +186,7 @@ int	init_parsing_data(t_parsing_data *data)
 int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 {
 	tree->start = 0;
-	tree->rule_name = (char *)data->grammar->start_rule;
+	tree->rule_name = data->grammar->start_rule;
 	tree->end = data->input_length - 1;
 	tree->terminal = 0;
 	tree->children = NULL;
@@ -312,8 +313,12 @@ int	main(int ac, char **av, char **env)
 		add_history(line);
 		free(line);
 		line = readline(MS_PROMPT_MSG);
+		if (!strcmp(line, "exit"))
+			break ;
 	}
+	free(line);
 	clear_history();
+	delete_grammar(data.grammar);
 	//ms_flush_exit(&data, 0);
 	//todo: free data and tree; -> note: no need to free the grammar at each loop.
 	return (status);

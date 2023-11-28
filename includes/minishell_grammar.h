@@ -31,7 +31,6 @@ typedef struct	s_ms_rule
 typedef struct	s_ms_grammar
 {
 	char			*start_rule;
-	char			*name;
 	t_ms_rule		**rules;
 	int				length;
 }				t_ms_grammar;

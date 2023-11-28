@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_grammar.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/28 17:16:22 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/28 17:54:35 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,10 +126,6 @@ void	delete_grammar(t_ms_grammar *grammar)
 
 	if (!grammar)
 		return ;
-	if (grammar->start_rule)
-		free(grammar->start_rule);
-	if (grammar->name)
-		free(grammar->name);
 	if (grammar->rules)
 	{
 		first_first = grammar->rules[0]->symbols[0];

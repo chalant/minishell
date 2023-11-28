@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:26 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 16:43:30 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/28 18:13:27 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int	init_tree(t_parse_tree *tree)
 	tree->terminal = 0;
 	tree->start = 0;
 	tree->end = 0;
+	tree->start_rule = 0;
 	return (1);
 }
 

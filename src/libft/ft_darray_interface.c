@@ -24,8 +24,8 @@ int	ft_darray_set(t_darray *darray, void *element, int index)
 {
 	unsigned char *target;
 
-	// if (index >= darray->max_size)
-	// 	return (ft_darray_append(darray, element));
+	if (index >= darray->max_size)
+		return (ft_darray_append(darray, element));
 	target = (unsigned char *)(darray->contents + index * darray->type_size);
 	if (!*target)
 		darray->size += 1;
