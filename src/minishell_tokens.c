@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/27 20:31:24 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/28 21:47:21 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,15 +86,22 @@ static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 // mallocs and adds token including start but not end
 static int	ms_add_token(char *start, char *end, t_darray *tokens, t_token *token)
 {
+	t_token	*last;
+
 	if (start == end)
 		return (0);
 	token->string = malloc(sizeof(char) * (end - start + 1));
 	if (!token->string)
 		return (ERR_MALLOC);
 	ft_strlcpy(token->string, start, end - start + 1);
-	if (token->flags & IS_VAR)
+	last = NULL;
+	if (tokens->size)
+		last = (((t_token *)tokens->contents) + tokens->size - 1);
+	if (last && last->flags & IS_RESERVED && !ft_strncmp(last->string, "<<", 3))
+		(void)token->flags;
+	else if (token->flags & IS_VAR)
 		return (ms_expand_var(tokens, token));
-	if (token->flags & IS_WILDCARD)
+	else if (token->flags & IS_WILDCARD)
 		return (ms_expand_wildcard(tokens, token));
 	if (ft_darray_append(tokens, token) == -1)
 	{
