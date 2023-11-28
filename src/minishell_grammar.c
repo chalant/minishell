@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_grammar.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/27 14:56:25 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/28 17:16:22 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,45 @@ int	set_minishell_grammar(t_ms_grammar *grammar)
 	if (!definition)
 		return (-1);
 	return (set_grammar(grammar, definition));
+}
+
+static void	delete_rule(t_ms_rule *rule)
+{
+	if (rule->name)
+		free(rule->name);
+	if (rule->symbols)
+	{
+		while (rule->length--)
+		{
+			if (rule->symbols[rule->length]->name)
+				free(rule->symbols[rule->length]->name);
+			free(rule->symbols[rule->length]);
+		}
+		free(rule->symbols);
+	}
+	free(rule);
+}
+
+void	delete_grammar(t_ms_grammar *grammar)
+{
+	t_ms_symbol	*first_first;
+
+	if (!grammar)
+		return ;
+	if (grammar->start_rule)
+		free(grammar->start_rule);
+	if (grammar->name)
+		free(grammar->name);
+	if (grammar->rules)
+	{
+		first_first = grammar->rules[0]->symbols[0];
+// these two are probably already free'd?
+		ft_darray_delete(first_first->tokens, ms_clear_token);
+		ft_darray_delete(first_first->earley_sets, clear_earley_set);
+		while (grammar->length--)
+			delete_rule(grammar->rules[grammar->length]);
+		free(grammar->rules);
+	}
 }
 
 int	set_grammar(t_ms_grammar *grammar, char **definition)

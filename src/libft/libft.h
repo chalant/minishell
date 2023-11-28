@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/11/27 20:15:24 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/28 16:33:30 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ void				*ft_darray_get(t_darray *darray, int index);
 int					ft_darray_init(t_darray *darray, int type_size, int size);
 int					ft_darray_set(t_darray *darray, void *element, int index);
 int					ft_darray_append(t_darray *darray, void *element);
+int					ft_darray_reset(t_darray *darray, void del_content(void *));
 int					ft_darray_delete(t_darray *darray, void del_content(void *));
 
 void				*ft_stack_peek(t_stack *stack);

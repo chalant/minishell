@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_darray.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 16:35:27 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/21 12:41:28 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/28 16:32:49 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,22 @@ int	ft_darray_init(t_darray *darray, int type_size, int size)
 	return (0);
 }
 
-int	ft_darray_reset(t_darray *darray)
+// if del_content == NULL that step is skipped.
+int	ft_darray_reset(t_darray *darray, void del_content(void *))
 {
-	if (!darray)
+	int	i;
+
+	if (!darray || !darray->contents)
 		return (0);
+	if (del_content)
+	{
+		i = 0;
+		while (i < darray->size)
+		{
+			del_content(darray->contents + i * darray->type_size);
+			i++;
+		}
+	}
 	darray->size = 0;
 	return (0);
 }
@@ -47,7 +59,6 @@ int	ft_darray_delete(t_darray *darray, void del_content(void *))
 		while (i < darray->size)
 		{
 			del_content(darray->contents + i * darray->type_size);
-			//set it to null?
 			i++;
 		}
 	}

@@ -3,14 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_earley_set.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 16:59:20 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/27 11:33:37 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/28 17:11:40 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void    clear_earley_set(t_earley_set *set)
+{
+    ft_darray_delete(set->items, NULL);
+}
 
 int add_earley_set(t_darray *sets, int size)
 {
