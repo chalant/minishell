@@ -207,6 +207,19 @@ int	tokenize_input(t_parsing_data *data, const char *input)
 	return (0);
 }
 
+void	print_tokens(t_parsing_data *data)
+{
+	int	i;
+	t_token	*token;
+
+	i = -1;
+	while (++i < data->tokens->size)
+	{
+		token = ft_darray_get(data->tokens, i);
+		printf("TOKEN %s\n", token->string);
+	}
+}
+
 int	recognize_input(t_parsing_data *data)
 {
 	int				i;
@@ -215,7 +228,7 @@ int	recognize_input(t_parsing_data *data)
 	sets = malloc(sizeof(t_darray));
 	if (!sets)
 		return (-1);
-	if (ft_darray_init(sets, sizeof(t_darray), data->tokens->size) < 0)
+	if (ft_darray_init(sets, sizeof(t_earley_set), data->tokens->size + 5) < 0)
 		return (-1);
 	i = -1;
 	while (++i < data->tokens->size)
@@ -284,6 +297,7 @@ int	main(int ac, char **av, char **env)
 	{
 		// this should be ran at each loop.
 		tokenize_input(&data, line);
+		print_tokens(&data);
 		//print_grammar(&grammar);
 		recognize_input(&data);
 		parse_input(&data, &tree);

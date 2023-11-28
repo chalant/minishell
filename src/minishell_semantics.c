@@ -54,7 +54,7 @@ int	handle_semantic_rule(t_parse_tree *node, t_stack *commands)
 	{
 		child = (t_parse_tree *)ft_darray_get(node->children, i);
 		if (!child->rule_name)
-			return (0);
+			return (1);
 		if (strcmp(child->rule_name, "|") == 0)
 			return (create_operator(node, commands, MS_PIPE, "PIPE"));
 		else if (strcmp(child->rule_name, "&&") == 0)

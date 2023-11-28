@@ -47,6 +47,7 @@ int	ft_darray_delete(t_darray *darray, void del_content(void *))
 		while (i < darray->size)
 		{
 			del_content(darray->contents + i * darray->type_size);
+			//set it to null?
 			i++;
 		}
 	}

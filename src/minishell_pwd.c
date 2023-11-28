@@ -19,8 +19,8 @@ int	ms_pwd(void)
 	buf = getcwd(NULL, 0);
 	if (!buf)
 		return (ms_perror("pwd", NULL, NULL, errno));
-	write(STDOUT_FILENO, buf, ft_strlen(buf));
-	write(STDOUT_FILENO, "\n", 1);
+	// write(STDOUT_FILENO, buf, ft_strlen(buf));
+	// write(STDOUT_FILENO, "\n", 1);
 	free(buf);
 	return (0);
 }

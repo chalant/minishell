@@ -37,22 +37,13 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"command_argument:word command_argument\n"\
 	"command_argument:word\n"\
 
-	"builtin:='echo'\n"\
-	"builtin:='cd'\n"\
-	"builtin:='pwd'\n"\
-	"builtin:='export'\n"\
-	"builtin:='env'\n"\
-	"builtin:='unset'\n"\
-	"builtin:='exit'\n"\
-
-	"command_element:command_argument redirection_list\n"\
-	"command_element:redirection_list\n"\
-	"command_element:command_argument\n"\
+	"command_element:redirection\n"\
+	"command_element:word\n"\
+	"command_element:word command_element\n"\
+	"command_element:redirection command_element\n"\
 
 	"simple_command:word command_element\n"\
 	"simple_command:word\n"\
-	"simple_command:builtin command_element\n"\
-	"simple_command:builtin\n"\
 
 	"redirection_command:redirection_list\n"\
 	"redirection_command:='(' redirection_list =')' redirection_list\n"\

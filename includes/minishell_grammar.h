@@ -24,14 +24,14 @@ typedef struct	s_ms_rule
 {
 	int			rule_id;
 	int			length;
-	const char	*name;
+	char		*name;
 	t_ms_symbol	**symbols;
 }				t_ms_rule;
 
 typedef struct	s_ms_grammar
 {
-	const char		*start_rule;
-	const char		*name;
+	char			*start_rule;
+	char			*name;
 	t_ms_rule		**rules;
 	int				length;
 }				t_ms_grammar;

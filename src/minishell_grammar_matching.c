@@ -34,6 +34,9 @@ int ms_match_equal(t_ms_symbol *symbol, t_token *token)
 
 	if (!token->string)
 		return (0);
+	//means it is the result of an expansion
+	// if (token->mask_exp)
+	// 	return (0);
 	len = ft_strlen(symbol->name);
 	if (ft_strlen(token->string) != len)
 		return (0);
@@ -79,8 +82,6 @@ int	ms_match_string(t_ms_symbol *symbol, t_token *token)
 		return (0);
 	i = 0;
 	if (token->flags & IS_RESERVED)
-		return (0);
-	if (is_builtin(token))
 		return (0);
 	while (token->string[i])
 	{
