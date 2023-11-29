@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_commands.h                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 16:44:19 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 18:18:00 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # define MS_BUILTIN 1 << 5
 # define MS_FORKED 1 << 6
 
+// redirection flags:
 # define MS_HEREDOC 1 << 0
 # define MS_READ 1 << 1
 # define MS_WRITE 1 << 2

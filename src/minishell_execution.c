@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/28 17:15:30 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 17:36:58 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,5 +255,8 @@ int	minishell_execute(t_command *command)
 	close(in_pipe[0]);
 	close(in_pipe[1]);
 	//todo: close all open file descriptors
+	if (!access(MS_HEREDOC_PATH, F_OK))
+		if (unlink(MS_HEREDOC_PATH))
+			ms_perror("unlink", MS_HEREDOC_PATH, NULL, errno);
 	return (0);
 }

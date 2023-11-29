@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_parser.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:26 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 13:57:19 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 18:30:04 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,7 @@ int	process_terminal(t_parse_tree *tree, t_parsing_data *data,
 	token = (t_token *)ft_darray_get(data->tokens, state.node);
 	if (state.node >= tree->end)
 		return (0);
-	else if (symbol->match(symbol,
-			(t_token *)ft_darray_get(data->tokens, state.node)))
+	else if (symbol->match(symbol, token))
 	{
 		subtree.terminal = 1;
 		set_subtree(&subtree, token->string, state.node, state.node);

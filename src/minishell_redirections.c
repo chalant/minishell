@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_redirections.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 16:43:08 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 18:38:02 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,11 @@ int	ms_heredoc_prompt(t_redirection *redirection)
 
 	fd = open(MS_HEREDOC_PATH,
 			O_TRUNC | O_CREAT | O_RDWR, redirection->mode);
+// check fd
 	line = readline("> ");
 	while (line && strcmp(line, redirection->file_path) != 0)
 	{
-		
+
 		write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1);
 		free(line);

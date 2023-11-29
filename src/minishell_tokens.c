@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/28 21:47:21 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/29 18:43:15 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,26 +84,22 @@ static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 }
 
 // mallocs and adds token including start but not end
-static int	ms_add_token(char *start, char *end, t_darray *tokens, t_token *token)
+static int	ms_add_token(char *start, char *end, t_darray *tkns, t_token *token)
 {
-	t_token	*last;
-
 	if (start == end)
 		return (0);
 	token->string = malloc(sizeof(char) * (end - start + 1));
 	if (!token->string)
 		return (ERR_MALLOC);
 	ft_strlcpy(token->string, start, end - start + 1);
-	last = NULL;
-	if (tokens->size)
-		last = (((t_token *)tokens->contents) + tokens->size - 1);
-	if (last && last->flags & IS_RESERVED && !ft_strncmp(last->string, "<<", 3))
-		(void)token->flags;
+	if (tkns->size
+		&& (((t_token *)tkns->contents) + tkns->size - 1)->flags & IS_HEREDOC)
+		token->flags |= IS_DELIMITER;
 	else if (token->flags & IS_VAR)
-		return (ms_expand_var(tokens, token));
+		return (ms_expand_var(tkns, token));
 	else if (token->flags & IS_WILDCARD)
-		return (ms_expand_wildcard(tokens, token));
-	if (ft_darray_append(tokens, token) == -1)
+		return (ms_expand_wildcard(tkns, token));
+	if (ft_darray_append(tkns, token) == -1)
 	{
 		ms_clear_token(token);
 		return (ERR_MALLOC);
@@ -124,7 +120,11 @@ static char	*ms_handle_symbol(char *end, t_darray *tokens, t_token *token, t_tok
 	start = end;
 	end++;
 	if (ft_strchr(info->reserved_double, *start) && *start == *end)
+	{
 		end++;
+		if (!ft_strncmp(start, "<<", 2))
+			token->flags |= IS_HEREDOC;
+	}
 	//todo: handle errors (clear tokens and stuff)
 	ms_add_token(start, end, tokens, token);
 	return (end);
