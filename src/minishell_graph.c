@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:29 by ychalant          #+#    #+#             */
-/*   Updated: 2023/10/23 13:54:27 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 13:41:29 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	add_edge(t_graph *graph, int start, void *data)
 	return (ft_darray_append(edges, data));
 }
 
-int	delete_graph(t_graph *graph)
+int	clear_graph(t_graph *graph, int (*del_method)(t_darray *, void(*)(void *)))
 {
 	int			i;
 	t_darray	*list;
@@ -68,8 +68,8 @@ int	delete_graph(t_graph *graph)
 	while (++i < graph->num_vertices)
 	{
 		list = ft_darray_get(graph->adjacency_list, i);
-		ft_darray_delete(list, NULL);
+		del_method(list, NULL);
 	}
-	ft_darray_delete(graph->adjacency_list, NULL);
+	del_method(graph->adjacency_list, NULL);
 	return (1);
 }

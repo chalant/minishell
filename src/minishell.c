@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/28 18:12:24 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:50:58 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,10 +93,6 @@ int	build_chart(t_darray *sets, t_graph *graph, int size)
 	t_earley_item	*item;
 	t_earley_set	*set;
 
-	//todo: this should be handled outside. since we will cache the
-	//graph.
-	if (init_graph(graph, size, sizeof(t_ms_edge)) < 0)
-		return (-1);
 	i = -1;
 	while (++i < size)
 	{
@@ -164,24 +160,37 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 	return (0);
 }
 
-int	init_parsing_data(t_parsing_data *data)
+int	init_data(t_parsing_data *data)
 {
+	data->chart = NULL;
+	data->tokens = NULL;
+	data->chart = NULL;
+	data->grammar = NULL;
+	return (0);
+}
+
+int	init_parsing_data(t_parsing_data *data, int size)
+{
+	//todo: tokens are initialized first.
 	data->tokens = malloc(sizeof(t_darray));
 	if (!data->tokens)
 		return (-1);
 	data->chart = malloc(sizeof(t_graph));
 	if (!data->chart)
-	{
-		free(data->tokens);
 		return (-1);
-	}
 	data->grammar = malloc(sizeof(t_ms_grammar));
 	if (!data->grammar)
-	{
-		free(data->tokens);
-		free(data->chart);
 		return (-1);
-	}
+	data->earley_sets = malloc(sizeof(t_darray));
+	if (!data->earley_sets)
+		return (-1);
+	if (init_graph(data->chart, size, sizeof(t_ms_edge)) < 0)
+		return (-1);
+	if (ft_darray_init(data->earley_sets, sizeof(t_darray), size) < 0)
+		return (-1);
+	if (ft_darray_init(data->tokens, sizeof(t_token), size) < 0)
+		return (-1);
+	set_minishell_grammar(data->grammar);
 	return (1);
 }
 
@@ -204,8 +213,6 @@ int	tokenize_input(t_parsing_data *data, char *input)
 {
 	t_token_info		info;
 
-	if (ft_darray_init(data->tokens, sizeof(t_token), 20) == -1)
-		return (-1);
 	info.reserved_double = RESERVED_DOUBLE;
 	info.reserved_single = RESERVED_SINGLE;
 	info.reserved_skip = RESERVED_SKIP;
@@ -230,25 +237,18 @@ void	print_tokens(t_parsing_data *data)
 int	recognize_input(t_parsing_data *data)
 {
 	int				i;
-	t_darray		*sets;
 
-	//todo: cache earley sets as-well...
-	sets = malloc(sizeof(t_darray));
-	if (!sets)
-		return (-1);
-	if (ft_darray_init(sets, sizeof(t_earley_set), data->tokens->size + 5) < 0)
-		return (-1);
 	i = -1;
 	while (++i < data->tokens->size)
-		add_earley_set(sets, data->tokens->size);
-	if (build_earley_items(sets, data->grammar, data->tokens) < 0)
+		add_earley_set(data->earley_sets, data->tokens->size);
+	if (build_earley_items(data->earley_sets, data->grammar, data->tokens) < 0)
 		return (-1);
 	//todo: remove the reverse_earley since it is for debugging
-	reverse_earley(sets, data->grammar);
+	//reverse_earley(data->earley_sets, data->grammar);
 	//todo: interrupt the program if we haven't reached the last
 	//state and print where the error occured
 	//todo: cache chart as-well.
-	if (build_chart(sets, data->chart, data->tokens->size) < 0)
+	if (build_chart(data->earley_sets, data->chart, data->tokens->size) < 0)
 		return (-1);
 	data->input_length = data->tokens->size;
 	data->chart_size = data->tokens->size;
@@ -285,6 +285,13 @@ int	execute(t_parse_tree *tree)
 // 	return (1);
 // }
 
+int	ft_darray_full_delete(t_darray *darray, void (*del_content)(void *))
+{
+	ft_darray_delete(darray, del_content);
+	free(darray);
+	return (0);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	int					status;
@@ -295,14 +302,14 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	(void)env;
-	// if (ac != 2)
-	// 	return (1);
+
 	status = 0;
-	//printf("INPUT: \"%s\"\n", av[1]);
-	if (init_parsing_data(&data) < 0)
+	init_data(&data);
+	if (init_parsing_data(&data, 20) < 0)
+	{
+		//todo: free data.
 		return (1);
-	//set the grammar only once.
-	set_minishell_grammar(data.grammar);
+	}
 	line = readline(MS_PROMPT_MSG);
 	while (line)
 	{
@@ -317,14 +324,23 @@ int	main(int ac, char **av, char **env)
 		free(line);
 		line = readline(MS_PROMPT_MSG);
 		clear_parse_tree(&tree, ft_darray_reset);
+		clear_earley_sets(data.earley_sets, ft_darray_reset);
+		clear_graph(data.chart, ft_darray_reset);
+		ft_darray_reset(data.tokens, ms_clear_token);
 		if (!strcmp(line, "exit"))
 			break ;
 	}
 	free(line);
 	clear_history();
 	delete_grammar(data.grammar);
-	clear_parse_tree(&tree, ft_darray_delete);
+	clear_parse_tree(&tree, ft_darray_full_delete);
+	clear_earley_sets(data.earley_sets, ft_darray_full_delete);
+	clear_graph(data.chart, ft_darray_delete);
+	ft_darray_delete(data.tokens, ms_clear_token);
+	free(data.tokens);
+	free(data.grammar);
+	free(data.chart);
+	//free(data.earley_sets);
 	//ms_flush_exit(&data, 0);
-	//todo: free data and tree; -> note: no need to free the grammar at each loop.
 	return (status);
 }

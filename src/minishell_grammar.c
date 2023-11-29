@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/28 17:54:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 16:19:43 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,10 @@ int	set_minishell_grammar(t_ms_grammar *grammar)
 
 	definition = ft_reverse_strings(ft_split(g_minishell_grammar, '\n'));
 	if (!definition)
+	{
+		ft_clear_ds(definition);
 		return (-1);
+	}
 	return (set_grammar(grammar, definition));
 }
 
@@ -111,8 +114,7 @@ static void	delete_rule(t_ms_rule *rule)
 	{
 		while (rule->length--)
 		{
-			if (rule->symbols[rule->length]->name)
-				free(rule->symbols[rule->length]->name);
+			free(rule->symbols[rule->length]->name);
 			free(rule->symbols[rule->length]);
 		}
 		free(rule->symbols);
@@ -130,8 +132,8 @@ void	delete_grammar(t_ms_grammar *grammar)
 	{
 		first_first = grammar->rules[0]->symbols[0];
 // these two are probably already free'd?
-		ft_darray_delete(first_first->tokens, ms_clear_token);
-		ft_darray_delete(first_first->earley_sets, clear_earley_set);
+		// ft_darray_delete(first_first->tokens, ms_clear_token);
+		//ft_darray_delete(first_first->earley_sets, clear_earley_set);
 		while (grammar->length--)
 			delete_rule(grammar->rules[grammar->length]);
 		free(grammar->rules);
@@ -150,9 +152,12 @@ int	set_grammar(t_ms_grammar *grammar, char **definition)
 		return (-1);
 	while (definition[i])
 	{
+		//todo: this might fail also, handle it.
 		add_rule(grammar, definition, i);
+		free(definition[i]);
 		i++;
 	}
+	free(definition);
 	grammar->start_rule = grammar->rules[0]->name;
 	grammar->length = i;
 	return (1);

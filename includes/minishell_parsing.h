@@ -43,6 +43,7 @@ typedef struct	s_parsing_data
 	t_ms_grammar	*grammar;
 	t_graph			*chart;
 	t_darray		*tokens;
+	t_darray		*earley_sets;
 }				t_parsing_data;
 
 typedef struct	s_parser_state

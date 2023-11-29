@@ -2,6 +2,7 @@
 
 static int	set_symbol(t_ms_symbol *symbol, const char *name, int (*match)(t_ms_symbol *, t_token *))
 {
+	free(symbol->name);
 	symbol->name = ft_strdup(name);
 	if (!symbol->name)
 		return (-1);
@@ -37,6 +38,7 @@ char *ms_strcdup(const char *src, char c)
 	return (dest);
 }
 
+// launches a prompt in case if an incomplete command.
 int	ms_prompt(t_ms_symbol *symbol, t_token *token)
 {
 	int				i;
@@ -44,14 +46,11 @@ int	ms_prompt(t_ms_symbol *symbol, t_token *token)
 	char			*line;
 	t_token_info	info;
 
-	//only accept when the token is null (empty), which means there's nothing
-	//after.
 	if (token->string)
 		return (0);
 	ms_token_info(&info,
 		RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
 	line = readline("> ");
-	//todo: free the last token.
 	symbol->tokens->size -= 1;
 	init_size = symbol->tokens->size;
 	ms_tokeniser(&line, symbol->tokens, &info);

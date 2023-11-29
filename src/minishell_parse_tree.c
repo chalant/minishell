@@ -24,7 +24,8 @@ int	clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(vo
 		child = ft_darray_get(tree->children, i);
 		clear_parse_tree(child, del_method);
 	}
-	del_method(tree->children, reset_tree_node);
+	if (tree->children)
+		del_method(tree->children, reset_tree_node);
 	return (0);
 }
 

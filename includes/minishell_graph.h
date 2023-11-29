@@ -10,7 +10,7 @@ typedef struct	s_graph
 }				t_graph;
 
 int			init_graph(t_graph *graph, int num_vertices, int type_size);
-int			delete_graph(t_graph *graph);
+int			clear_graph(t_graph *graph, int (*del_method)(t_darray *, void(*)(void *)));
 int			add_edge(t_graph *graph, int start, void* data);
 int			add_adjacency_list(t_graph *graph, int type_size, int size);
 

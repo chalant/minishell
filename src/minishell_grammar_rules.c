@@ -14,6 +14,7 @@ int	init_rule(char ***result, t_ms_grammar *grammar, char **rules, int i)
 		return (-1);
 	grammar->rules[i]->name = rule[0];
 	symbols = ft_split(rule[1], ' ');
+	free(rule[1]);
 	if (!symbols)
 		return (-1);
 	result[1] = symbols;
@@ -30,6 +31,7 @@ int	free_all(char ***to_free, int size)
 	i = -1;
 	while (++i < size)
 		free(to_free[i]);
+	free(to_free);
 	return (0);
 }
 
@@ -45,8 +47,7 @@ int	tail_rule(t_ms_symbol **symbols, char ***to_free, int size)
 		return (-1);
 	symbol->symbol_type = MS_NULL_SYMBOL;
 	symbols[size] = symbol;
-	free(to_free[0]);
-	free(to_free[1]);
+	free_all(to_free, 2);
 	return (1);
 }
 

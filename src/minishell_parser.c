@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:26 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/28 18:13:27 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 13:57:19 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,7 @@ int	build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 		parse_tree->children = malloc(sizeof(t_darray));
 	if (!parse_tree->children)
 		return (-1);
+	//todo: optimize the size by using ft_darray_set -> resize when the index goes above the max size.
 	if (ft_darray_init(parse_tree->children, sizeof(t_parse_tree), data->tokens->size) < 0)
 		return (-1);
 	if (fill_parse_tree(parse_tree, data) < 0)
