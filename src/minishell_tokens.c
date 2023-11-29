@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/29 18:43:15 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/29 19:15:43 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,26 +39,23 @@ static int	ms_prompt_quote(char **end, char **start, char **line)
 	*line = NULL;
 	if (!temp)
 		return (ms_perror("tokenising", NULL, NULL, errno));
-// strjoin error
 	add_line = readline("> ");
 	if (!add_line)
 	{
 		free(temp);
 		return (ms_perror("readline", NULL, NULL, errno));
-// readline errror
 	}
 	*line = ft_strjoin(temp, add_line);
 	free(temp);
 	free(add_line);
 	if (!*line)
 		return (ms_perror("tokenising", NULL, NULL, errno));
-// strjoin error
 	*start = (*line) + start_index;
 	*end = (*line) + end_index;
 	return (0);
 }
 
-// returns 1 on error
+// returns 1 on error, and *line = NULL
 // returns the next instance of *end
 // adds the IS_VAR flag if applicable
 static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
@@ -90,7 +87,10 @@ static int	ms_add_token(char *start, char *end, t_darray *tkns, t_token *token)
 		return (0);
 	token->string = malloc(sizeof(char) * (end - start + 1));
 	if (!token->string)
+	{
+		ms_perror("malloc", NULL, NULL, errno);
 		return (ERR_MALLOC);
+	}
 	ft_strlcpy(token->string, start, end - start + 1);
 	if (tkns->size
 		&& (((t_token *)tkns->contents) + tkns->size - 1)->flags & IS_HEREDOC)
@@ -102,6 +102,7 @@ static int	ms_add_token(char *start, char *end, t_darray *tkns, t_token *token)
 	if (ft_darray_append(tkns, token) == -1)
 	{
 		ms_clear_token(token);
+		ms_perror("malloc", NULL, NULL, errno);
 		return (ERR_MALLOC);
 	}
 	return (0);
@@ -130,8 +131,8 @@ static char	*ms_handle_symbol(char *end, t_darray *tokens, t_token *token, t_tok
 	return (end);
 }
 
-// NULL terminates tokens with a fresh initialised token
-// returns > 0 on failure, doesn't delete 'tokens'
+// NULL terminates tokens with a fresh initialised token.
+// returns > 0 on failure, free's *'input', doesn't delete 'tokens'.
 int	ms_tokeniser(char **input, t_darray *tokens, t_token_info *info)
 {
 	char	*start;
@@ -147,16 +148,19 @@ int	ms_tokeniser(char **input, t_darray *tokens, t_token_info *info)
 		{
 			if (*end == '"' || *end == '\'')
 			{
-				//todo: handle error: quote unclosed
 				if (ms_skip_quoted(&token, &end, &start, input))
-					return (ERR_QUOTE_UNCLOSED);
+					return (1);
 			}
 			ms_add_flags_char(&token, *end);
 			end++;
 		}
 		//todo: handle errors (clear stuff?, malloc or opendir or ..?)
 		if (ms_add_token(start, end, tokens, &token))
+		{
+			free(*input);
 			return (ERR_MALLOC);
+		}
+		//todo: handle errors
 		end = ms_handle_symbol(end, tokens, &token, info);
 	}
 	ms_token_expansion(tokens);
