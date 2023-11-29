@@ -93,6 +93,8 @@ int	build_chart(t_darray *sets, t_graph *graph, int size)
 	t_earley_item	*item;
 	t_earley_set	*set;
 
+	//todo: this should be handled outside. since we will cache the
+	//graph.
 	if (init_graph(graph, size, sizeof(t_ms_edge)) < 0)
 		return (-1);
 	i = -1;
@@ -147,7 +149,7 @@ int	ms_start_rule(t_parse_tree *tree, t_parsing_data *data)
 	t_darray		*edges;
 
 	end = 0;
-	tree->start_rule = 0;
+	tree->start_rule = 1;
 	edges = get_edges(data->chart, tree->start);
 	edge = (t_ms_edge *)edges->contents + end;
 	longest = edge;
@@ -208,10 +210,7 @@ int	tokenize_input(t_parsing_data *data, char *input)
 	info.reserved_single = RESERVED_SINGLE;
 	info.reserved_skip = RESERVED_SKIP;
 	if (ms_tokeniser(&input, data->tokens, &info) > 1)
-	{
-		//todo: free tokens
 		return (-1);
-	}
 	return (0);
 }
 
@@ -233,6 +232,7 @@ int	recognize_input(t_parsing_data *data)
 	int				i;
 	t_darray		*sets;
 
+	//todo: cache earley sets as-well...
 	sets = malloc(sizeof(t_darray));
 	if (!sets)
 		return (-1);
@@ -247,6 +247,7 @@ int	recognize_input(t_parsing_data *data)
 	reverse_earley(sets, data->grammar);
 	//todo: interrupt the program if we haven't reached the last
 	//state and print where the error occured
+	//todo: cache chart as-well.
 	if (build_chart(sets, data->chart, data->tokens->size) < 0)
 		return (-1);
 	data->input_length = data->tokens->size;
@@ -270,6 +271,8 @@ int	execute(t_parse_tree *tree)
 	}
 	return (minishell_execute(command));
 }
+
+
 
 // int	free_on_error(t_parsing_data *data, t_parse_tree *tree)
 // {
@@ -305,7 +308,7 @@ int	main(int ac, char **av, char **env)
 	{
 		// this should be ran at each loop.
 		tokenize_input(&data, line);
-		print_tokens(&data);
+		//print_tokens(&data);
 		//print_grammar(&grammar);
 		recognize_input(&data);
 		parse_input(&data, &tree);
@@ -313,12 +316,14 @@ int	main(int ac, char **av, char **env)
 		add_history(line);
 		free(line);
 		line = readline(MS_PROMPT_MSG);
+		clear_parse_tree(&tree, ft_darray_reset);
 		if (!strcmp(line, "exit"))
 			break ;
 	}
 	free(line);
 	clear_history();
 	delete_grammar(data.grammar);
+	clear_parse_tree(&tree, ft_darray_delete);
 	//ms_flush_exit(&data, 0);
 	//todo: free data and tree; -> note: no need to free the grammar at each loop.
 	return (status);

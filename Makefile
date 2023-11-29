@@ -23,8 +23,7 @@ INCLUDES_FILES = minishell.h \
 				 minishell_commands.h \
 				 minishell_semantics.h
 
-SRC_FILES =	minishell_main.c \
-			minishell.c \
+SRC_FILES =	minishell.c \
 			minishell_exit.c \
 			minishell_cd.c \
 			minishell_pwd.c \
@@ -41,6 +40,7 @@ SRC_FILES =	minishell_main.c \
 			minishell_token_expansion.c \
 			minishell_recogniser.c \
 			minishell_parser.c \
+			minishell_parse_tree.c \
 			minishell_graph.c \
 			minishell_grammar.c \
 			minishell_grammar_rules.c \
@@ -63,7 +63,7 @@ NAME = minishell
 LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-C_FLAGS = -Wall -Wextra -Werror -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
+C_FLAGS = -Wall -Wextra -Werror -g -O3 -Wno-unused-result -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 #C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 READLINE = -lreadline -lhistory -L/Users/$(USER)/homebrew/opt/readline/lib
 IREADLINE = -I/Users/$(USER)/homebrew/opt/readline/include

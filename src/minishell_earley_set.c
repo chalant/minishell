@@ -12,9 +12,18 @@
 
 #include "minishell.h"
 
-void    clear_earley_set(void *set)
+int	clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void *)))
 {
-    ft_darray_delete(((t_earley_set *)set)->items, NULL);
+	int				i;
+	t_earley_set	*set;
+
+	i = -1;
+	while (++i < sets->size)
+	{
+		set = ft_darray_get(set, i);
+		del_method(set->items, NULL);
+	}
+	return (0);
 }
 
 int add_earley_set(t_darray *sets, int size)

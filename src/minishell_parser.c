@@ -21,7 +21,7 @@ int	init_tree(t_parse_tree *tree)
 	tree->terminal = 0;
 	tree->start = 0;
 	tree->end = 0;
-	tree->start_rule = 0;
+	tree->start_rule = 1;
 	return (1);
 }
 
@@ -75,8 +75,6 @@ int	process_non_terminal(t_parse_tree *tree, t_parsing_data *data,
 	t_ms_edge		*item;
 	t_darray		*edges;
 
-	if (state.node >= tree->end)
-		return (1);
 	edges = get_edges(data->chart, state.node);
 	item = (t_ms_edge *)edges->contents;
 	i = -1;
@@ -147,13 +145,13 @@ int	build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 	int				i;
 	t_parse_tree	*child;
 
-	if (!parse_tree)
-		return (0);
 	if (parse_tree->terminal || !parse_tree->end
 		|| parse_tree->start == parse_tree->end)
 		return (0);
 	i = -1;
-	parse_tree->children = malloc(sizeof(t_darray));
+	//todo: this should be lazy created.
+	if (!parse_tree->children)
+		parse_tree->children = malloc(sizeof(t_darray));
 	if (!parse_tree->children)
 		return (-1);
 	if (ft_darray_init(parse_tree->children, sizeof(t_parse_tree), data->tokens->size) < 0)
