@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 16:19:43 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 16:29:23 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void	delete_grammar(t_ms_grammar *grammar)
 	{
 		first_first = grammar->rules[0]->symbols[0];
 // these two are probably already free'd?
-		// ft_darray_delete(first_first->tokens, ms_clear_token);
+		ft_darray_delete(first_first->tokens, ms_clear_token);
 		//ft_darray_delete(first_first->earley_sets, clear_earley_set);
 		while (grammar->length--)
 			delete_rule(grammar->rules[grammar->length]);

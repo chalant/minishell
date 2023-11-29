@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 15:50:58 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/29 16:26:17 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,7 +240,7 @@ int	recognize_input(t_parsing_data *data)
 
 	i = -1;
 	while (++i < data->tokens->size)
-		add_earley_set(data->earley_sets, data->tokens->size);
+		add_earley_set(data->earley_sets, 5);
 	if (build_earley_items(data->earley_sets, data->grammar, data->tokens) < 0)
 		return (-1);
 	//todo: remove the reverse_earley since it is for debugging
@@ -336,6 +336,7 @@ int	main(int ac, char **av, char **env)
 	clear_parse_tree(&tree, ft_darray_full_delete);
 	clear_earley_sets(data.earley_sets, ft_darray_full_delete);
 	clear_graph(data.chart, ft_darray_delete);
+	free(data.chart->adjacency_list);
 	ft_darray_delete(data.tokens, ms_clear_token);
 	free(data.tokens);
 	free(data.grammar);
