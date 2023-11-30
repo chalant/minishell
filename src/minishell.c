@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 16:26:17 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/30 23:16:39 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -357,7 +357,8 @@ int	main(int ac, char **av, char **env)
 		if (!strcmp(line, "exit"))
 			break ;
 	}
-	free(line);
+	if (line)
+		free(line);
 	clear_history();
 	free_data(&data, &tree);
 	//free(data.earley_sets);
