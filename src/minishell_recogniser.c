@@ -117,7 +117,7 @@ int	earley_scan(t_darray *sets, t_ms_symbol *symbol,
 	return (0);
 }
 
-int	set_parsing_info(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
+int	set_parsing_info(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens, t_graph *chart)
 {
 	int			i;
 	int			j;
@@ -132,12 +132,13 @@ int	set_parsing_info(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
 			symbol = grammar->rules[i]->symbols[j];
 			symbol->earley_sets = sets;
 			symbol->tokens = tokens;
+			symbol->chart = chart;
 		}
 	}
 	return (1);
 }
 
-int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
+int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens, t_graph *chart)
 {
 	int				i;
 	int				j;
@@ -147,7 +148,7 @@ int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens)
 
 	i = -1;
 	set = ft_darray_get(sets, 0);
-	set_parsing_info(sets, grammar, tokens);
+	set_parsing_info(sets, grammar, tokens, chart);
 	while (++i < grammar->length)
 	{
 		if (strcmp(grammar->start_rule, grammar->rules[i]->name) == 0)

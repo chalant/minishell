@@ -206,7 +206,7 @@ int update_parsing_data(t_parsing_data *data, int size)
 	int	i;
 
 	i = -1;
-	while (++i < size)
+	while (++i < size + 1)
 	{
 		add_earley_set(data->earley_sets, 10);
 		add_adjacency_list(data->chart, sizeof(t_ms_edge), 10);
@@ -285,7 +285,7 @@ int	recognize_input(t_parsing_data *data)
 	//state and print where the error occured
 	//init_graph(data->chart, data->tokens->size, sizeof(t_ms_edge));
 	update_parsing_data(data, data->tokens->size);
-	if (build_earley_items(data->earley_sets, data->grammar, data->tokens) < 0)
+	if (build_earley_items(data->earley_sets, data->grammar, data->tokens, data->chart) < 0)
 		return (-1);
 	if (build_chart(data->earley_sets, data->chart, data->tokens->size) < 0)
 		return (-1);

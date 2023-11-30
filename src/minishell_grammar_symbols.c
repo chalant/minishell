@@ -55,8 +55,12 @@ int	ms_prompt(t_ms_symbol *symbol, t_token *token)
 	init_size = symbol->tokens->size;
 	ms_tokeniser(&line, symbol->tokens, &info);
 	i = -1;
+	//todo: errors
 	while (++i < symbol->tokens->size - init_size -1)
+	{
 		add_earley_set(symbol->earley_sets, 5);
+		add_adjacency_list(symbol->chart, sizeof(t_ms_edge), 5);
+	}
 	free(line);
 	return (1);
 }
