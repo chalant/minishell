@@ -64,7 +64,7 @@ typedef struct	s_parse_tree
 	int			end;
 }				t_parse_tree;
 
-int		ms_prompt(t_ms_symbol *symbol, t_token *token);
+int		ms_prompt_command(t_ms_symbol *symbol, t_token *token);
 
 int		ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state state);
 int		build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);

@@ -100,7 +100,6 @@ int	build_chart(t_darray *sets, t_graph *graph, int size)
 	t_earley_item	*item;
 	t_earley_set	*set;
 
-	printf("BUILD %d\n", size);
 	i = -1;
 	while (++i < size)
 	{
@@ -252,14 +251,14 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	return (0);
 }
 
-int	tokenize_input(t_parsing_data *data, char *input)
+int	tokenize_input(t_parsing_data *data, char **input)
 {
 	t_token_info		info;
 
 	info.reserved_double = RESERVED_DOUBLE;
 	info.reserved_single = RESERVED_SINGLE;
 	info.reserved_skip = RESERVED_SKIP;
-	if (ms_tokeniser(&input, data->tokens, &info) > 1)
+	if (ms_tokeniser(input, data->tokens, &info) > 1)
 		return (-1);
 	return (0);
 }
@@ -337,7 +336,7 @@ int	main(int ac, char **av, char **env)
 	init_data(&data);
 	if (init_parsing_data(&data, 20) < 0)
 	{
-		//todo: free data.
+		free_data(&data, &tree);
 		return (1);
 	}
 	tree.children = NULL;
@@ -345,7 +344,7 @@ int	main(int ac, char **av, char **env)
 	while (line)
 	{
 		// this should be ran at each loop.
-		tokenize_input(&data, line);
+		tokenize_input(&data, &line);
 		//print_tokens(&data);
 		//print_grammar(&grammar);
 		recognize_input(&data);

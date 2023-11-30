@@ -39,7 +39,7 @@ char *ms_strcdup(const char *src, char c)
 }
 
 // launches a prompt in case if an incomplete command.
-int	ms_prompt(t_ms_symbol *symbol, t_token *token)
+int	ms_prompt_command(t_ms_symbol *symbol, t_token *token)
 {
 	int				i;
 	int				init_size;
@@ -76,7 +76,7 @@ int	handle_special(t_ms_symbol *symbol, char *input)
 		set_symbol(symbol, "<NL>", ms_match_newline);
 	//todo: prompt and call tokenizer here.
 	else if (*ptr == MS_PROMPTING)
-		set_symbol(symbol, "<PROMPT>", ms_prompt);
+		set_symbol(symbol, "<PROMPT>", ms_prompt_command);
 	else if (*ptr == MS_INTEGER)
 		set_symbol(symbol, "<NUMBER>", ms_match_integer);
 	else if (*ptr == MS_EQUAL)
