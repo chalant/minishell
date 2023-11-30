@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 16:26:17 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/30 23:16:39 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,14 +252,14 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	return (0);
 }
 
-int	tokenize_input(t_parsing_data *data, char *input)
+int	tokenize_input(t_parsing_data *data, char **input)
 {
 	t_token_info		info;
 
 	info.reserved_double = RESERVED_DOUBLE;
 	info.reserved_single = RESERVED_SINGLE;
 	info.reserved_skip = RESERVED_SKIP;
-	if (ms_tokeniser(&input, data->tokens, &info) > 1)
+	if (ms_tokeniser(input, data->tokens, &info) > 1)
 		return (-1);
 	return (0);
 }
@@ -345,7 +345,7 @@ int	main(int ac, char **av, char **env)
 	while (line)
 	{
 		// this should be ran at each loop.
-		tokenize_input(&data, line);
+		tokenize_input(&data, &line);
 		//print_tokens(&data);
 		//print_grammar(&grammar);
 		recognize_input(&data);
@@ -358,7 +358,8 @@ int	main(int ac, char **av, char **env)
 		if (!strcmp(line, "exit"))
 			break ;
 	}
-	free(line);
+	if (line)
+		free(line);
 	clear_history();
 	free_data(&data, &tree);
 	//free(data.earley_sets);

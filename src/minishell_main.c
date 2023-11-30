@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/27 20:21:58 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/30 23:04:43 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,12 +105,12 @@ if (!ft_strncmp(line, "sleep", 6))
 }
 	ft_darray_init(&tokens, sizeof(t_token), 20);
 	if (ms_tokeniser(&line, &tokens, ms_token_info(&info,
-		RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP)))
-		{
-			ft_darray_delete(&tokens, ms_clear_token);
-			free(line);
-			return (1);
-		}
+				RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP)))
+	{
+		ft_darray_delete(&tokens, ms_clear_token);
+		free(line);
+		return (1);
+	}
 // int i = 0;
 // while (i < tokens.size)
 // {
