@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_redirections.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 16:43:08 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/11/30 17:49:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,34 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	return (0);
 }
 
+static void	ms_heredoc_write(int fd, char *line, int delim_quoted)
+{
+	char	*end;
+	char	temp;
+
+	if (delim_quoted)
+		write(fd, line, ft_strlen(line));
+	while (!delim_quoted && *line)
+	{
+		end = ft_strchr(line, '$');
+		if (end)
+			write(fd, line, end - line);
+		else
+			write(fd, line, ft_strlen(line));
+		line = end;
+		if (!line)
+			break ;
+		end = ms_end_of_name(line);
+		temp = *end;
+		*end = 0;
+		line = getenv(line + 1);
+		write(fd, line, ft_strlen(line));
+		*end = temp;
+		line = end;
+	}
+	write(fd, "\n", 1);
+}
+
 int	ms_heredoc_prompt(t_redirection *redirection)
 {
 	char	*line;
@@ -87,15 +115,19 @@ int	ms_heredoc_prompt(t_redirection *redirection)
 
 	fd = open(MS_HEREDOC_PATH,
 			O_TRUNC | O_CREAT | O_RDWR, redirection->mode);
+// check fd
 	line = readline("> ");
 	while (line && strcmp(line, redirection->file_path) != 0)
 	{
-		
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
+		// pass along whether the delimiter was quoted or not
+		ms_heredoc_write(fd, line, 0);
 		free(line);
 		line = readline("> ");
 	}
+	if (line)
+		free(line);
+	else
+		printf("shellshock: warning: here-document delimited by end-of-file (wanted '%s')\n", redirection->file_path);
 	close(fd);
 	return (1);
 }

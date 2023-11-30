@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/27 20:21:14 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/30 14:54:20 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,12 @@ static char	*ms_next_var(const char *str, int *qt)
 
 // it's advised to pass the pointer of the starting '$'
 // returns pointer to right after the name
-static char	*ms_end_of_name(const char *str)
+char	*ms_end_of_name(const char *str)
 {
 	if (*str == '$')
 		str++;
+	if ('0' <= *str && *str <= '9')
+		return ((char *) str + 1);
 	while (('a' <= *str && *str <= 'z') || ('A' <= *str && *str <= 'Z')
 		|| *str == '_' || ('0' <= *str && *str <= '9'))
 		str++;
