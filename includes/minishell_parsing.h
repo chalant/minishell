@@ -19,8 +19,8 @@ typedef struct	s_earley_item
 
 typedef	struct	s_earley_set
 {
-	int			size;
 	t_darray	*items;
+	int			size;
 }				t_earley_set;
 
 typedef struct	s_ms_edge
@@ -55,20 +55,20 @@ typedef struct	s_parser_state
 
 typedef struct	s_parse_tree
 {
+	t_darray	*children;
 	char		*rule_name;
 	int			start_rule;
 	int			rule;
 	int			terminal;
 	int			start;
 	int			end;
-	t_darray	*children;
 }				t_parse_tree;
 
 int		ms_prompt(t_ms_symbol *symbol, t_token *token);
 
 int		ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state state);
 int		build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
-int		clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(void *)));
+int		clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(void *)), int del);
 
 int		build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens);
 int 	add_earley_set(t_darray *sets, int size);

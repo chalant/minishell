@@ -37,7 +37,7 @@ int	set_arguments(t_command *command, t_parse_tree *tree)
 	if (ft_darray_append(command->arguments, get_word(tree)) < 0)
 		return (-1);
 	node = ft_darray_get(tree->children, 1);
-	while (node->children)
+	while (!node->terminal)
 	{
 		if (ft_darray_append(command->arguments, get_word(node)) < 0)
 			return (-1);
@@ -51,7 +51,7 @@ int	set_command_elements(t_command *command, t_parse_tree *tree)
 	t_redirection	redirection;
 	t_parse_tree	*node;
 
-	while (tree->children)
+	while (!tree->terminal)
 	{
 		//todo: handle errors
 		node = ft_darray_get(tree->children, 0);
@@ -70,9 +70,6 @@ int	set_command_elements(t_command *command, t_parse_tree *tree)
 static int	create_command(t_parse_tree *node, t_stack *stack,
 	t_command *command)
 {
-	//int				i;
-	//t_parse_tree	*element_type;
-
 	if (!node->rule_name)
 		return (0);
 	//printf("RULE NAME! %s\n", node->rule_name);
@@ -84,16 +81,14 @@ static int	create_command(t_parse_tree *node, t_stack *stack,
 
 	//todo: only create arguments if there is any.
 	command->arguments = malloc(sizeof(t_darray));
-	command->redirections = malloc(sizeof(t_darray));
+	// command->redirections = malloc(sizeof(t_darray));
 	if (!command->arguments)
 		return (-1);
 	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
 		return (-1);
-	if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
-		return (-1);
 	if (node->children)
 	{
-		//todo: set redirections and arguments here.
+		// errors ?
 		set_command_elements(command, node);
 	}
 	if (command->redirections)
@@ -119,6 +114,7 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 {
 	t_command		command;
+	t_parse_tree	*nod;
 
 	init_command(&command);
 	command.redirections = malloc(sizeof(t_darray));
@@ -127,9 +123,16 @@ int	create_redirection_command(t_parse_tree *node, t_stack *stack)
 	if (ft_darray_init(command.redirections, sizeof(t_redirection), 5) < 0)
 		return (-1);
 	set_redirections(&command, ft_darray_get(node->children, 0));
+	//todo: fix redirection commands
+	//command must take the redirection.
+	//must be able to creat redirections without commands
+	//is it 3 or 2?
 	if (node->children->size >= 2)
-		return (create_command(ft_darray_get(node->children, 1),
-				stack, &command));
+	{
+		nod = ft_darray_get(node->children, 1);
+		if (nod->rule_name)
+			return (create_command(nod, stack, &command));
+	}
 	create_files(&command, command.redirections);
 	return (ft_stack_push(stack, &command));
 }

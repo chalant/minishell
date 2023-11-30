@@ -12,6 +12,13 @@
 
 # include "minishell.h"
 
+int	ft_darray_full_delete(t_darray *darray, void (*del_content)(void *))
+{
+	ft_darray_delete(darray, del_content);
+	free(darray);
+	return (0);
+}
+
 int	print_earley(t_earley_set **sets, t_ms_grammar *grammar, int size)
 {
 	int				i;
@@ -93,6 +100,7 @@ int	build_chart(t_darray *sets, t_graph *graph, int size)
 	t_earley_item	*item;
 	t_earley_set	*set;
 
+	printf("BUILD %d\n", size);
 	i = -1;
 	while (++i < size)
 	{
@@ -184,8 +192,7 @@ int	init_parsing_data(t_parsing_data *data, int size)
 	data->earley_sets = malloc(sizeof(t_darray));
 	if (!data->earley_sets)
 		return (-1);
-	if (init_graph(data->chart, size, sizeof(t_ms_edge)) < 0)
-		return (-1);
+	init_graph(data->chart, size);
 	if (ft_darray_init(data->earley_sets, sizeof(t_darray), size) < 0)
 		return (-1);
 	if (ft_darray_init(data->tokens, sizeof(t_token), size) < 0)
@@ -194,13 +201,49 @@ int	init_parsing_data(t_parsing_data *data, int size)
 	return (1);
 }
 
+int update_parsing_data(t_parsing_data *data, int size)
+{
+	int	i;
+
+	i = -1;
+	while (++i < size)
+	{
+		add_earley_set(data->earley_sets, 10);
+		add_adjacency_list(data->chart, sizeof(t_ms_edge), 10);
+	}
+	return (0);
+}
+
+int	reset_data(t_parsing_data *data, t_parse_tree *tree)
+{
+	clear_parse_tree(tree, ft_darray_reset, 0);
+	clear_earley_sets(data->earley_sets, ft_darray_delete);
+	clear_graph(data->chart, ft_darray_delete);
+	ft_darray_reset(data->tokens, ms_clear_token);
+	return (0);
+}
+
+int	free_data(t_parsing_data *data, t_parse_tree *tree)
+{
+	delete_grammar(data->grammar);
+	clear_parse_tree(tree, ft_darray_full_delete, 1);
+	clear_earley_sets(data->earley_sets, ft_darray_full_delete);
+	//clear_graph(data.chart, ft_darray_delete);
+	free(data->chart->adjacency_list);
+	ft_darray_delete(data->tokens, ms_clear_token);
+	free(data->tokens);
+	free(data->grammar);
+	free(data->chart);
+	return (0);
+}
+
 int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 {
 	tree->start = 0;
 	tree->rule_name = data->grammar->start_rule;
 	tree->end = data->input_length - 1;
 	tree->terminal = 0;
-	tree->children = NULL;
+	//tree->children = NULL;
 	ms_start_rule(tree, data);
 	if (build_parse_tree(tree, data) < 0)
 		return (-1);
@@ -236,18 +279,14 @@ void	print_tokens(t_parsing_data *data)
 
 int	recognize_input(t_parsing_data *data)
 {
-	int				i;
-
-	i = -1;
-	while (++i < data->tokens->size)
-		add_earley_set(data->earley_sets, 5);
-	if (build_earley_items(data->earley_sets, data->grammar, data->tokens) < 0)
-		return (-1);
 	//todo: remove the reverse_earley since it is for debugging
 	//reverse_earley(data->earley_sets, data->grammar);
 	//todo: interrupt the program if we haven't reached the last
 	//state and print where the error occured
-	//todo: cache chart as-well.
+	//init_graph(data->chart, data->tokens->size, sizeof(t_ms_edge));
+	update_parsing_data(data, data->tokens->size);
+	if (build_earley_items(data->earley_sets, data->grammar, data->tokens) < 0)
+		return (-1);
 	if (build_chart(data->earley_sets, data->chart, data->tokens->size) < 0)
 		return (-1);
 	data->input_length = data->tokens->size;
@@ -272,8 +311,6 @@ int	execute(t_parse_tree *tree)
 	return (minishell_execute(command));
 }
 
-
-
 // int	free_on_error(t_parsing_data *data, t_parse_tree *tree)
 // {
 // 	return (1);
@@ -284,13 +321,6 @@ int	execute(t_parse_tree *tree)
 	
 // 	return (1);
 // }
-
-int	ft_darray_full_delete(t_darray *darray, void (*del_content)(void *))
-{
-	ft_darray_delete(darray, del_content);
-	free(darray);
-	return (0);
-}
 
 int	main(int ac, char **av, char **env)
 {
@@ -310,6 +340,7 @@ int	main(int ac, char **av, char **env)
 		//todo: free data.
 		return (1);
 	}
+	tree.children = NULL;
 	line = readline(MS_PROMPT_MSG);
 	while (line)
 	{
@@ -321,26 +352,15 @@ int	main(int ac, char **av, char **env)
 		parse_input(&data, &tree);
 		status = execute(&tree);
 		add_history(line);
+		reset_data(&data, &tree);
 		free(line);
 		line = readline(MS_PROMPT_MSG);
-		clear_parse_tree(&tree, ft_darray_reset);
-		clear_earley_sets(data.earley_sets, ft_darray_reset);
-		clear_graph(data.chart, ft_darray_reset);
-		ft_darray_reset(data.tokens, ms_clear_token);
 		if (!strcmp(line, "exit"))
 			break ;
 	}
 	free(line);
 	clear_history();
-	delete_grammar(data.grammar);
-	clear_parse_tree(&tree, ft_darray_full_delete);
-	clear_earley_sets(data.earley_sets, ft_darray_full_delete);
-	clear_graph(data.chart, ft_darray_delete);
-	free(data.chart->adjacency_list);
-	ft_darray_delete(data.tokens, ms_clear_token);
-	free(data.tokens);
-	free(data.grammar);
-	free(data.chart);
+	free_data(&data, &tree);
 	//free(data.earley_sets);
 	//ms_flush_exit(&data, 0);
 	return (status);

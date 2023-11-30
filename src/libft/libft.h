@@ -27,11 +27,11 @@ typedef struct s_list
 
 typedef	struct	s_darray
 {
+	void		*contents;
 	int			max_size;
 	int			block_size;
 	int			size;
 	int			type_size;
-	void		*contents;
 }				t_darray;
 
 typedef struct	s_stack

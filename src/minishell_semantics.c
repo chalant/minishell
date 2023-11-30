@@ -71,7 +71,7 @@ int	handle_semantic_rule(t_parse_tree *node, t_stack *commands)
 
 int	flatten_tree(t_parse_tree *node, t_stack *commands)
 {
-	if (!node || !node->rule_name || node->terminal || !node->children)
+	if (node->terminal)
 		return (1);
 	if (strcmp(node->rule_name, "simple_command") == 0)
 		return (create_simple_command(node, commands));
@@ -89,7 +89,7 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *node)
 	flatten_tree(node, &commands);
 	command = (t_command *)ft_stack_pop(&commands);
 	if (!command->command_name)
-		return (0);
+		return (NULL);
 	if (command->command_flags & MS_OPERATOR)
 		build_operator(command, &commands);
 	return (command);

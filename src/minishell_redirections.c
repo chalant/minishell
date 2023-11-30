@@ -69,7 +69,8 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	if (ft_darray_append(command->redirections, &redirection) < 0)
 		return (-1);
 	node = ft_darray_get(tree->children, 1);
-	while (node->children)
+	printf("Redirections %s\n", node->rule_name);
+	while (!node->terminal)
 	{
 		set_redirection(&redirection, ft_darray_get(node->children, 0));
 		if (ft_darray_append(command->redirections, &redirection) < 0)

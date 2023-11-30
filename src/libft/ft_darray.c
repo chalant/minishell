@@ -64,6 +64,8 @@ int	ft_darray_delete(t_darray *darray, void del_content(void *))
 	}
 	free(darray->contents);
 	darray->contents = NULL;
+	darray->size = 0;
+	darray->max_size = 0;
 	return (0);
 }
 
