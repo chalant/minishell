@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 18:38:02 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/30 15:40:51 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,34 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	return (0);
 }
 
+static void	ms_heredoc_write(int fd, char *line, int delim_quoted)
+{
+	char	*end;
+	char	temp;
+
+	if (delim_quoted)
+		write(fd, line, ft_strlen(line));
+	while (!delim_quoted && *line)
+	{
+		end = ft_strchr(line, '$');
+		if (end)
+			write(fd, line, end - line);
+		else
+			write(fd, line, ft_strlen(line));
+		line = end;
+		if (!line)
+			break ;
+		end = ms_end_of_name(line);
+		temp = *end;
+		*end = 0;
+		line = getenv(line + 1);
+		write(fd, line, ft_strlen(line));
+		*end = temp;
+		line = end;
+	}
+	write(fd, "\n", 1);
+}
+
 int	ms_heredoc_prompt(t_redirection *redirection)
 {
 	char	*line;
@@ -91,11 +119,12 @@ int	ms_heredoc_prompt(t_redirection *redirection)
 	while (line && strcmp(line, redirection->file_path) != 0)
 	{
 
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
+		ms_heredoc_write(fd, line, 0);
 		free(line);
 		line = readline("> ");
 	}
+	if (line)
+		free(line);
 	close(fd);
 	return (1);
 }

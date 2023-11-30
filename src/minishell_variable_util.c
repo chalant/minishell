@@ -6,16 +6,18 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:44:01 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/23 17:32:27 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/30 14:50:31 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// returns 1 if no good
+// returns 1 if no good (includes digit-start)
 // takes both [name]=[value] and just [name]
 int	ms_check_varname(char *var)
 {
+	if ('0' <= *var && *var <= '9')
+		return (1);
 	while (*var && *var != '=')
 	{
 		if ( !('a' <= *var && *var <= 'z') && !('A' <= *var && *var <= 'Z')

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/29 18:35:58 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/30 14:55:10 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void			ms_clear_token(void *token);
 void			ms_add_flags_char(t_token *token, char c);
 void			ms_add_flags_str(t_token *new);
 int				ms_expand_var(t_darray *tokens, t_token *token);
+char			*ms_end_of_name(const char *str);
 int				ms_expand_wildcard(t_darray *tokens, t_token *token);
 void			ms_token_expansion(t_darray *tokens);
 void			ms_remove_quotes(char *str, char *mask_exp);
