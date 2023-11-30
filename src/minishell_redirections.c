@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/30 15:40:51 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/11/30 17:49:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,13 +118,15 @@ int	ms_heredoc_prompt(t_redirection *redirection)
 	line = readline("> ");
 	while (line && strcmp(line, redirection->file_path) != 0)
 	{
-
+		// pass along whether the delimiter was quoted or not
 		ms_heredoc_write(fd, line, 0);
 		free(line);
 		line = readline("> ");
 	}
 	if (line)
 		free(line);
+	else
+		printf("shellshock: warning: here-document delimited by end-of-file (wanted '%s')\n", redirection->file_path);
 	close(fd);
 	return (1);
 }
