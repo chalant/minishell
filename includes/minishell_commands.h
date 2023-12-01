@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_commands.h                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 18:18:00 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 18:46:45 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,10 @@ typedef struct	s_redirection
 
 typedef struct	s_command
 {
+	char				*command_name;
 	int					command_flags;
 	int					input;
 	int					output;
-	char				*command_name;
 	t_darray			*redirections;
 	t_darray			*arguments;
 	struct	s_command	*left;
@@ -53,8 +53,9 @@ typedef struct	s_command
 }				t_command;
 
 int	init_command(t_command *command);
-int	create_redirection_command(t_parse_tree *node, t_stack *stack);
-int	create_simple_command(t_parse_tree *node, t_stack *stack);
+int	set_command_fields(t_parse_tree *node, t_command *command);
+int	redirection_command(t_parse_tree *node, t_command *command);
+int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *));
 
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2]);
 int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2]);

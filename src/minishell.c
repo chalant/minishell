@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/30 23:16:39 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:13:54 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,7 @@ int update_parsing_data(t_parsing_data *data, int size)
 	int	i;
 
 	i = -1;
-	while (++i < size + 1)
+	while (++i < size)
 	{
 		add_earley_set(data->earley_sets, 10);
 		add_adjacency_list(data->chart, sizeof(t_ms_edge), 10);
@@ -236,6 +236,23 @@ int	free_data(t_parsing_data *data, t_parse_tree *tree)
 	return (0);
 }
 
+int	clear_command(t_command *command)
+{
+	free(command->command_name);
+	ft_darray_reset(command->redirections, NULL);
+	ft_darray_reset(command->arguments, NULL);
+	command->left = NULL;
+	command->right = NULL;
+	command->command_name = NULL;
+	command->command_flags = 0;
+	if (command->input)
+		close(command->input);
+	if (command->output)
+		close(command->output);
+	command->input = 0;
+	command->output = 0;
+}
+
 int	reset_commands(t_darray *commands)
 {
 	int			i;
@@ -243,12 +260,30 @@ int	reset_commands(t_darray *commands)
 
 	i = -1;
 	while (++i < commands->size)
+		clear_command(command);
+	ft_darray_reset(commands, NULL);
+	return (0);
+}
+
+int	delete_commands(t_darray *commands)
+{
+	int			i;
+	t_command	*command;
+
+	i = -1;
+	while (++i < commands->max_size)
 	{
 		command = ft_darray_get(commands, i);
-		ft_darray_reset(command->redirections, NULL);
-		//todo:
-		ft_darray_reset(command->arguments, free);
+		free(command->command_name);
+		ft_darray_delete(command->redirections, NULL);
+		ft_darray_delete(command->arguments, NULL);
+		command->left = NULL;
+		command->right = NULL;
+		command->command_name = NULL;
+		free(command->redirections);
+		free(command->arguments);
 	}
+	ft_darray_delete(commands, NULL);
 	return (0);
 }
 
@@ -258,7 +293,6 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	tree->rule_name = data->grammar->start_rule;
 	tree->end = data->input_length - 1;
 	tree->terminal = 0;
-	//tree->children = NULL;
 	ms_start_rule(tree, data);
 	if (build_parse_tree(tree, data) < 0)
 		return (-1);
@@ -314,8 +348,8 @@ int	execute(t_parse_tree *tree, t_darray *command_array)
 {
 	t_command	*command;
 
-	reset_commands(&command_array);
-	command = build_command(&command_array, tree);
+	reset_commands(command_array);
+	command = build_command(command_array, tree);
 	//todo
 	if (!command)
 		return (1);
@@ -374,9 +408,11 @@ int	main(int ac, char **av, char **env)
 	}
 	if (line)
 		free(line);
-	clear_history();
+	rl_clear_history();
 	free_data(&data, &tree);
+	delete_commands(&commands);
 	//free(data.earley_sets);
 	//ms_flush_exit(&data, 0);
+	printf("BYE!\n");
 	return (status);
 }

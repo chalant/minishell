@@ -6,13 +6,13 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/28 16:06:32 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/01 18:47:20 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	create_operator(t_parse_tree *node, t_stack *stack, int type, const char *name)
+int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 {
 	t_command	command;
 
@@ -20,6 +20,8 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, const char *na
 	flatten_tree((t_parse_tree *)ft_darray_get(node->children, 2), stack);
 	init_command(&command);
 	command.command_name = ft_strdup(name);
+	if (!command.command_name)
+		return (-1);
 	command.command_flags = MS_OPERATOR | type;
 	return (ft_stack_push(stack, &command));
 }
@@ -74,9 +76,9 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 	if (node->terminal)
 		return (1);
 	if (strcmp(node->rule_name, "simple_command") == 0)
-		return (create_simple_command(node, commands));
+		return (create_command(node, commands, set_command_fields));
 	else if (strcmp(node->rule_name, "redirection_command") == 0)
-		return (create_redirection_command(node, commands));
+		return (create_command(node, commands, redirection_command));
 	return (handle_semantic_rule(node, commands));
 }
 
