@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 18:57:32 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:31:14 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,6 @@ int	redirection_command(t_parse_tree *node, t_command *command)
 	//todo: errors
 	set_redirections(command, ft_darray_get(node->children, 0));
 	//is it 3 or 2?
-	command->command_name = ft_strdup("FAIL");
 	if (node->children->size >= 2)
 	{
 		tmp = ft_darray_get(node->children, 1);
@@ -132,7 +131,6 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	command = ft_darray_get(stack->elements, stack->elements->size);
 	if (!command || !command->redirections)
 	{
-		printf("HELLO!\n");
 		init_command_fields(&new);
 		//todo: errors
 		factory(node, &new);

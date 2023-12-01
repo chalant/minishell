@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 19:13:54 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:30:08 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,16 +251,16 @@ int	clear_command(t_command *command)
 		close(command->output);
 	command->input = 0;
 	command->output = 0;
+	return (0);
 }
 
 int	reset_commands(t_darray *commands)
 {
 	int			i;
-	t_command	*command;
 
 	i = -1;
 	while (++i < commands->size)
-		clear_command(command);
+		clear_command(ft_darray_get(commands, i));
 	ft_darray_reset(commands, NULL);
 	return (0);
 }
