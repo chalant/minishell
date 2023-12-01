@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell_commands.c                               :+:      :+:    :+:   */
+/*   minishell_command_factory.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/28 17:44:03 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:31:14 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,70 +67,76 @@ int	set_command_elements(t_command *command, t_parse_tree *tree)
 	return (1);
 }
 
-static int	create_command(t_parse_tree *node, t_stack *stack,
-	t_command *command)
+int	set_command_fields(t_parse_tree *node, t_command *command)
 {
 	if (!node->rule_name)
 		return (0);
-	//printf("RULE NAME! %s\n", node->rule_name);
-	if (strcmp(node->rule_name, "builtin") == 0)
-		command->command_flags |= MS_BUILTIN;
 	//todo: need an error when the command is not found.
 	command->command_name = get_command(*get_word(node));
+	if (!command->command_name)
+		return (-1);
 	node = ft_darray_get(node->children, 1);
-	//todo: only create arguments if there is any.
+	if (node->children)
+		//todo: errors
+		set_command_elements(command, node);
+	if (command->redirections)
+		//todo: errors
+		create_files(command, command->redirections);
+	command->command_flags |= MS_OPERAND;
+	return (0);
+}
+
+int	init_command_fields(t_command *command)
+{
+	init_command(command);
+	command->redirections = malloc(sizeof(t_darray));
+	if (!command->redirections)
+		return (-1);
+	if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
+		return (-1);
 	command->arguments = malloc(sizeof(t_darray));
-	// command->redirections = malloc(sizeof(t_darray));
 	if (!command->arguments)
 		return (-1);
 	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
 		return (-1);
-	if (node->children)
-		// todo:errors
-		set_command_elements(command, node);
-	if (command->redirections)
-		create_files(command, command->redirections);
-	command->command_flags |= MS_OPERAND;
-	return (ft_stack_push(stack, command));
+	return (0);
 }
 
-int	create_simple_command(t_parse_tree *node, t_stack *stack)
+int	create_simple_command(t_parse_tree *node, t_command *command)
 {
-	t_command		command;
-
-	init_command(&command);
-	//todo: no need to create redirections if there aren't any!
-	//todo: only create if it is not NULL
-	command.redirections = malloc(sizeof(t_darray));
-	if (!command.redirections)
-		return (-1);
-	if (ft_darray_init(command.redirections, sizeof(t_redirection), 5) < 0)
-		return (-1);
-	return (create_command(node, stack, &command));
+	return (set_command_fields(node, command));
 }
 
-int	create_redirection_command(t_parse_tree *node, t_stack *stack)
+int	redirection_command(t_parse_tree *node, t_command *command)
 {
-	t_command		command;
-	t_parse_tree	*nod;
+	t_parse_tree	*tmp;
 
-	init_command(&command);
-	command.redirections = malloc(sizeof(t_darray));
-	if (!command.redirections)
-		return (-1);
-	if (ft_darray_init(command.redirections, sizeof(t_redirection), 5) < 0)
-		return (-1);
-	set_redirections(&command, ft_darray_get(node->children, 0));
-	//todo: fix redirection commands
-	//command must take the redirection.
-	//must be able to creat redirections without commands
+	//todo: errors
+	set_redirections(command, ft_darray_get(node->children, 0));
 	//is it 3 or 2?
 	if (node->children->size >= 2)
 	{
-		nod = ft_darray_get(node->children, 1);
-		if (nod->rule_name)
-			return (create_command(nod, stack, &command));
+		tmp = ft_darray_get(node->children, 1);
+		if (tmp->rule_name)
+			return (set_command_fields(tmp, command));
 	}
-	create_files(&command, command.redirections);
-	return (ft_stack_push(stack, &command));
+	return (create_files(command, command->redirections));
+}
+
+int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *))
+{
+	t_command	*command;
+	t_command	new;
+
+	command = ft_darray_get(stack->elements, stack->elements->size);
+	if (!command || !command->redirections)
+	{
+		init_command_fields(&new);
+		//todo: errors
+		factory(node, &new);
+		return (ft_stack_push(stack, &new));
+	}
+	//todo: errors
+	factory(node, command);
+	return (ft_stack_push(stack, command));
 }

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 18:34:11 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:37:35 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,7 @@ int update_parsing_data(t_parsing_data *data, int size)
 	int	i;
 
 	i = -1;
-	while (++i < size + 1)
+	while (++i < size)
 	{
 		add_earley_set(data->earley_sets, 10);
 		add_adjacency_list(data->chart, sizeof(t_ms_edge), 10);
@@ -239,19 +239,54 @@ int	free_parse_data(t_parsing_data *data, t_parse_tree *tree)
 	return (0);
 }
 
+int	clear_command(t_command *command)
+{
+	free(command->command_name);
+	ft_darray_reset(command->redirections, NULL);
+	ft_darray_reset(command->arguments, NULL);
+	command->left = NULL;
+	command->right = NULL;
+	command->command_name = NULL;
+	command->command_flags = 0;
+	if (command->input)
+		close(command->input);
+	if (command->output)
+		close(command->output);
+	command->input = 0;
+	command->output = 0;
+	return (0);
+}
+
 int	reset_commands(t_darray *commands)
+{
+	int			i;
+
+	i = -1;
+	while (++i < commands->size)
+		clear_command(ft_darray_get(commands, i));
+	ft_darray_reset(commands, NULL);
+	return (0);
+}
+
+int	delete_commands(t_darray *commands)
 {
 	int			i;
 	t_command	*command;
 
 	i = -1;
-	while (++i < commands->size)
+	while (++i < commands->max_size)
 	{
 		command = ft_darray_get(commands, i);
-		ft_darray_reset(command->redirections, NULL);
-		//todo:
-		ft_darray_reset(command->arguments, free);
+		free(command->command_name);
+		ft_darray_delete(command->redirections, NULL);
+		ft_darray_delete(command->arguments, NULL);
+		command->left = NULL;
+		command->right = NULL;
+		command->command_name = NULL;
+		free(command->redirections);
+		free(command->arguments);
 	}
+	ft_darray_delete(commands, NULL);
 	return (0);
 }
 
@@ -261,7 +296,6 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	tree->rule_name = data->grammar->start_rule;
 	tree->end = data->input_length - 1;
 	tree->terminal = 0;
-	//tree->children = NULL;
 	ms_start_rule(tree, data);
 	if (build_parse_tree(tree, data) < 0)
 		return (-1);
@@ -344,38 +378,43 @@ int	execute(t_parse_tree *tree, t_darray *command_array)
 // 	t_darray			commands;
 // 	char				*line;
 
-// 	status = 0;
-// 	init_parse_data(&data);
-// 	if (alloc_parse_data(&data, 20) < 0)
-// 	{
-// 		free_parse_data(&data, &tree);
-// 		return (1);
-// 	}
-// 	if (ft_darray_init(&commands, sizeof(t_command), 10) < 0)
-// 		return (1);
-// 	tree.children = NULL;
-// 	line = readline(MS_PROMPT_MSG);
-// 	while (line)
-// 	{
-// 		// this should be ran at each loop.
-// 		tokenize_input(&data, &line);
-// 		//print_tokens(&data);
-// 		//print_grammar(&grammar);
-// 		recognize_input(&data);
-// 		parse_input(&data, &tree);
-// 		status = execute(&tree, &commands);
-// 		add_history(line);
-// 		reset_parse_data(&data, &tree);
-// 		free(line);
-// 		line = readline(MS_PROMPT_MSG);
-// 		if (!strcmp(line, "exit"))
-// 			break ;
-// 	}
-// 	if (line)
-// 		free(line);
-// 	rl_clear_history();
-// 	free_parse_data(&data, &tree);
-// 	//free(data.earley_sets);
-// 	//ms_flush_exit(&data, 0);
-// 	return (status);
-// }
+	(void)ac;
+	(void)av;
+	(void)env;
+
+	status = 0;
+	init_data(&data);
+	if (init_parsing_data(&data, 20) < 0)
+	{
+		free_data(&data, &tree);
+		return (1);
+	}
+	if (ft_darray_init(&commands, sizeof(t_command), 10) < 0)
+		return (1);
+	tree.children = NULL;
+	line = readline(MS_PROMPT_MSG);
+	while (line)
+	{
+		// this should be ran at each loop.
+		tokenize_input(&data, &line);
+		//print_tokens(&data);
+		//print_grammar(&grammar);
+		recognize_input(&data);
+		parse_input(&data, &tree);
+		status = execute(&tree, &commands);
+		add_history(line);
+		reset_data(&data, &tree);
+		free(line);
+		line = readline(MS_PROMPT_MSG);
+		if (!strcmp(line, "exit"))
+			break ;
+	}
+	if (line)
+		free(line);
+	rl_clear_history();
+	free_parse_data(&data, &tree);
+	delete_commands(&commands);
+	//free(data.earley_sets);
+	//ms_flush_exit(&data, 0);
+	return (status);
+}
