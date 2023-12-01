@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/01 19:26:47 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:44:13 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,11 +134,11 @@ void	ms_new_prompt(int sig)
 	{
 		glob_status = 130;
 		return ;
+// set $? to 130 or get it from waitpid that would probs be better..
 	}
 	rl_replace_line("", 1);
 	rl_on_new_line();
 	rl_redisplay();
-// set $? to 130 or get it from waitpid that would probs be better..
 }
 
 void	ms_kill_pid(int sig)

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 19:33:53 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:39:58 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ typedef struct	s_command
 int	execute(t_parse_tree *tree, t_darray *command_array);
 
 int	init_command(t_command *command);
+int	delete_commands(t_darray *commands);
 int	set_command_fields(t_parse_tree *node, t_command *command);
 int	redirection_command(t_parse_tree *node, t_command *command);
 int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *));

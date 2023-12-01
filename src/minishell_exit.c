@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 15:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/01 16:53:00 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:40:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 // clear history, clear env, write exit, exit(exit_value)
 void	ms_flush_exit(t_shellshock *data, int exit_value)
 {
+	delete_commands(&(data->commands));
 	free_parse_data(&(data->parse_data), &(data->tree));
 	rl_clear_history();
 	ft_clear_ds(data->env);
