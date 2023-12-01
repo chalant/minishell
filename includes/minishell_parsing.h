@@ -64,14 +64,21 @@ typedef struct	s_parse_tree
 	int			end;
 }				t_parse_tree;
 
-int		ms_prompt_command(t_ms_symbol *symbol, t_token *token);
+int	init_parse_data(t_parsing_data *data);
+int	alloc_parse_data(t_parsing_data *data, int size);
+int	reset_parse_data(t_parsing_data *data, t_parse_tree *tree);
+int	free_parse_data(t_parsing_data *data, t_parse_tree *tree);
 
-int		ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state state);
-int		build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
-int		clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(void *)), int del);
+int	recognize_input(t_parsing_data *data);
+int	parse_input(t_parsing_data *data, t_parse_tree *tree);
+int	ms_prompt_command(t_ms_symbol *symbol, t_token *token);
 
-int		build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens, t_graph *chart);
-int 	add_earley_set(t_darray *sets, int size);
-int		clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void *)));
+int	ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state state);
+int	build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
+int	clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(void *)), int del);
+
+int	build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens, t_graph *chart);
+int	add_earley_set(t_darray *sets, int size);
+int	clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void *)));
 
 #endif

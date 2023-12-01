@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 18:18:00 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:12:37 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,13 @@ typedef struct	s_command
 	struct	s_command	*right;
 }				t_command;
 
+int	execute(t_parse_tree *tree, t_darray *command_array);
+
 int	init_command(t_command *command);
 int	create_redirection_command(t_parse_tree *node, t_stack *stack);
 int	create_simple_command(t_parse_tree *node, t_stack *stack);
 
+int	minishell_execute(t_command *command);
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2]);
 int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2]);
 int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2]);

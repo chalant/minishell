@@ -6,13 +6,14 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 17:36:58 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:28:02 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	get_exit_status(int pid)
+// WIFSIGNALED isn't true even for 'ctrl-c' and 'ctrl-\'
+static int	get_exit_status(pid_t pid)
 {
 	int	status;
 
@@ -20,9 +21,17 @@ int	get_exit_status(int pid)
 	waitpid(pid, &status, 2);
 	while (wait(NULL) != -1)
 		continue ;
-	if (((status) & 0x7f) == 0)
-		return ((((status) & 0xff00) >> 8));
-	return (0);
+	if (glob_status)
+	{
+		status = glob_status;
+		glob_status = 0;
+		return (status);
+	}
+	if (WIFSIGNALED(status))
+		return (WTERMSIG(status));
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	return (1);
 }
 
 //copies file descriptors
@@ -67,10 +76,10 @@ int	pipe_in(t_command *command, int _pipe[2])
 
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
-int	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
+static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 {
-	int	pid;
-	int	status;
+	pid_t	pid;
+	int		status;
 
 	pid = fork();
 	//todo: maybe print an error ?
@@ -243,20 +252,21 @@ void	print_commands(t_command *command, int depth)
 
 int	minishell_execute(t_command *command)
 {
-	int			in_pipe[2];
-	int			out_pipe[2];
+	int	in_pipe[2];
+	int	out_pipe[2];
+	int	status;
 
 	//printf("Commands: \n");
-	print_commands(command, 0);
+	// print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	if (pipe(in_pipe) < 0)
 		return (-1);
-	execute_command(command, in_pipe, out_pipe);
+	status = execute_command(command, in_pipe, out_pipe);
 	close(in_pipe[0]);
 	close(in_pipe[1]);
 	//todo: close all open file descriptors
 	if (!access(MS_HEREDOC_PATH, F_OK))
 		if (unlink(MS_HEREDOC_PATH))
 			ms_perror("unlink", MS_HEREDOC_PATH, NULL, errno);
-	return (0);
+	return (status);
 }

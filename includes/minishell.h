@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/27 17:39:53 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/01 19:26:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,17 +31,24 @@
 # include "minishell_semantics.h"
 # include "libft.h"
 
+int	glob_status;
+
 typedef struct s_shellshock
 {
+	int					status;
+	char				*line;
 	int					env_excess;
 	char				**env;
 	struct sigaction	act_sigint;
 	struct sigaction	act_sigquit;
+	t_parsing_data		parse_data;
+	t_parse_tree		tree;
+	t_darray			commands;
 }			t_shellshock;
 
 # define MS_PROMPT_MSG "shellshock$ "
 
-int		ms_exit(t_shellshock *data, char **arg, char *line);
+int		ms_exit(t_shellshock *data, char **arg);
 void	ms_flush_exit(t_shellshock *data, int exit_value);
 int		ms_echo(char **arg);
 int		ms_cd(t_shellshock *data, char **arg);
