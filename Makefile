@@ -49,7 +49,7 @@ SRC_FILES =	minishell.c \
 			minishell_semantics.c \
 			minishell_execution.c \
 			minishell_path.c \
-			minishell_commands.c \
+			minishell_command_factory.c \
 			minishell_redirections.c \
 			minishell_semantic_operators.c \
 			minishell_semantics_utils.c \

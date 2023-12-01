@@ -80,13 +80,16 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 	return (handle_semantic_rule(node, commands));
 }
 
-t_command	*build_command(t_darray	*command_array, t_parse_tree *node)
+//todo: should also take additional data for the builtins..
+t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 {
 	t_stack		commands;
 	t_command	*command;
 
+	//todo: error here.
 	ft_stack_init(&commands, command_array);
-	flatten_tree(node, &commands);
+	//todo:error here
+	flatten_tree(tree, &commands);
 	command = (t_command *)ft_stack_pop(&commands);
 	if (!command->command_name)
 		return (NULL);

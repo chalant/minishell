@@ -236,6 +236,22 @@ int	free_data(t_parsing_data *data, t_parse_tree *tree)
 	return (0);
 }
 
+int	reset_commands(t_darray *commands)
+{
+	int			i;
+	t_command	*command;
+
+	i = -1;
+	while (++i < commands->size)
+	{
+		command = ft_darray_get(commands, i);
+		ft_darray_reset(command->redirections, NULL);
+		//todo:
+		ft_darray_reset(command->arguments, free);
+	}
+	return (0);
+}
+
 int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 {
 	tree->start = 0;
@@ -294,19 +310,15 @@ int	recognize_input(t_parsing_data *data)
 	return (0);
 }
 
-int	execute(t_parse_tree *tree)
+int	execute(t_parse_tree *tree, t_darray *command_array)
 {
-	t_darray	command_array;
 	t_command	*command;
 
-	if (ft_darray_init(&command_array, sizeof(t_command), 10) < 0)
-		return (1);
+	reset_commands(&command_array);
 	command = build_command(&command_array, tree);
+	//todo
 	if (!command)
-	{
-		//todo: free command_array.
 		return (1);
-	}
 	return (minishell_execute(command));
 }
 
@@ -326,6 +338,7 @@ int	main(int ac, char **av, char **env)
 	int					status;
 	t_parsing_data		data;
 	t_parse_tree		tree;
+	t_darray			commands;
 	char				*line;
 
 	(void)ac;
@@ -339,6 +352,8 @@ int	main(int ac, char **av, char **env)
 		free_data(&data, &tree);
 		return (1);
 	}
+	if (ft_darray_init(&commands, sizeof(t_command), 10) < 0)
+		return (1);
 	tree.children = NULL;
 	line = readline(MS_PROMPT_MSG);
 	while (line)
@@ -349,7 +364,7 @@ int	main(int ac, char **av, char **env)
 		//print_grammar(&grammar);
 		recognize_input(&data);
 		parse_input(&data, &tree);
-		status = execute(&tree);
+		status = execute(&tree, &commands);
 		add_history(line);
 		reset_data(&data, &tree);
 		free(line);

@@ -78,7 +78,6 @@ static int	create_command(t_parse_tree *node, t_stack *stack,
 	//todo: need an error when the command is not found.
 	command->command_name = get_command(*get_word(node));
 	node = ft_darray_get(node->children, 1);
-
 	//todo: only create arguments if there is any.
 	command->arguments = malloc(sizeof(t_darray));
 	// command->redirections = malloc(sizeof(t_darray));
@@ -87,10 +86,8 @@ static int	create_command(t_parse_tree *node, t_stack *stack,
 	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
 		return (-1);
 	if (node->children)
-	{
-		// errors ?
+		// todo:errors
 		set_command_elements(command, node);
-	}
 	if (command->redirections)
 		create_files(command, command->redirections);
 	command->command_flags |= MS_OPERAND;
@@ -103,6 +100,7 @@ int	create_simple_command(t_parse_tree *node, t_stack *stack)
 
 	init_command(&command);
 	//todo: no need to create redirections if there aren't any!
+	//todo: only create if it is not NULL
 	command.redirections = malloc(sizeof(t_darray));
 	if (!command.redirections)
 		return (-1);

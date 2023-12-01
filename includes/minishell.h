@@ -52,12 +52,11 @@ int		ms_export_var(t_shellshock *data, char *var);
 int		ms_unset(t_shellshock *data, char **arg);
 void	ms_unset_var(t_shellshock *data, char *name);
 int		ms_envcpy(t_shellshock *data);
-char	**ms_realloc(char **ptr, int add);
 char	*ms_get_var_env(t_shellshock *data, char *var);
+char	**ms_realloc(char **ptr, int add);
 char	**ms_get_var_envp(t_shellshock *data, char *var);
 int		ms_check_varname(char *var);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
-char	*get_command(char *command);
 
 #endif
