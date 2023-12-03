@@ -19,7 +19,5 @@ char	**get_word(t_parse_tree *node)
 	tree = ft_darray_get(node->children, 0);
 	while (!tree->terminal)
 		tree = ft_darray_get(tree->children, 0);
-	//todo: set the rule name to NULL and free the string from the command?
-	// or return a copy?
 	return (&tree->rule_name);
 }

@@ -265,7 +265,7 @@ int	reset_commands(t_darray *commands)
 	int			i;
 
 	i = -1;
-	while (++i < commands->size)
+	while (++i < commands->actual_size)
 		clear_command(ft_darray_get(commands, i));
 	ft_darray_reset(commands, NULL);
 	return (0);
@@ -277,7 +277,7 @@ int	delete_commands(t_darray *commands)
 	t_command	*command;
 
 	i = -1;
-	while (++i < commands->max_size)
+	while (++i < commands->actual_size)
 	{
 		command = ft_darray_get(commands, i);
 		free(command->command_name);
@@ -303,7 +303,7 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	if (build_parse_tree(tree, data) < 0)
 		return (-1);
 	//todo: remove this since it is for debugging.
-	// print_parse_tree(tree, 0);
+	print_parse_tree(tree, 0);
 	return (0);
 }
 

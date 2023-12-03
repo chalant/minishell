@@ -39,7 +39,7 @@ t_parse_tree	*get_subtree(t_parse_tree *tree, int index)
 	t_parse_tree	subtree;
 	int				i;
 
-	if (index == tree->children->max_size)
+	if (index >= tree->children->actual_size)
 	{
 		i = -1;
 		while (++i < index + 1 - tree->children->max_size)
@@ -105,7 +105,7 @@ int	process_non_terminal(t_parse_tree *tree, t_parsing_data *data,
 				//todo: errors.
 				set_subtree(subtree, symbol->name, state.node, nstate.node);
 				subtree->terminal = 0;
-				ft_darray_set(tree->children, subtree, state.depth);
+				//ft_darray_set(tree->children, subtree, state.depth);
 			}
 			if (nstate.node == tree->end)
 				return (1);

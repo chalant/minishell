@@ -40,9 +40,9 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 				return (-1);
 			if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
 				return (-1);
-			set_redirections(command, ft_darray_get(node->children, 3));
-			create_files(command, command->redirections);
 		}
+		set_redirections(command, ft_darray_get(node->children, 3));
+		create_files(command, command->redirections);
 	}
 	return (1);
 }

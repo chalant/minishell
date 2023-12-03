@@ -16,12 +16,12 @@ static int  build_right_operator(t_command *right, t_command *parent, t_stack *c
 {
 	if (right->command_flags & MS_OPERATOR)
 	{
-		//todo: these should be copies when we free later.
-		if (!(parent->command_flags & MS_PIPE) && !right->redirections && parent->redirections)
+		if (!(parent->command_flags & MS_PIPE))
 		{
-			right->redirections = parent->redirections;
-			right->input = parent->input;
-			right->output = parent->output;
+			if (!right->input)
+				right->input = parent->input;
+			if (!right->output)
+				right->output = parent->output;
 		}
 		return (build_operator(right, commands));
 	}
@@ -32,12 +32,10 @@ static int  build_left_operator(t_command *left, t_command *parent, t_stack *com
 {
 	if (left->command_flags & MS_OPERATOR)
 	{
-		if (!left->redirections)
-		{
-			left->redirections = parent->redirections;
+		if (!left->input)
 			left->input = parent->input;
+		if (!left->output)
 			left->output = parent->output;
-		}
 		return (build_operator(left, commands));
 	}
 	return (1);
@@ -53,17 +51,14 @@ int	build_operator(t_command *command, t_stack *commands)
 	build_right_operator(right, command, commands);
 	left = (t_command *)ft_stack_pop(commands);
 	build_left_operator(left, command, commands);
-	if (command->redirections)
-	{
-		if (!left->output && !(command->command_flags & MS_PIPE))
-			left->output = command->output;
-		if (!right->output)
-			right->output = command->output;
-		if (!left->input)
-			left->input = command->input;
-		if (!right->input && !(command->command_flags & MS_PIPE))
-			right->input = command->input;
-	}
+	if (!left->output && !(command->command_flags & MS_PIPE))
+		left->output = command->output;
+	if (!right->output)
+		right->output = command->output;
+	if (!left->input)
+		left->input = command->input;
+	if (!right->input && !(command->command_flags & MS_PIPE))
+		right->input = command->input;
 	command->left = left;
 	command->right = right;
 	return (1);

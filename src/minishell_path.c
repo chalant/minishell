@@ -86,7 +86,7 @@ char	*get_command(char *command)
 	if (!command)
 		return (NULL);
 	if (ft_strchr(command, '/'))
-		return (command);
+		return (ft_strdup(command));
 	if (get_paths(&paths, environ) < 0)
         return (NULL);
 	command_path = find_command(paths, command);

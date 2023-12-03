@@ -266,8 +266,8 @@ int	minishell_execute(t_command *command)
 	int	out_pipe[2];
 	int	status;
 
-	//printf("Commands: \n");
-	// print_commands(command, 0);
+	printf("Commands: \n");
+	print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	if (pipe(in_pipe) < 0)
 		return (-1);

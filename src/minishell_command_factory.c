@@ -107,7 +107,8 @@ int	redirection_command(t_parse_tree *node, t_command *command)
 	t_parse_tree	*tmp;
 
 	//todo: errors
-	set_redirections(command, ft_darray_get(node->children, 0));
+	if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
+		return (-1);
 	//is it 3 or 2?
 	if (node->children->size >= 2)
 	{
@@ -124,7 +125,7 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	t_command	new;
 
 	command = ft_darray_get(stack->elements, stack->elements->size);
-	if (!command || !command->redirections)
+	if (!command || !command->redirections || !command->arguments)
 	{
 		init_command_fields(&new);
 		//todo: errors

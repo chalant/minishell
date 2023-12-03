@@ -53,8 +53,6 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	redirection->mode = 0664;
 	redir = ft_darray_get(tree->children, 0);
 	set_redirection_flags(redirection, redir->rule_name);
-	//todo: maybe copy the word or set it to NULL in the tree.
-	//might be safer to copy instead.
 	redirection->file_path = *get_word(
 			ft_darray_get(tree->children, 1));
 	return (0);
@@ -69,7 +67,6 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	if (ft_darray_append(command->redirections, &redirection) < 0)
 		return (-1);
 	node = ft_darray_get(tree->children, 1);
-	printf("Redirections %s\n", node->rule_name);
 	while (!node->terminal)
 	{
 		set_redirection(&redirection, ft_darray_get(node->children, 0));
