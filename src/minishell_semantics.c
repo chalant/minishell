@@ -17,7 +17,8 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 	t_command	command;
 
 	//todo:handle errors
-	flatten_tree((t_parse_tree *)ft_darray_get(node->children, 2), stack);
+	if (flatten_tree((t_parse_tree *)ft_darray_get(node->children, 2), stack) < 0)
+		return (-1);
 	init_command(&command);
 	command.command_name = ft_strdup(name);
 	if (!command.command_name)
@@ -93,6 +94,8 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 	//todo:error here
 	flatten_tree(tree, &commands);
 	command = (t_command *)ft_stack_pop(&commands);
+	if (!command)
+		return (0);
 	if (!command->command_name)
 		return (NULL);
 	if (command->command_flags & MS_OPERATOR)

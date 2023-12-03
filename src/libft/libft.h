@@ -31,6 +31,7 @@ typedef	struct	s_darray
 	int			max_size;
 	int			block_size;
 	int			size;
+	int			actual_size;
 	int			type_size;
 }				t_darray;
 

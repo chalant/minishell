@@ -31,7 +31,7 @@
 # include "minishell_semantics.h"
 # include "libft.h"
 
-int	glob_status;
+extern int	g_global_status;
 
 typedef struct s_shellshock
 {

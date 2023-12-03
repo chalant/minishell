@@ -102,11 +102,6 @@ int	init_command_fields(t_command *command)
 	return (0);
 }
 
-int	create_simple_command(t_parse_tree *node, t_command *command)
-{
-	return (set_command_fields(node, command));
-}
-
 int	redirection_command(t_parse_tree *node, t_command *command)
 {
 	t_parse_tree	*tmp;
@@ -133,10 +128,12 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	{
 		init_command_fields(&new);
 		//todo: errors
-		factory(node, &new);
+		if (factory(node, &new) < 0)
+			return (-1);
 		return (ft_stack_push(stack, &new));
 	}
 	//todo: errors
-	factory(node, command);
+	if (factory(node, command) < 0)
+		return (-1);
 	return (ft_stack_push(stack, command));
 }

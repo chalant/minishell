@@ -12,13 +12,27 @@
 
 #include "minishell.h"
 
-// int	init_earley_sets(t_parsing_data *data)
-// {
-// 	data->earley_sets = malloc(sizeof(t_darray));
-// 	if (!data->earley_sets)
-// 		return (-1);
-// 	return (0);
-// }
+void	delete_earley_set(void *set)
+{
+	t_earley_set	*tmp;
+
+	tmp = (t_earley_set *)set;
+	ft_darray_delete(tmp->items, NULL);
+	free(tmp->items);
+	tmp->items = NULL;
+	tmp->size = 0;
+	return ;
+}
+
+void	reset_earley_set(void *set)
+{
+	t_earley_set	*tmp;
+
+	tmp = (t_earley_set *)set;
+	ft_darray_reset(tmp->items, NULL);
+	tmp->size = 0;
+	return ;
+}
 
 int	clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void *)))
 {
@@ -30,7 +44,7 @@ int	clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void
 	{
 		set = ft_darray_get(sets, i);
 		del_method(set->items, NULL);
-		free(set->items);
+		//free(set->items);
 	}
 	del_method(sets, NULL);
 	return (0);
@@ -38,11 +52,16 @@ int	clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void
 
 int add_earley_set(t_darray *sets, int size)
 {
-    t_earley_set    set;
+	t_earley_set	new;
 
-	set.items = malloc(sizeof(t_darray));
-	set.size = 0;
-	if (ft_darray_init(set.items, sizeof(t_earley_item), size) < 0)
+	if (sets->size < sets->actual_size)
+	{
+		sets->size += 1;
+		return (1);
+	}
+	new.items = malloc(sizeof(t_darray));
+	new.size = 0;
+	if (ft_darray_init(new.items, sizeof(t_earley_item), size) < 0)
 		return (-1);
-    return (ft_darray_append(sets, &set));
+	return (ft_darray_append(sets, &new));
 }

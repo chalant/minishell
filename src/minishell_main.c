@@ -132,7 +132,7 @@ void	ms_new_prompt(int sig)
 	write(STDOUT_FILENO, "\n", 1);
 	if (check > -1)
 	{
-		glob_status = 130;
+		g_global_status = 130;
 		return ;
 // set $? to 130 or get it from waitpid that would probs be better..
 	}
@@ -152,7 +152,7 @@ void	ms_kill_pid(int sig)
 	{
 		// kill(check, SIGQUIT);
 		printf("Quit: %i\n", SIGQUIT);
-		glob_status = 131;
+		g_global_status = 131;
 // set $? to 131 or get it from waitpid that would probs be better..
 	}
 }
@@ -188,7 +188,7 @@ int	main(void)
 {
 	t_shellshock	data;
 
-	glob_status = 0;
+	g_global_status = 0;
 	data.env_excess = 0;
 	if (ms_envcpy(&data))
 		return (1);

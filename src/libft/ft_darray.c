@@ -23,6 +23,7 @@ int	ft_darray_init(t_darray *darray, int type_size, int size)
 	darray->max_size = size;
 	darray->type_size = type_size;
 	darray->block_size = size;
+	darray->actual_size = 0;
 	return (0);
 }
 
@@ -36,7 +37,7 @@ int	ft_darray_reset(t_darray *darray, void del_content(void *))
 	if (del_content)
 	{
 		i = 0;
-		while (i < darray->size)
+		while (i < darray->actual_size)
 		{
 			del_content(darray->contents + i * darray->type_size);
 			i++;
@@ -56,7 +57,7 @@ int	ft_darray_delete(t_darray *darray, void del_content(void *))
 	if (del_content)
 	{
 		i = 0;
-		while (i < darray->size)
+		while (i < darray->actual_size)
 		{
 			del_content(darray->contents + i * darray->type_size);
 			i++;
@@ -66,6 +67,7 @@ int	ft_darray_delete(t_darray *darray, void del_content(void *))
 	darray->contents = NULL;
 	darray->size = 0;
 	darray->max_size = 0;
+	darray->actual_size = 0;
 	return (0);
 }
 
@@ -75,6 +77,8 @@ int	ft_darray_append(t_darray *darray, void *element)
 	void	*address;
 
 	darray->size += 1;
+	if (darray->size > darray->actual_size)
+		darray->actual_size += 1;
 	if (darray->size > darray->max_size)
 	{
 		new_elements = malloc((darray->max_size + darray->block_size) * darray->type_size);

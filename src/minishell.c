@@ -12,6 +12,8 @@
 
 # include "minishell.h"
 
+int	g_global_status;
+
 int	ft_darray_full_delete(t_darray *darray, void (*del_content)(void *))
 {
 	ft_darray_delete(darray, del_content);
@@ -180,7 +182,6 @@ int	alloc_parse_data(t_parsing_data *data, int size)
 {
 	//todo: error management, maybe init stuff to NULL and call a protected clear ft?
 			// not sure how feasible that is
-	//todo: tokens are initialized first.
 	data->tokens = malloc(sizeof(t_darray));
 	if (!data->tokens)
 		return (-1);
@@ -193,7 +194,8 @@ int	alloc_parse_data(t_parsing_data *data, int size)
 	data->earley_sets = malloc(sizeof(t_darray));
 	if (!data->earley_sets)
 		return (-1);
-	init_graph(data->chart, size);
+	if (init_graph(data->chart, size) < 0)
+		return (-1);
 	if (ft_darray_init(data->earley_sets, sizeof(t_darray), size) < 0)
 		return (-1);
 	if (ft_darray_init(data->tokens, sizeof(t_token), size) < 0)
@@ -217,10 +219,10 @@ int update_parsing_data(t_parsing_data *data, int size)
 
 int	reset_parse_data(t_parsing_data *data, t_parse_tree *tree)
 {
-	clear_parse_tree(tree, ft_darray_reset, 0);
-	clear_earley_sets(data->earley_sets, ft_darray_delete);
-	clear_graph(data->chart, ft_darray_delete);
 	ft_darray_reset(data->tokens, ms_clear_token);
+	clear_parse_tree(tree, ft_darray_reset, 0);
+	ft_darray_reset(data->earley_sets, reset_earley_set);
+	clear_graph(data->chart, ft_darray_reset);
 	return (0);
 }
 
@@ -229,13 +231,14 @@ int	free_parse_data(t_parsing_data *data, t_parse_tree *tree)
 	delete_grammar(data->grammar);
 	if (tree)
 		clear_parse_tree(tree, ft_darray_full_delete, 1);
-	clear_earley_sets(data->earley_sets, ft_darray_full_delete);
+	ft_darray_delete(data->earley_sets, delete_earley_set);
 	clear_graph(data->chart, ft_darray_delete);
-	free(data->chart->adjacency_list);
 	ft_darray_delete(data->tokens, ms_clear_token);
+	free(data->chart->adjacency_list);
 	free(data->tokens);
 	free(data->grammar);
 	free(data->chart);
+	free(data->earley_sets);
 	return (0);
 }
 
@@ -359,58 +362,48 @@ int	execute(t_parse_tree *tree, t_darray *command_array)
 	return (minishell_execute(command));
 }
 
-// int	free_on_error(t_parsing_data *data, t_parse_tree *tree)
-// {
-// 	return (1);
-// }
+int	main(void)
+{
+	int					status;
+	t_parsing_data		data;
+	t_parse_tree		tree;
+	t_darray			commands;
+	char				*line;
 
-// int	free_on_success(t_parsing_data *data, t_parse_tree *tree, int status)
-// {
-
-// 	return (1);
-// }
-
-// int	main(void)
-// {
-// 	int					status;
-// 	t_parsing_data		data;
-// 	t_parse_tree		tree;
-// 	t_darray			commands;
-// 	char				*line;
-
-// 	status = 0;
-// 	init_parse_data(&data);
-// 	if (alloc_parse_data(&data, 20) < 0)
-// 	{
-// 		free_parse_data(&data, &tree);
-// 		return (1);
-// 	}
-// 	if (ft_darray_init(&commands, sizeof(t_command), 10) < 0)
-// 		return (1);
-// 	tree.children = NULL;
-// 	line = readline(MS_PROMPT_MSG);
-// 	while (line)
-// 	{
-// 		// this should be ran at each loop.
-// 		tokenize_input(&data, &line);
-// 		//print_tokens(&data);
-// 		//print_grammar(&grammar);
-// 		recognize_input(&data);
-// 		parse_input(&data, &tree);
-// 		status = execute(&tree, &commands);
-// 		add_history(line);
-// 		reset_parse_data(&data, &tree);
-// 		free(line);
-// 		line = readline(MS_PROMPT_MSG);
-// 		if (!strcmp(line, "exit"))
-// 			break ;
-// 	}
-// 	if (line)
-// 		free(line);
-// 	rl_clear_history();
-// 	free_parse_data(&data, &tree);
-// 	delete_commands(&commands);
-// 	//free(data.earley_sets);
-// 	//ms_flush_exit(&data, 0);
-// 	return (status);
-// }
+	status = 0;
+	g_global_status = 0;
+	init_parse_data(&data);
+	if (alloc_parse_data(&data, 20) < 0)
+	{
+		free_parse_data(&data, &tree);
+		return (1);
+	}
+	if (ft_darray_init(&commands, sizeof(t_command), 10) < 0)
+		return (1);
+	tree.children = NULL;
+	line = readline(MS_PROMPT_MSG);
+	while (line)
+	{
+		// this should be ran at each loop.
+		tokenize_input(&data, &line);
+		//print_tokens(&data);
+		//print_grammar(&grammar);
+		recognize_input(&data);
+		parse_input(&data, &tree);
+		status = execute(&tree, &commands);
+		add_history(line);
+		reset_parse_data(&data, &tree);
+		free(line);
+		line = readline(MS_PROMPT_MSG);
+		if (!strcmp(line, "exit"))
+			break ;
+	}
+	if (line)
+		free(line);
+	rl_clear_history();
+	free_parse_data(&data, &tree);
+	delete_commands(&commands);
+	//free(data.earley_sets);
+	//ms_flush_exit(&data, 0);
+	return (status);
+}

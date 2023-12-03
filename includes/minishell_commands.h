@@ -19,7 +19,7 @@
 # define MS_PIPE 1 << 0
 # define MS_OR 1 << 1
 # define MS_AND 1 << 2
-# define	MS_OPERATOR 1 << 3
+# define MS_OPERATOR 1 << 3
 # define MS_OPERAND 1 << 4
 # define MS_BUILTIN 1 << 5
 # define MS_FORKED 1 << 6

@@ -21,10 +21,10 @@ static int	get_exit_status(pid_t pid)
 	waitpid(pid, &status, 2);
 	while (wait(NULL) != -1)
 		continue ;
-	if (glob_status)
+	if (g_global_status)
 	{
-		status = glob_status;
-		glob_status = 0;
+		status = g_global_status;
+		g_global_status = 0;
 		return (status);
 	}
 	if (WIFSIGNALED(status))
@@ -173,10 +173,20 @@ int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 	(void)command;
 	(void)in_pipe;
 	(void)out_pipe;
-	// if (strcmp(command->command_name, "echo") == 0)
-	// 	ms_echo(command->arguments);
-	// else if (strcmp(command->command_name, "echo") == 0)
-	// 	ms_cd(command->data,)
+	// if (strcmp(token->string, "cd") == 0)
+	// 	ms_cd();
+	// else if (strcmp(token->string, "echo") == 0)
+	// 	ms_echo();
+	// else if (strcmp(token->string, "pwd") == 0)
+	// 	ms_pwd();
+	// else if (strcmp(token->string, "export") == 0)
+	// 	ms_export();
+	// else if (strcmp(token->string, "env") == 0)
+	// 	ms_env();
+	// else if (strcmp(token->string, "unset") == 0)
+	// 	ms_unset();
+	// else if (strcmp(token->string, "exit") == 0)
+	// 	ms_exit();
 	return (0);
 }
 

@@ -6,6 +6,7 @@
 typedef struct	s_graph 
 {
 	int			num_vertices;
+	int			current_size;
 	t_darray	*adjacency_list;
 }				t_graph;
 

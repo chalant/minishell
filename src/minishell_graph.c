@@ -20,6 +20,7 @@ int	init_graph(t_graph *graph, int num_vertices)
 		return (-1);
 	if (ft_darray_init(graph->adjacency_list, sizeof(t_darray), num_vertices))
 		return (-1);
+	graph->num_vertices = 0;
 	return (1);
 }
 
@@ -27,6 +28,11 @@ int	add_adjacency_list(t_graph *graph, int type_size, int size)
 {
 	t_darray	list;
 
+	if (graph->adjacency_list->size < graph->num_vertices)
+	{
+		graph->adjacency_list->size += 1;
+		return (1);
+	}
 	if (ft_darray_init(&list, type_size, size))
 		return (-1);
 	if (ft_darray_append(graph->adjacency_list, &list) < 0)
@@ -50,29 +56,17 @@ int	add_edge(t_graph *graph, int start, void *data)
 	return (ft_darray_append(edges, data));
 }
 
-void	delete_darray(void *data)
-{
-	t_darray	*array;
-
-	array = (t_darray *)data;
-	ft_darray_delete(array, NULL);
-}
-
 int	clear_graph(t_graph *graph, int (*del_method)(t_darray *, void(*)(void *)))
 {
-	// int			i;
-	// t_darray	*list;
+	int			i;
+	t_darray	*list;
 
-	// i = -1;
-	// while (++i < graph->adjacency_list->size)
-	// {
-	// 	list = ft_darray_get(graph->adjacency_list, i);
-	// 	del_method(list, );
-	// 	free(list);
-	// }
-	del_method(graph->adjacency_list, delete_darray);
-	//free(graph->adjacency_list);
-	//graph->adjacency_list = NULL;
-	graph->num_vertices = 0;
+	i = -1;
+	while (++i < graph->num_vertices)
+	{
+		list = ft_darray_get(graph->adjacency_list, i);
+		del_method(list, NULL);
+	}
+	del_method(graph->adjacency_list, NULL);
 	return (1);
 }

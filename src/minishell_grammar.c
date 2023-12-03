@@ -124,16 +124,10 @@ static void	delete_rule(t_ms_rule *rule)
 
 void	delete_grammar(t_ms_grammar *grammar)
 {
-	t_ms_symbol	*first_first;
-
 	if (!grammar)
 		return ;
 	if (grammar->rules)
 	{
-		first_first = grammar->rules[0]->symbols[0];
-// these two are probably already free'd?
-		//ft_darray_delete(first_first->tokens, ms_clear_token);
-		//ft_darray_delete(first_first->earley_sets, clear_earley_set);
 		while (grammar->length--)
 			delete_rule(grammar->rules[grammar->length]);
 		free(grammar->rules);
