@@ -6,12 +6,13 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/23 17:50:33 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 16:47:21 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// close dirp, clear token, clear new, perror if ret == err_malloc, return ret
 static int	ms_wildcard_error(DIR *dirp, t_token *token, t_token *new, int ret)
 {
 	if (dirp)
@@ -68,7 +69,7 @@ static void	ms_add_flags(t_token *token)
 	}
 }
 
-// returns 1 on malloc error, doesn't clear 'new'
+// returns ERR_MALLOC on error, doesn't clear 'new'
 static int	ms_wildcard_add(t_darray *tokens, struct dirent *entryp, t_token *new)
 {
 	int	namlen;
@@ -211,7 +212,7 @@ static int	ms_pre_check(t_token *token, struct dirent *entryp)
 	return (1);
 }
 
-// returns 0 if succes
+// returns 0 if succes, clears 'token' or adds it to tokens
 // on error, doesn't clear 'tokens', prints message
 int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 {
@@ -246,5 +247,3 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 	ms_clear_token(token);
 	return (0);
 }
-
-// errors are all good! (i'm pretty sure)

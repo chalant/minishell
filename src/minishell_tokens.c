@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/29 19:15:43 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 17:02:20 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,13 +126,13 @@ static char	*ms_handle_symbol(char *end, t_darray *tokens, t_token *token, t_tok
 		if (!ft_strncmp(start, "<<", 2))
 			token->flags |= IS_HEREDOC;
 	}
-	//todo: handle errors (clear tokens and stuff)
-	ms_add_token(start, end, tokens, token);
+	if (ms_add_token(start, end, tokens, token))
+		return (NULL);
 	return (end);
 }
 
 // NULL terminates tokens with a fresh initialised token.
-// returns > 0 on failure, free's *'input', doesn't delete 'tokens'.
+// error: free '*input', print error msg
 int	ms_tokeniser(char **input, t_darray *tokens, t_token_info *info)
 {
 	char	*start;
@@ -154,17 +154,24 @@ int	ms_tokeniser(char **input, t_darray *tokens, t_token_info *info)
 			ms_add_flags_char(&token, *end);
 			end++;
 		}
-		//todo: handle errors (clear stuff?, malloc or opendir or ..?)
 		if (ms_add_token(start, end, tokens, &token))
 		{
 			free(*input);
 			return (ERR_MALLOC);
 		}
-		//todo: handle errors
 		end = ms_handle_symbol(end, tokens, &token, info);
+		if (!end)
+		{
+			free(*input);
+			return (ERR_MALLOC);
+		}
 	}
 	ms_token_expansion(tokens);
-	//todo: handle errors
-	ft_darray_append(tokens, ms_init_token(&token));
+	if (ft_darray_append(tokens, ms_init_token(&token)))
+	{
+		free(*input);
+		ms_perror("tokeniser", NULL, NULL, errno);
+		return (ERR_MALLOC);
+	}
 	return (0);
 }
