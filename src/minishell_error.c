@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:45:06 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/20 15:34:13 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 15:33:38 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 // returns 1
 int	ms_perror(const char *cmd, const char *item, const char *msg, int err)
 {
+// maybe error msg in the STD_ERROR?
 	printf("shellshock: ");
 	if (cmd)
 		printf("%s: ", cmd);

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/30 14:54:20 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 16:32:07 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ char	*ms_end_of_name(const char *str)
 }
 
 // skipped if (!add_len || !fill);
+// error: perror, return
 static int	ms_join_mask(t_token *token, int add_len, char fill)
 {
 	char	*new;
@@ -52,21 +53,29 @@ static int	ms_join_mask(t_token *token, int add_len, char fill)
 		return (0);
 	if (!token->mask_exp)
 		token->mask_exp = ft_strdup("");
+	if (!token->mask_exp)
+	{
+		ms_perror("expansion", NULL, NULL, errno);
+		return (ERR_MALLOC);
+	}
 	old_len = ft_strlen(token->mask_exp);
 	new = malloc(sizeof(char) * (old_len + add_len + 1));
 	if (!new)
+	{
+		ms_perror("expansion", NULL, NULL, errno);
 		return (ERR_MALLOC);
+	}
 	ft_strlcpy(new, token->mask_exp, old_len + 1);
 	new[old_len + add_len] = 0;
 	while (add_len--)
 		new[old_len + add_len] = fill;
-	if (token->mask_exp)
-		free(token->mask_exp);
+	free(token->mask_exp);
 	token->mask_exp = new;
 	return (0);
 }
 
 // never free's str
+// error: perror, return
 static int	ms_join_str(t_token *token, char *str, char mask)
 {
 	char	*new;
@@ -77,11 +86,18 @@ static int	ms_join_str(t_token *token, char *str, char mask)
 	str_len = ft_strlen(str);
 	if (!token->string)
 		token->string = ft_strdup("");
+	if (!token->string)
+	{
+		ms_perror("expansion", NULL, NULL, errno);
+		return (ERR_MALLOC);
+	}
 	new = ft_strjoin(token->string, str);
 	if (!new)
+	{
+		ms_perror("expansion", NULL, NULL, errno);
 		return (ERR_MALLOC);
-	if (token->string)
-		free(token->string);
+	}
+	free(token->string);
 	token->string = new;
 	return (ms_join_mask(token, str_len, mask));
 }
@@ -100,16 +116,15 @@ static int	ms_append_tokens_var(t_darray *tokens, t_token *new, char **value, in
 		err = ft_darray_append(tokens, new);
 	if (err)
 	{
-		if (value)
+		if (!(new->flags & IS_WILDCARD))
+			ms_perror("expansion", NULL, NULL, errno);
+		while (value && value[i])
 		{
-			while (value[i])
-			{
-				free(value[i]);
-				i++;
-			}
-			free(value);
+			free(value[i]);
+			i++;
 		}
-		ms_clear_token(new);
+		if (value)
+			free(value);
 		return (ERR_MALLOC);
 	}
 	return (0);
@@ -157,7 +172,10 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 	*end = 0;
 	value = ms_handle_getenv(*str + 1, qt);
 	if (!value)
+	{
+		ms_perror("expansion", NULL, NULL, errno);
 		return (ERR_MALLOC);
+	}
 	*end = temp;
 	*str = end;
 	if (!*value)
@@ -179,7 +197,12 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 		ms_init_token(new);
 		new->string = value[i];
 		if (ms_join_mask(new, ft_strlen(new->string), '1'))
+		{
+			while (value[++i])
+				free(value[i]);
+			free(value);
 			return (ERR_MALLOC);
+		}
 		i++;
 	}
 	free(value);
@@ -194,7 +217,8 @@ static int	ms_add_str(t_token *new, char **str, int *qt)
 	end = ms_next_var(*str, qt);
 	if (*end == '$' && ms_end_of_name(end) == end + 1)
 		end = ms_next_var(end + 1, qt);
-// consider special vars here maybe (e.g. '$?')
+// does that skip enough? maybe while loop?
+// consider special vars here maybe (e.g. '?')
 	if (*str == end)
 		return (0);
 	temp = *end;
@@ -206,7 +230,7 @@ static int	ms_add_str(t_token *new, char **str, int *qt)
 	return (0);
 }
 
-// always clears 'token'
+// always clears 'token', never 'tokens'
 int	ms_expand_var(t_darray *tokens, t_token *token)
 {
 	char	*str;
