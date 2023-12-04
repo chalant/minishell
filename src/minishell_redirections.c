@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_redirections.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/04 15:51:30 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/04 17:14:32 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int	ms_heredoc_prompt(t_redirection *redirection)
 	while (line && strcmp(line, redirection->file_path) != 0)
 	{
 		// pass along whether the delimiter was quoted or not
-		ms_heredoc_write(fd, line, 0);
+		ms_heredoc_write(fd, line, redirection->redirection_flags & MS_QUOTED);
 		free(line);
 		line = readline("> ");
 	}
