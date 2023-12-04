@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_parser.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:26 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 16:43:30 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/04 15:48:15 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int	init_tree(t_parse_tree *tree)
 {
 	tree->rule_name = NULL;
 	tree->children = NULL;
+	tree->token = NULL;
 	tree->terminal = 1;
 	tree->start = 0;
 	tree->end = 0;
@@ -71,6 +72,7 @@ int	process_terminal(t_parse_tree *tree, t_parsing_data *data,
 	else if (symbol->match(symbol, token))
 	{
 		subtree = get_subtree(tree, state.depth);
+		subtree->token = token;
 		//todo: errors
 		set_subtree(subtree, token->string, state.node, state.node);
 		ft_darray_set(tree->children, subtree, state.depth);

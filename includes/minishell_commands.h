@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/04 14:14:08 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/04 15:50:41 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # define MS_HEREDOC 1 << 0
 # define MS_READ 1 << 1
 # define MS_WRITE 1 << 2
+# define MS_QUOTED 1 << 3
 
 //todo: this might not work on mac.
 # define MS_HEREDOC_PATH "/tmp/ms_heredoc"

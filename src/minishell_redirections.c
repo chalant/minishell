@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_redirections.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/30 17:49:19 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 15:51:30 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ static int	set_redirection_flags(t_redirection *redirection, char *rule_name)
 int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 {
 	t_parse_tree	*redir;
+	t_parse_tree	*leaf;
 
 	//todo: need to set the right file permissions.
 	if (!tree || !tree->rule_name)
@@ -53,8 +54,10 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	redirection->mode = 0664;
 	redir = ft_darray_get(tree->children, 0);
 	set_redirection_flags(redirection, redir->rule_name);
-	redirection->file_path = *get_word(
-			ft_darray_get(tree->children, 1));
+	leaf = get_leaf(ft_darray_get(tree->children, 1));
+	if (leaf->token->flags & IS_QUOTED)
+		redirection->redirection_flags |= MS_QUOTED;
+	redirection->file_path = leaf->rule_name;
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/04 15:14:51 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,7 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	if (build_parse_tree(tree, data) < 0)
 		return (-1);
 	//todo: remove this since it is for debugging.
-	print_parse_tree(tree, 0);
+	//print_parse_tree(tree, 0);
 	return (0);
 }
 

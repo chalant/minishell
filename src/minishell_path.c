@@ -77,7 +77,7 @@ int get_paths(char ***paths, char **env)
     return (1);
 }
 
-char	*get_command(char *command)
+char	*get_binary(char *command)
 {
 	char        **paths;
 	char	    *command_path;
