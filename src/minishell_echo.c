@@ -12,11 +12,10 @@
 
 #include "minishell.h"
 
-// free's arg
 int	ms_echo(char **arg)
 {
-	int	flag_n;
-	int	i;
+	int		flag_n;
+	int		i;
 
 	i = 0;
 	flag_n = 0;

@@ -164,6 +164,8 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	copy_pipe(out_pipe, in_pipe);
 	out_pipe[1] = -1;
 	pid = execute_process(command->right, in_pipe, out_pipe);
+	close(in_pipe[0]);
+	close(in_pipe[1]);
 	//todo: print error
 	if (pid < 0)
 		return (1);
@@ -202,31 +204,33 @@ int	launch_execve(t_command *command)
 		exit(1);
 	execve(command->command_name, arguments, environ);
 	ms_perror("execve", NULL, NULL, errno);
-	ft_clear_ds(arguments);
+	free(arguments);
 	return (1);
 }
 
 int	execute_builtin(t_command *command)
 {
+	int		status;
 	char	**arguments;
 
+	status = 0;
 	arguments = make_arguments(command);
 	if (strcmp(command->command_name, "echo") == 0)
-		return (ms_echo(arguments));
+		status = ms_echo(arguments);
 	else if (strcmp(command->command_name, "cd") == 0)
-		ms_cd(command->context, arguments);
+		status = ms_cd(command->context, arguments);
 	else if (strcmp(command->command_name, "pwd") == 0)
-		ms_pwd();
+		status = ms_pwd();
 	else if (strcmp(command->command_name, "export") == 0)
-		ms_export(command->context, arguments);
+		status = ms_export(command->context, arguments);
 	else if (strcmp(command->command_name, "env") == 0)
-		ms_env();
+		status = ms_env();
 	else if (strcmp(command->command_name, "unset") == 0)
-		ms_unset(command->context, arguments);
+		status = ms_unset(command->context, arguments);
 	else if (strcmp(command->command_name, "exit") == 0)
-		ms_exit(command->context, arguments);
+		status = ms_exit(command->context, arguments);
 	free(arguments);
-	return (0);
+	return (status);
 }
 
 //this is the core execution function.
