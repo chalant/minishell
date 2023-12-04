@@ -57,6 +57,7 @@ typedef struct	s_parse_tree
 {
 	char		*rule_name;
 	t_darray	*children;
+	t_token		*token;
 	int			start_rule;
 	int			rule;
 	int			terminal;

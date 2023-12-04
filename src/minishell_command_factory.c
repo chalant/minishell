@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/04 14:39:10 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/04 15:54:14 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,9 +102,9 @@ int	set_command_fields(t_parse_tree *node, t_command *command)
 		command->command_name = ft_strdup(command_name);
 	}
 	else
-		//todo: this means that the command was not found-> print error.
+		//todo: if command was not found:
 		//perror(ft_strrchr(command->command_name, '/'));
-		command->command_name = get_command(command_name);
+		command->command_name = get_binary(command_name);
 	if (!command->command_name)
 		return (-1);
 	node = ft_darray_get(node->children, 1);
@@ -138,10 +138,8 @@ int	redirection_command(t_parse_tree *node, t_command *command)
 {
 	t_parse_tree	*tmp;
 
-	//todo: errors
 	if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
 		return (-1);
-	//is it 3 or 2?
 	if (node->children->size >= 2)
 	{
 		tmp = ft_darray_get(node->children, 1);
@@ -160,12 +158,10 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	if (!command || !command->redirections || !command->arguments)
 	{
 		init_command_fields(&new);
-		//todo: errors
 		if (factory(node, &new) < 0)
 			return (-1);
 		return (ft_stack_push(stack, &new));
 	}
-	//todo: errors
 	if (factory(node, command) < 0)
 		return (-1);
 	return (ft_stack_push(stack, command));
