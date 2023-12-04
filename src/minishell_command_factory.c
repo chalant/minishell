@@ -22,6 +22,7 @@ int	init_command(t_command *command)
 	command->command_name = NULL;
 	command->arguments = NULL;
 	command->redirections = NULL;
+	command->data = NULL;
 	return (1);
 }
 
@@ -67,12 +68,41 @@ int	set_command_elements(t_command *command, t_parse_tree *tree)
 	return (1);
 }
 
+int	is_builtin(char *command_name)
+{
+	//todo: add more builtins
+	if (strcmp(command_name, "cd") == 0)
+		return (1);
+	else if (strcmp(command_name, "echo") == 0)
+		return (1);
+	else if (strcmp(command_name, "pwd") == 0)
+		return (1);
+	else if (strcmp(command_name, "export") == 0)
+		return (1);
+	else if (strcmp(command_name, "env") == 0)
+		return (1);
+	else if (strcmp(command_name, "unset") == 0)
+		return (1);
+	else if (strcmp(command_name, "exit") == 0)
+		return (1);
+	return (0);
+}
+
 int	set_command_fields(t_parse_tree *node, t_command *command)
 {
+	char	*command_name;
+
 	if (!node->rule_name)
 		return (0);
 	//todo: need an error when the command is not found.
-	command->command_name = get_command(*get_word(node));
+	command_name = *get_word(node);
+	if (is_builtin(command_name))
+	{
+		command->command_flags |= MS_BUILTIN;
+		command->command_name = ft_strdup(command_name);
+	}
+	else
+	command->command_name = get_command(command_name);
 	if (!command->command_name)
 		return (-1);
 	node = ft_darray_get(node->children, 1);

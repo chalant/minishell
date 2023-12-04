@@ -45,14 +45,14 @@ int	redirect_in(t_command *command)
 {
 	// // todo: dup file errors
 	if (dup2(command->input, STDIN_FILENO) < 0)
-		return (1);
+		return (-1);
 	return (0);
 }
 
 int	redirect_out(t_command *command)
 {
 	if (dup2(command->output, STDOUT_FILENO) < 0)
-		return (1);
+		return (-1);
 	return (0);
 }
 
@@ -61,7 +61,8 @@ int	pipe_out(t_command *command, int _pipe[2])
 	if (command->output)
 		return (redirect_out(command));
 	//todo: report errors
-	dup2(_pipe[1], STDOUT_FILENO);
+	if (dup2(_pipe[1], STDOUT_FILENO) < 0)
+		return (-1);
 	return (0);
 }
 
@@ -70,7 +71,8 @@ int	pipe_in(t_command *command, int _pipe[2])
 	if (command->input)
 		return (redirect_in(command));
 	//todo: report errors
-	dup2(_pipe[0], STDIN_FILENO);
+	if (dup2(_pipe[0], STDIN_FILENO) < 0)
+		return (-1);
 	return (0);
 }
 
@@ -84,14 +86,14 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 	pid = fork();
 	//todo: maybe print an error ?
 	if (pid < 0)
-		return (-1);
-	//todo: make cleaner redirection handling.
+		return (1);
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		//todo handle pipe errors.
-		pipe_in(command, in_pipe);
-		pipe_out(command, out_pipe);
+		if (pipe_in(command, in_pipe) < 0))
+			exit(1);
+		if (pipe_out(command, out_pipe) < 0)
+			exit(1);
 		status = execute_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
 			exit(status);
@@ -105,8 +107,6 @@ int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
-	//todo: if there are redirections, the out_pipe has
-	//a write file descriptor in append mode.
 	status = execute_command(command->left, in_pipe, out_pipe);
 	if (status == 0)
 		return (execute_command(command->right, in_pipe, out_pipe));
@@ -117,76 +117,82 @@ int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
-	//todo: if there are redirections, the out_pipe has
-	//a write file descriptor in append mode.
 	status = execute_command(command->left, in_pipe, out_pipe);
 	if (status > 0)
 		return (execute_command(command->right, in_pipe, out_pipe));
 	return (status);
 }
 
-//todo: should also be able to launch heredocs.
 int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 
 	if (pipe(out_pipe) < 0)
 		return (-1);
-	//todo: out_pipe could also be a redirection so we need to either create a pipe or open a file...
-	//read from in pipe of the parent
 	pid = execute_process(command->left, in_pipe, out_pipe);
 	copy_pipe(out_pipe, in_pipe);
 	pid = execute_process(command->right, in_pipe, out_pipe);
 	return (get_exit_status(pid));
 }
 
-int	launch_execve(t_command *command)
+char	**make_arguments(t_command *command)
 {
-	extern char	**environ;
-	char		**arguments;
 	int			nargs;
 	int			i;
+	char		**arguments;
 
-	//todo: lookup into the environment.
-	//doing this in the child process to avoid unnecessary copies.
 	nargs = 2;
 	if (command->arguments)
 		nargs = command->arguments->size + 2;
 	arguments = malloc(sizeof(char *) * nargs);
 	if (!arguments)
-		exit(1);
+		return (NULL);
 	arguments[0] = command->command_name;
 	i = 0;
 	while (++i < nargs - 1 && nargs != 2)
 		arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
 	arguments[i] = NULL;
-	//todo handle errors
+	return (arguments);
+}
+
+//creates arguments in child process to avoid unnecessary copies.
+int	launch_execve(t_command *command)
+{
+	extern char	**environ;
+	char		**arguments;
+
+	arguments = make_arguments(command);
+	if (!arguments)
+		exit(1);
 	execve(command->command_name, arguments, environ);
-	perror("error HERE");
-	//todo: free arguments here in cause of errors..
+	ms_perror("execve", NULL, NULL, errno);
+	ft_clear_ds(arguments);
 	return (1);
 }
 
 int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	//todo: call builtins.
-	(void)command;
 	(void)in_pipe;
 	(void)out_pipe;
-	// if (strcmp(token->string, "cd") == 0)
-	// 	ms_cd();
-	// else if (strcmp(token->string, "echo") == 0)
-	// 	ms_echo();
-	// else if (strcmp(token->string, "pwd") == 0)
-	// 	ms_pwd();
-	// else if (strcmp(token->string, "export") == 0)
-	// 	ms_export();
-	// else if (strcmp(token->string, "env") == 0)
-	// 	ms_env();
-	// else if (strcmp(token->string, "unset") == 0)
-	// 	ms_unset();
-	// else if (strcmp(token->string, "exit") == 0)
-	// 	ms_exit();
+	char	**arguments;
+
+	arguments = make_arguments(command);
+	if (strcmp(command->command_name, "echo") == 0)
+		return (ms_echo(arguments));
+	else if (strcmp(command->command_name, "cd") == 0)
+		ms_cd(command->data, arguments);
+	else if (strcmp(command->command_name, "pwd") == 0)
+		ms_pwd();
+	else if (strcmp(command->command_name, "export") == 0)
+		ms_export(command->data, arguments);
+	else if (strcmp(command->command_name, "env") == 0)
+		ms_env();
+	else if (strcmp(command->command_name, "unset") == 0)
+		ms_unset(data, arguments);
+	else if (strcmp(token->string, "exit") == 0)
+		ms_exit(command->data, arguments);
+	ft_clear_ds(arguments);
 	return (0);
 }
 

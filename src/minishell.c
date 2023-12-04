@@ -350,13 +350,13 @@ int	recognize_input(t_parsing_data *data)
 	return (0);
 }
 
-int	execute(t_parse_tree *tree, t_darray *command_array)
+int	execute(t_shellshock *data, t_parse_tree *tree, t_darray *command_array)
 {
 	t_command	*command;
 
 	reset_commands(command_array);
-	command = build_command(command_array, tree);
-	//todo
+	command = build_command(data, command_array, tree);
+	//todo handle error
 	if (!command)
 		return (1);
 	return (minishell_execute(command));

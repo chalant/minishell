@@ -108,7 +108,7 @@ ms_flush_exit(data, data->status);
 	}
 	recognize_input(&(data->parse_data));
 	parse_input(&(data->parse_data), &(data->tree));
-	data->status = execute(&(data->tree), &(data->commands));
+	data->status = execute(data, &(data->tree), &(data->commands));
 	reset_parse_data(&(data->parse_data), &(data->tree));
 // arg = ms_convert_tokens_arg(&tokens);
 // ft_darray_delete(&tokens, ms_clear_token);

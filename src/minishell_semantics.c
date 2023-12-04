@@ -83,22 +83,27 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 	return (handle_semantic_rule(node, commands));
 }
 
-//todo: should also take additional data for the builtins..
-t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
+//builds a command tree to be executed.
+t_command	*build_command(t_shellshock *data, t_darray	*command_array, t_parse_tree *tree)
 {
 	t_stack		commands;
 	t_command	*command;
+	int			i;
 
-	//todo: error here.
 	ft_stack_init(&commands, command_array);
-	//todo:error here
-	flatten_tree(tree, &commands);
+	if (flatten_tree(tree, &commands) < 0)
+		return (NULL);
 	command = (t_command *)ft_stack_pop(&commands);
 	if (!command)
-		return (0);
+		return (NULL);
+	//todo: this means that the command was not found-> print error.
+	//perror(ft_strrchr(command->command_name, '/'));
 	if (!command->command_name)
 		return (NULL);
 	if (command->command_flags & MS_OPERATOR)
 		build_operator(command, &commands);
+	i = -1;
+	while (++i < command_array->actual_size)
+		((t_command *)ft_darray_get(command_array, i))->data = data;
 	return (command);
 }

@@ -23,8 +23,7 @@ INCLUDES_FILES = minishell.h \
 				 minishell_commands.h \
 				 minishell_semantics.h
 
-SRC_FILES =	minishell_main.c \
-			minishell.c \
+SRC_FILES =	minishell.c \
 			minishell_exit.c \
 			minishell_cd.c \
 			minishell_pwd.c \

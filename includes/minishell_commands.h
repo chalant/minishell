@@ -50,9 +50,10 @@ typedef struct	s_command
 	t_darray			*arguments;
 	struct	s_command	*left;
 	struct	s_command	*right;
+	t_shellshock		*data;
 }				t_command;
 
-int	execute(t_parse_tree *tree, t_darray *command_array);
+int	execute(t_shellshock *data, t_parse_tree *tree, t_darray *command_array);
 
 int	init_command(t_command *command);
 int	delete_commands(t_darray *commands);
