@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_unset.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 18:31:09 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/23 17:28:16 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ms_unset_var(t_shellshock *data, char *name)
+void	ms_unset_var(t_ms_context *data, char *name)
 {
 	char	**envp;
 	int		i;
@@ -33,7 +33,7 @@ void	ms_unset_var(t_shellshock *data, char *name)
 
 // free's args
 // returns 0 even if 'name' doesn't exist
-int	ms_unset(t_shellshock *data, char **arg)
+int	ms_unset(t_ms_context *data, char **arg)
 {
 	extern char	**environ;
 	int			i;

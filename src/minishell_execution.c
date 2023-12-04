@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 19:32:53 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:59:21 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,10 +90,9 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		if (pipe_in(command, in_pipe) < 0))
+		if (pipe_in(command, in_pipe) < 0)
 			exit(1);
-		if (pipe_out(command, out_pipe) < 0)
-			exit(1);
+		pipe_out(command, out_pipe);
 		status = execute_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
 			exit(status);
@@ -181,18 +180,18 @@ int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 	if (strcmp(command->command_name, "echo") == 0)
 		return (ms_echo(arguments));
 	else if (strcmp(command->command_name, "cd") == 0)
-		ms_cd(command->data, arguments);
+		ms_cd(command->context, arguments);
 	else if (strcmp(command->command_name, "pwd") == 0)
 		ms_pwd();
 	else if (strcmp(command->command_name, "export") == 0)
-		ms_export(command->data, arguments);
+		ms_export(command->context, arguments);
 	else if (strcmp(command->command_name, "env") == 0)
 		ms_env();
 	else if (strcmp(command->command_name, "unset") == 0)
-		ms_unset(data, arguments);
-	else if (strcmp(token->string, "exit") == 0)
-		ms_exit(command->data, arguments);
-	ft_clear_ds(arguments);
+		ms_unset(command->context, arguments);
+	else if (strcmp(command->command_name, "exit") == 0)
+		ms_exit(command->context, arguments);
+	free(arguments);
 	return (0);
 }
 

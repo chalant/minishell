@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_variable_util.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:44:01 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/30 14:50:31 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	ms_check_varname(char *var)
 // 'var' is of type [name]=[value] or just [name]
 // returns an incremented copy of data->env, double-pointing to a name
 // returns NULL if no variable is found
-char	**ms_get_var_envp(t_shellshock *data, char *var)
+char	**ms_get_var_envp(t_ms_context *data, char *var)
 {
 	char	**envp;
 	int		i;
@@ -58,7 +58,7 @@ char	**ms_get_var_envp(t_shellshock *data, char *var)
 // returns the ptr of a variable in data->env
 // (points to the name, unlike getenv() which points to the value)
 // returns NULL if no variable is found
-char	*ms_get_var_env(t_shellshock *data, char *var)
+char	*ms_get_var_env(t_ms_context *data, char *var)
 {
 	char	**envp;
 

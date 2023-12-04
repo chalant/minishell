@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 18:47:20 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:20:13 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,11 +84,10 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 }
 
 //builds a command tree to be executed.
-t_command	*build_command(t_shellshock *data, t_darray	*command_array, t_parse_tree *tree)
+t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 {
 	t_stack		commands;
 	t_command	*command;
-	int			i;
 
 	ft_stack_init(&commands, command_array);
 	if (flatten_tree(tree, &commands) < 0)
@@ -96,14 +95,9 @@ t_command	*build_command(t_shellshock *data, t_darray	*command_array, t_parse_tr
 	command = (t_command *)ft_stack_pop(&commands);
 	if (!command)
 		return (NULL);
-	//todo: this means that the command was not found-> print error.
-	//perror(ft_strrchr(command->command_name, '/'));
 	if (!command->command_name)
 		return (NULL);
 	if (command->command_flags & MS_OPERATOR)
 		build_operator(command, &commands);
-	i = -1;
-	while (++i < command_array->actual_size)
-		((t_command *)ft_darray_get(command_array, i))->data = data;
 	return (command);
 }

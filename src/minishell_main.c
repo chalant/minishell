@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_main.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/01 19:44:13 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:42:29 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,14 +90,14 @@ static int	ms_add_herstory(char *line)
 }
 
 // should free 'line'
-static int	ms_process_line(t_shellshock *data, char *line)
+static int	ms_process_line(t_ms_context *data, char *line)
 {
 	t_token_info	info;
 	// t_darray		tokens;
 	// char			**arg;
 
-if (!ft_strncmp(line, "exit", 5))
-ms_flush_exit(data, data->status);
+// if (!ft_strncmp(line, "exit", 5))
+// ms_flush_exit(data, data->status);
 	// ft_darray_init(data->parse_data.tokens, sizeof(t_token), 20);
 	if (ms_tokeniser(&line, data->parse_data.tokens, ms_token_info(&info,
 				RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP)))
@@ -157,7 +157,7 @@ void	ms_kill_pid(int sig)
 	}
 }
 
-static void	ms_set_signals(t_shellshock *data)
+static void	ms_set_signals(t_ms_context *data)
 {
 	extern int			rl_catch_signals;
 
@@ -170,7 +170,7 @@ static void	ms_set_signals(t_shellshock *data)
 	sigaction(SIGQUIT, &(data->act_sigquit), NULL);
 }
 
-static int	ms_init_parse(t_shellshock *data)
+static int	ms_init_parse(t_ms_context *data)
 {
 	init_parse_data(&(data->parse_data));
 	if (alloc_parse_data(&(data->parse_data), 20) < 0)
@@ -186,7 +186,7 @@ static int	ms_init_parse(t_shellshock *data)
 
 int	main(void)
 {
-	t_shellshock	data;
+	t_ms_context	data;
 
 	g_global_status = 0;
 	data.env_excess = 0;

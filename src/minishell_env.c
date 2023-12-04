@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_env.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:32:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/27 17:28:18 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	ms_env(void)
 }
 
 // returns 1 if malloc failed, else 0
-int	ms_envcpy(t_shellshock *data)
+int	ms_envcpy(t_ms_context *data)
 {
 	extern char	**environ;
 	char		**new;

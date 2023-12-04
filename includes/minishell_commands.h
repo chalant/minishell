@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_commands.h                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 19:39:58 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:14:08 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,19 @@
 //todo: this might not work on mac.
 # define MS_HEREDOC_PATH "/tmp/ms_heredoc"
 
+typedef struct s_ms_context
+{
+	int					status;
+	int					env_excess;
+	char				*line;
+	char				**env;
+	struct sigaction	act_sigint;
+	struct sigaction	act_sigquit;
+	t_parsing_data		parse_data;
+	t_parse_tree		tree;
+	t_darray			commands;
+}			t_ms_context;
+
 typedef struct	s_redirection
 {
 	int			redirection_flags;
@@ -50,10 +63,8 @@ typedef struct	s_command
 	t_darray			*arguments;
 	struct	s_command	*left;
 	struct	s_command	*right;
-	t_shellshock		*data;
+	t_ms_context		*context;
 }				t_command;
-
-int	execute(t_shellshock *data, t_parse_tree *tree, t_darray *command_array);
 
 int	init_command(t_command *command);
 int	delete_commands(t_darray *commands);

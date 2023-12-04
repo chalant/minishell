@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/01 19:26:45 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:19:11 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,36 +33,25 @@
 
 extern int	g_global_status;
 
-typedef struct s_shellshock
-{
-	int					status;
-	char				*line;
-	int					env_excess;
-	char				**env;
-	struct sigaction	act_sigint;
-	struct sigaction	act_sigquit;
-	t_parsing_data		parse_data;
-	t_parse_tree		tree;
-	t_darray			commands;
-}			t_shellshock;
-
 # define MS_PROMPT_MSG "shellshock$ "
 
-int		ms_exit(t_shellshock *data, char **arg);
-void	ms_flush_exit(t_shellshock *data, int exit_value);
+int		ms_exit(t_ms_context *context, char **arg);
+void	ms_flush_exit(t_ms_context *context, int exit_value);
 int		ms_echo(char **arg);
-int		ms_cd(t_shellshock *data, char **arg);
+int		ms_cd(t_ms_context *context, char **arg);
 int		ms_pwd(void);
 int		ms_env(void);
-int		ms_export(t_shellshock *data, char **arg);
-int		ms_export_var(t_shellshock *data, char *var);
-int		ms_unset(t_shellshock *data, char **arg);
-void	ms_unset_var(t_shellshock *data, char *name);
-int		ms_envcpy(t_shellshock *data);
-char	*ms_get_var_env(t_shellshock *data, char *var);
+int		ms_export(t_ms_context *context, char **arg);
+int		ms_export_var(t_ms_context *context, char *var);
+int		ms_unset(t_ms_context *context, char **arg);
+void	ms_unset_var(t_ms_context *context, char *name);
+int		ms_envcpy(t_ms_context *context);
+char	*ms_get_var_env(t_ms_context *context, char *var);
 char	**ms_realloc(char **ptr, int add);
-char	**ms_get_var_envp(t_shellshock *data, char *var);
+char	**ms_get_var_envp(t_ms_context *context, char *var);
 int		ms_check_varname(char *var);
+
+int		execute(t_ms_context *context, t_parse_tree *tree, t_darray *commands);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
 

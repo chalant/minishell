@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 19:42:40 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -350,60 +350,64 @@ int	recognize_input(t_parsing_data *data)
 	return (0);
 }
 
-int	execute(t_shellshock *data, t_parse_tree *tree, t_darray *command_array)
+int	execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array)
 {
+	int			i;
 	t_command	*command;
 
 	reset_commands(command_array);
-	command = build_command(data, command_array, tree);
+	command = build_command(command_array, tree);
 	//todo handle error
 	if (!command)
 		return (1);
+	i = -1;
+	while (++i < command_array->actual_size)
+		((t_command *)ft_darray_get(command_array, i))->context = data;
 	return (minishell_execute(command));
 }
 
-int	main(void)
-{
-	int					status;
-	t_parsing_data		data;
-	t_parse_tree		tree;
-	t_darray			commands;
-	char				*line;
+// int	main(void)
+// {
+// 	int					status;
+// 	t_parsing_data		data;
+// 	t_parse_tree		tree;
+// 	t_darray			commands;
+// 	char				*line;
 
-	status = 0;
-	g_global_status = 0;
-	init_parse_data(&data);
-	if (alloc_parse_data(&data, 20) < 0)
-	{
-		free_parse_data(&data, &tree);
-		return (1);
-	}
-	if (ft_darray_init(&commands, sizeof(t_command), 10) < 0)
-		return (1);
-	tree.children = NULL;
-	line = readline(MS_PROMPT_MSG);
-	while (line)
-	{
-		// this should be ran at each loop.
-		tokenize_input(&data, &line);
-		//print_tokens(&data);
-		//print_grammar(&grammar);
-		recognize_input(&data);
-		parse_input(&data, &tree);
-		status = execute(&tree, &commands);
-		add_history(line);
-		reset_parse_data(&data, &tree);
-		free(line);
-		line = readline(MS_PROMPT_MSG);
-		if (!strcmp(line, "exit"))
-			break ;
-	}
-	if (line)
-		free(line);
-	rl_clear_history();
-	free_parse_data(&data, &tree);
-	delete_commands(&commands);
-	//free(data.earley_sets);
-	//ms_flush_exit(&data, 0);
-	return (status);
-}
+// 	status = 0;
+// 	g_global_status = 0;
+// 	init_parse_data(&data);
+// 	if (alloc_parse_data(&data, 20) < 0)
+// 	{
+// 		free_parse_data(&data, &tree);
+// 		return (1);
+// 	}
+// 	if (ft_darray_init(&commands, sizeof(t_command), 10) < 0)
+// 		return (1);
+// 	tree.children = NULL;
+// 	line = readline(MS_PROMPT_MSG);
+// 	while (line)
+// 	{
+// 		// this should be ran at each loop.
+// 		tokenize_input(&data, &line);
+// 		//print_tokens(&data);
+// 		//print_grammar(&grammar);
+// 		recognize_input(&data);
+// 		parse_input(&data, &tree);
+// 		status = execute(&tree, &commands);
+// 		add_history(line);
+// 		reset_parse_data(&data, &tree);
+// 		free(line);
+// 		line = readline(MS_PROMPT_MSG);
+// 		if (!strcmp(line, "exit"))
+// 			break ;
+// 	}
+// 	if (line)
+// 		free(line);
+// 	rl_clear_history();
+// 	free_parse_data(&data, &tree);
+// 	delete_commands(&commands);
+// 	//free(data.earley_sets);
+// 	//ms_flush_exit(&data, 0);
+// 	return (status);
+// }

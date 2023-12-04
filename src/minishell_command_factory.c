@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/01 19:31:14 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:39:10 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	init_command(t_command *command)
 	command->command_name = NULL;
 	command->arguments = NULL;
 	command->redirections = NULL;
-	command->data = NULL;
+	command->context = NULL;
 	return (1);
 }
 
@@ -102,7 +102,9 @@ int	set_command_fields(t_parse_tree *node, t_command *command)
 		command->command_name = ft_strdup(command_name);
 	}
 	else
-	command->command_name = get_command(command_name);
+		//todo: this means that the command was not found-> print error.
+		//perror(ft_strrchr(command->command_name, '/'));
+		command->command_name = get_command(command_name);
 	if (!command->command_name)
 		return (-1);
 	node = ft_darray_get(node->children, 1);

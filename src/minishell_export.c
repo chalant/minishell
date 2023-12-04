@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_export.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/23 15:53:31 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int	ms_env_alpha()
 }
 
 // returns 1 if malloc in ms_realloc failed
-static int	ms_add_var_env(t_shellshock *data, char *var)
+static int	ms_add_var_env(t_ms_context *data, char *var)
 {
 	char		**envp;
 	int			i;
@@ -90,7 +90,7 @@ static int	ms_add_var_env(t_shellshock *data, char *var)
 
 // 'var' is an allocated string of valid format [name]=[value]
 // on error, 'var' is free'd
-int	ms_export_var(t_shellshock *data, char *var)
+int	ms_export_var(t_ms_context *data, char *var)
 {
 	extern char	**environ;
 	char		**temp_envp;
@@ -113,7 +113,7 @@ int	ms_export_var(t_shellshock *data, char *var)
 }
 
 // no arguments: prints env in alphabetical order (all uppercase before any lowercase)
-int	ms_export(t_shellshock *data, char **arg)
+int	ms_export(t_ms_context *data, char **arg)
 {
 	char		*var;
 	int			i;

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/01 17:08:27 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/12/04 13:21:27 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,8 @@ INCLUDES_FILES = minishell.h \
 				 minishell_commands.h \
 				 minishell_semantics.h
 
-SRC_FILES =	minishell.c \
+SRC_FILES =	minishell_main.c \
+			minishell.c \
 			minishell_exit.c \
 			minishell_cd.c \
 			minishell_pwd.c \

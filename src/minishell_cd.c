@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_cd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 17:20:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/24 15:21:59 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // updates OLDPWD and PWD
-static int	ms_update_pwd_env(t_shellshock *data)
+static int	ms_update_pwd_env(t_ms_context *data)
 {
 	char	*pwd;
 	char	*oldpwd;
@@ -47,7 +47,7 @@ static int	ms_update_pwd_env(t_shellshock *data)
 }
 
 // seems to always return 1 on error
-int	ms_cd(t_shellshock *data, char **arg)
+int	ms_cd(t_ms_context *data, char **arg)
 {
 	char	*path;
 
