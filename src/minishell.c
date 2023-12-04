@@ -340,7 +340,7 @@ int	recognize_input(t_parsing_data *data)
 	//state and print where the error occured
 	//init_graph(data->chart, data->tokens->size, sizeof(t_ms_edge));
 	update_parsing_data(data, data->tokens->size);
-	if (build_earley_items(data->earley_sets, data->grammar, data->tokens, data->chart) < 0)
+	if (build_earley_items(data) < 0)
 		return (-1);
 	if (build_chart(data->earley_sets, data->chart, data->tokens->size) < 0)
 		return (-1);

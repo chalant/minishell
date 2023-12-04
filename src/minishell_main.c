@@ -164,8 +164,8 @@ static void	ms_set_signals(t_ms_context *data)
 	rl_catch_signals = 0;
 	ft_bzero(&(data->act_sigint), sizeof(struct sigaction));
 	ft_bzero(&(data->act_sigquit), sizeof(struct sigaction));
-	data->act_sigint.__sigaction_u.__sa_handler = ms_new_prompt;
-	data->act_sigquit.__sigaction_u.__sa_handler = ms_kill_pid;
+	data->act_sigint.sa_handler = ms_new_prompt;
+	data->act_sigquit.sa_handler = ms_kill_pid;
 	sigaction(SIGINT, &(data->act_sigint), NULL);
 	sigaction(SIGQUIT, &(data->act_sigquit), NULL);
 }

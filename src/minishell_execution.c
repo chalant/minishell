@@ -77,6 +77,31 @@ int	pipe_in(t_command *command, int _pipe[2])
 	return (0);
 }
 
+int	ms_redirect(t_command *command)
+{
+	// // todo: dup file errors
+	if (command->input)
+	{
+		if (dup2(command->input, STDIN_FILENO) < 0)
+			return (-1);
+	}
+	if (command->output)
+	{
+		if (dup2(command->output, STDOUT_FILENO) < 0)
+			return (-1);
+	}
+	return (0);
+}
+
+int	pipe_io(t_command *command, int in_pipe[2], int out_pipe[2])
+{
+	if (pipe_in(command, in_pipe) < 0)
+		return (-1);
+	if (pipe_out(command, out_pipe) < 0)
+		return (-1);
+	return (0);
+}
+
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
 static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
@@ -87,20 +112,20 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 	pid = fork();
 	//todo: maybe print an error ?
 	if (pid < 0)
-		return (1);
+		return (-1);
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		if (pipe_in(command, in_pipe) < 0)
-			exit(1);
-		if (pipe_out(command, out_pipe) < 0)
+		//todo: print error
+		if (pipe_io(command, in_pipe, out_pipe) < 0)
 			exit(1);
 		status = execute_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
 			exit(status);
 		exit(126);
 	}
-	close(out_pipe[1]);
+	if (out_pipe[1] != -1)
+		close(out_pipe[1]);
 	return (pid);
 }
 
@@ -131,11 +156,17 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	if (pipe(out_pipe) < 0)
 		return (-1);
 	pid = execute_process(command->left, in_pipe, out_pipe);
+	//todo: print error
+	if (pid < 0)
+		return (1);
 	close(in_pipe[0]);
 	close(in_pipe[1]);
 	copy_pipe(out_pipe, in_pipe);
 	out_pipe[1] = -1;
 	pid = execute_process(command->right, in_pipe, out_pipe);
+	//todo: print error
+	if (pid < 0)
+		return (1);
 	return (get_exit_status(pid));
 }
 
@@ -166,6 +197,7 @@ int	launch_execve(t_command *command)
 	char		**arguments;
 
 	arguments = make_arguments(command);
+	//todo: display error
 	if (!arguments)
 		exit(1);
 	execve(command->command_name, arguments, environ);
@@ -174,11 +206,8 @@ int	launch_execve(t_command *command)
 	return (1);
 }
 
-int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_builtin(t_command *command)
 {
-	//todo: call builtins.
-	(void)in_pipe;
-	(void)out_pipe;
 	char	**arguments;
 
 	arguments = make_arguments(command);
@@ -201,22 +230,20 @@ int	execute_builtin(t_command *command, int in_pipe[2], int out_pipe[2])
 }
 
 //this is the core execution function.
-int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_simple_command(t_command *command)
 {
 	pid_t	pid;
 
 	if (command->command_flags & MS_BUILTIN)
-		return (execute_builtin(command, in_pipe, out_pipe));
+		return (execute_builtin(command));
 	if (!(command->command_flags & MS_FORKED))
 	{
 		pid = fork();
 		if (pid == 0)
 		{
 			//todo: handle errors
-			if (command->output)
-				redirect_out(command);
-			if (command->input)
-				redirect_in(command);
+			if (ms_redirect(command) < 0)
+				exit(1);
 			launch_execve(command);
 		}
 		return (get_exit_status(pid));
@@ -230,7 +257,7 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	if (!command)
 		return (0);
 	if (command->command_flags & MS_OPERAND)
-		return (execute_simple_command(command, in_pipe, out_pipe));
+		return (execute_simple_command(command));
 	else if (command->command_flags & MS_AND)
 		return (execute_and(command, in_pipe, out_pipe));
 	else if (command->command_flags & MS_OR)

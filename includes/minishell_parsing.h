@@ -78,7 +78,7 @@ int		ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state sta
 int		build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
 int		clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(void *)), int del);
 
-int		build_earley_items(t_darray *sets, t_ms_grammar *grammar, t_darray *tokens, t_graph *chart);
+int		build_earley_items(t_parsing_data *data);
 int		add_earley_set(t_darray *sets, int size);
 void	delete_earley_set(void *set);
 void	reset_earley_set(void *set);

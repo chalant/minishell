@@ -73,10 +73,10 @@ int	process_terminal(t_parse_tree *tree, t_parsing_data *data,
 	{
 		subtree = get_subtree(tree, state.depth);
 		subtree->token = token;
-		//todo: errors
 		set_subtree(subtree, token->string, state.node, state.node);
 		ft_darray_set(tree->children, subtree, state.depth);
 		if (state.node < data->input_length)
+			//todo: errors
 			ms_search_core(tree, data,
 				next_state(state.depth + 1, state.node + 1, state.rule));
 		return (1);
