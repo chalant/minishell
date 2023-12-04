@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/04 15:16:33 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/04 17:13:05 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,11 @@ int	redirect_out(t_command *command)
 
 int	pipe_out(t_command *command, int _pipe[2])
 {
+	//todo: print errors here
 	if (command->output)
 		return (redirect_out(command));
-	//todo: report errors
+	if (_pipe[1] == -1)
+		return (0);
 	if (dup2(_pipe[1], STDOUT_FILENO) < 0)
 		return (-1);
 	return (0);
@@ -70,7 +72,6 @@ int	pipe_in(t_command *command, int _pipe[2])
 {
 	if (command->input)
 		return (redirect_in(command));
-	//todo: report errors
 	if (dup2(_pipe[0], STDIN_FILENO) < 0)
 		return (-1);
 	return (0);
@@ -92,7 +93,8 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 	{
 		if (pipe_in(command, in_pipe) < 0)
 			exit(1);
-		pipe_out(command, out_pipe);
+		if (pipe_out(command, out_pipe) < 0)
+			exit(1);
 		status = execute_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
 			exit(status);
@@ -129,7 +131,10 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	if (pipe(out_pipe) < 0)
 		return (-1);
 	pid = execute_process(command->left, in_pipe, out_pipe);
+	close(in_pipe[0]);
+	close(in_pipe[1]);
 	copy_pipe(out_pipe, in_pipe);
+	out_pipe[1] = -1;
 	pid = execute_process(command->right, in_pipe, out_pipe);
 	return (get_exit_status(pid));
 }
@@ -279,7 +284,6 @@ int	minishell_execute(t_command *command)
 	status = execute_command(command, in_pipe, out_pipe);
 	close(in_pipe[0]);
 	close(in_pipe[1]);
-	//todo: close all open file descriptors
 	if (!access(MS_HEREDOC_PATH, F_OK))
 		if (unlink(MS_HEREDOC_PATH))
 			ms_perror("unlink", MS_HEREDOC_PATH, NULL, errno);
