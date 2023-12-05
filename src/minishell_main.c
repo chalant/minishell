@@ -106,7 +106,11 @@ static int	ms_process_line(t_ms_context *data, char *line)
 		free(line);
 		return (1);
 	}
-	recognize_input(&(data->parse_data));
+	if (recognize_input(&(data->parse_data)) == 2)
+	{
+		reset_parse_data(&(data->parse_data), &(data->tree));
+		return (0);
+	}
 	parse_input(&(data->parse_data), &(data->tree));
 	data->status = execute(data, &(data->tree), &(data->commands));
 	reset_parse_data(&(data->parse_data), &(data->tree));
@@ -120,6 +124,7 @@ static int	ms_process_line(t_ms_context *data, char *line)
 	return (ms_add_herstory(line));
 }
 
+//todo: need to reset data here!
 void	ms_new_prompt(int sig)
 {
 	pid_t	check;
@@ -159,7 +164,7 @@ void	ms_kill_pid(int sig)
 
 static void	ms_set_signals(t_ms_context *data)
 {
-	extern int			rl_catch_signals;
+	extern int	rl_catch_signals;
 
 	rl_catch_signals = 0;
 	ft_bzero(&(data->act_sigint), sizeof(struct sigaction));

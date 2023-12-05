@@ -34,3 +34,9 @@ int	ms_perror(const char *cmd, const char *item, const char *msg, int err)
 	printf("\n");
 	return (1);
 }
+
+int	ms_message_header(void *data, int(*printer)(void *), int fd)
+{
+	write(fd, "shellshock: ", 13);
+	return (printer(data));
+}

@@ -54,5 +54,6 @@ int		ms_check_varname(char *var);
 int		execute(t_ms_context *context, t_parse_tree *tree, t_darray *commands);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
+int		ms_message_header(void *data, int(*printer)(void *), int fd);
 
 #endif

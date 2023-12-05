@@ -103,7 +103,13 @@ int	set_minishell_grammar(t_ms_grammar *grammar)
 		ft_clear_ds(definition);
 		return (-1);
 	}
-	return (set_grammar(grammar, definition));
+	if (set_grammar(grammar, definition) < 0)
+	{
+		ft_clear_ds(definition);
+		return (-1);
+	}
+	ft_clear_ds(definition);
+	return (1);
 }
 
 static void	delete_rule(t_ms_rule *rule)
@@ -146,12 +152,10 @@ int	set_grammar(t_ms_grammar *grammar, char **definition)
 		return (-1);
 	while (definition[i])
 	{
-		//todo: this might fail also, handle it.
-		add_rule(grammar, definition, i);
-		free(definition[i]);
+		if (add_rule(grammar, definition, i) < 0)
+			return (-1);
 		i++;
 	}
-	free(definition);
 	grammar->start_rule = grammar->rules[0]->name;
 	grammar->length = i;
 	return (1);

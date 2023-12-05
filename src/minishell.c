@@ -200,8 +200,7 @@ int	alloc_parse_data(t_parsing_data *data, int size)
 		return (-1);
 	if (ft_darray_init(data->tokens, sizeof(t_token), size) < 0)
 		return (-1);
-	set_minishell_grammar(data->grammar);
-	return (1);
+	return (set_minishell_grammar(data->grammar));
 }
 
 int update_parsing_data(t_parsing_data *data, int size)
@@ -334,16 +333,21 @@ void	print_tokens(t_parsing_data *data)
 
 int	recognize_input(t_parsing_data *data)
 {
-	//todo: remove the reverse_earley since it is for debugging
-	//reverse_earley(data->earley_sets, data->grammar);
-	//todo: interrupt the program if we haven't reached the last
-	//state and print where the error occured
-	//init_graph(data->chart, data->tokens->size, sizeof(t_ms_edge));
+	t_earley_set	*last_set;
+
 	update_parsing_data(data, data->tokens->size);
 	if (build_earley_items(data) < 0)
 		return (-1);
+	last_set = ft_darray_get(data->earley_sets, data->earley_sets->size - 1);
+	if (!last_set->items->size)
+	{
+		printf("syntax error near unexpected token '%s'\n", ((t_token*)(ft_darray_get(data->tokens, data->tokens->size-2)))->string);
+		//ms_message_header();
+		return (2);
+	}
 	if (build_chart(data->earley_sets, data->chart, data->tokens->size) < 0)
 		return (-1);
+	//reverse_earley(data->earley_sets, data->grammar);
 	data->input_length = data->tokens->size;
 	data->chart_size = data->tokens->size;
 	//todo: free sets.
