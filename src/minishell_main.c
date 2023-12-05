@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/05 12:38:51 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/05 16:22:50 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,8 +172,6 @@ static void	ms_set_signals(t_ms_context *data)
 	ft_bzero(&(data->act_sigquit), sizeof(struct sigaction));
 	data->act_sigint.sa_handler = ms_new_prompt;
 	data->act_sigquit.sa_handler = ms_kill_pid;
-	// data->act_sigint.__sigaction_u.__sa_handler = ms_new_prompt;
-	// data->act_sigquit.__sigaction_u.__sa_handler = ms_kill_pid;
 	sigaction(SIGINT, &(data->act_sigint), NULL);
 	sigaction(SIGQUIT, &(data->act_sigquit), NULL);
 }

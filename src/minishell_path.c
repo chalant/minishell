@@ -1,21 +1,5 @@
 #include "minishell.h"
 
-static int  delete_strings(char **s)
-{
-	int	from;
-
-	if (!s)
-		return (0);
-	from = 0;
-	while (s[from])
-	{
-		free(s[from]);
-		from++;
-	}
-	free(s);
-	return (0);
-}
-
 static char	**get_path_env_var(char **env)
 {
 	int	i;
@@ -33,20 +17,24 @@ static char	**get_path_env_var(char **env)
 int make_paths(char **paths)
 {
 	char	*tmp;
+	char	*res;
 	int		i;
 
 	i = 0;
 	while (paths[i])
 	{
 		tmp = paths[i];
-		paths[i] = ft_strjoin(tmp, "/");
+		res = ft_strjoin(tmp, "/");
+		if (!res)
+			return (-1);
+		paths[i] = res;
 		free(tmp);
 		i++;
 	}
 	return (1);
 }
 
-char	*find_command(char **paths, char *command)
+char	*find_command(char **paths, char *command, int *mfailed)
 {
 	int		i;
 	char	*path;
@@ -56,7 +44,10 @@ char	*find_command(char **paths, char *command)
 	{
 		path = ft_strjoin(paths[i], command);
 		if (!path)
+		{
+			*mfailed = 1;
 			return (NULL);
+		}
 		if (access(path, X_OK) == 0)
 			return (path);
 		free(path);
@@ -79,6 +70,7 @@ int get_paths(char ***paths, char **env)
 
 char	*get_binary(char *command)
 {
+	int			failed;
 	char        **paths;
 	char	    *command_path;
     extern char **environ;
@@ -89,12 +81,15 @@ char	*get_binary(char *command)
 		return (ft_strdup(command));
 	if (get_paths(&paths, environ) < 0)
         return (NULL);
-	command_path = find_command(paths, command);
+	failed = 0;
+	command_path = find_command(paths, command, &failed);
 	if (!command_path)
 	{
-		delete_strings(paths);
-		return (NULL);
+		ft_clear_ds(paths);
+		if (failed)
+			return (NULL);
+		return (ft_strdup(command));
 	}
-	delete_strings(paths);
+	ft_clear_ds(paths);
 	return (command_path);
 }

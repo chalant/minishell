@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/04 17:13:05 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/05 15:46:45 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,9 +203,9 @@ int	launch_execve(t_command *command)
 	if (!arguments)
 		exit(1);
 	execve(command->command_name, arguments, environ);
-	ms_perror("execve", NULL, NULL, errno);
 	free(arguments);
-	return (1);
+	ms_perror(command->command_name, NULL, NULL, errno);
+	exit(127);
 }
 
 int	execute_builtin(t_command *command)

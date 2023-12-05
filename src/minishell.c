@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/04 16:15:46 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/05 15:56:42 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ int	init_parse_data(t_parsing_data *data)
 int	alloc_parse_data(t_parsing_data *data, int size)
 {
 	//todo: error management, maybe init stuff to NULL and call a protected clear ft?
-			// not sure how feasible that is
+	// not sure how feasible that is
 	data->tokens = malloc(sizeof(t_darray));
 	if (!data->tokens)
 		return (-1);
@@ -331,6 +331,16 @@ void	print_tokens(t_parsing_data *data)
 	}
 }
 
+int	ms_syntax_error(void *input)
+{
+	t_parsing_data	*data;
+
+	data = (t_parsing_data *)(input);
+	printf("syntax error near unexpected token '%s'\n",
+			((t_token*)(ft_darray_get(data->tokens, data->tokens->size-2)))->string);
+	return (2);
+}
+
 int	recognize_input(t_parsing_data *data)
 {
 	t_earley_set	*last_set;
@@ -341,8 +351,7 @@ int	recognize_input(t_parsing_data *data)
 	last_set = ft_darray_get(data->earley_sets, data->earley_sets->size - 1);
 	if (!last_set->items->size)
 	{
-		printf("syntax error near unexpected token '%s'\n", ((t_token*)(ft_darray_get(data->tokens, data->tokens->size-2)))->string);
-		//ms_message_header();
+		ms_message_header(data, ms_syntax_error, 2);
 		return (2);
 	}
 	if (build_chart(data->earley_sets, data->chart, data->tokens->size) < 0)
