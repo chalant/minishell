@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_darray.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 16:35:27 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/28 16:32:49 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/05 12:53:51 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,7 @@ int	ft_darray_append(t_darray *darray, void *element)
 	void	*new_elements;
 	void	*address;
 
-	darray->size += 1;
-	if (darray->size > darray->actual_size)
-		darray->actual_size += 1;
-	if (darray->size > darray->max_size)
+	if (darray->size + 1 > darray->max_size)
 	{
 		new_elements = malloc((darray->max_size + darray->block_size) * darray->type_size);
 		if (!new_elements)
@@ -90,6 +87,9 @@ int	ft_darray_append(t_darray *darray, void *element)
 		darray->contents = new_elements;
 		darray->max_size += darray->block_size;
 	}
+	darray->size += 1;
+	if (darray->size > darray->actual_size)
+		darray->actual_size += 1;
 	address = (unsigned char*)darray->contents + (darray->size - 1) * darray->type_size;
 	ft_memcpy(address, element, darray->type_size);
 	return (0);

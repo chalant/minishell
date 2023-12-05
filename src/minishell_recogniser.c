@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:34 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/24 17:41:24 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/05 12:10:18 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ int	earley_safe_append(t_earley_set *set, t_earley_item *item)
 	while (++i < set->items->size)
 	{
 		current_item = items + i;
+		if (!current_item)
+			return (-1);
 		if (current_item->next == item->next
 			&& current_item->rule == item->rule
 			&& current_item->start == item->start)

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 14:42:29 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/05 12:38:51 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ static int	ms_add_herstory(char *line)
 static int	ms_process_line(t_ms_context *data, char *line)
 {
 	t_token_info	info;
+	int				recogniser_status;
 	// t_darray		tokens;
 	// char			**arg;
 
@@ -106,14 +107,14 @@ static int	ms_process_line(t_ms_context *data, char *line)
 		free(line);
 		return (1);
 	}
-	if (recognize_input(&(data->parse_data)) == 2)
-	{
-		reset_parse_data(&(data->parse_data), &(data->tree));
+	recogniser_status = recognize_input(&(data->parse_data));
+	if (recogniser_status == 2)
 		return (0);
-	}
+	else if (recogniser_status < 0)
+		return (-1);
 	parse_input(&(data->parse_data), &(data->tree));
 	data->status = execute(data, &(data->tree), &(data->commands));
-	reset_parse_data(&(data->parse_data), &(data->tree));
+	//reset_parse_data(&(data->parse_data), &(data->tree));
 // arg = ms_convert_tokens_arg(&tokens);
 // ft_darray_delete(&tokens, ms_clear_token);
 // if (!arg)
@@ -208,6 +209,7 @@ int	main(void)
 	{
 		if (ms_process_line(&data, data.line))
 			ms_flush_exit(&data, 1);
+		reset_parse_data(&data.parse_data, &data.tree);
 		data.line = readline(MS_PROMPT_MSG);
 	}
 	ms_flush_exit(&data, 0);
