@@ -3,16 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/11/28 16:33:30 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/06 14:32:29 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #ifndef LIBFT_H
 # define LIBFT_H
+
+# define FT_LIFO 0
+# define FT_FIFO 1
 
 # include <stdlib.h>
 # include <string.h>
@@ -39,6 +42,7 @@ typedef struct	s_stack
 {
 	int			top;
 	int			size;
+	int			mode;
 	t_darray	*elements;
 }				t_stack;
 

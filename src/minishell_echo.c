@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_echo.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:10:33 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/21 16:50:33 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/06 16:40:44 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ms_echo(char **arg)
+int	ms_echo(char **arg, int fd)
 {
 	int		flag_n;
 	int		i;
@@ -28,12 +28,12 @@ int	ms_echo(char **arg)
 	}
 	while (arg && arg[i])
 	{
-		write(STDOUT_FILENO, arg[i], ft_strlen(arg[i]));
+		write(fd, arg[i], ft_strlen(arg[i]));
 		i++;
 		if (arg[i])
-			write(STDOUT_FILENO, " ", 1);
+			write(fd, " ", 1);
 	}
 	if (!flag_n)
-		write(STDOUT_FILENO, "\n", 1);
+		write(fd, "\n", 1);
 	return (0);
 }

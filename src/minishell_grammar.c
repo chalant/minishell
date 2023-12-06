@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/05 14:31:03 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 15:12:39 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,17 +52,18 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"parenthesis:='(' command =')'\n"\
 	"parenthesis:='(' command $'4'\n"\
 
-	"command_operand:parenthesis\n"\
-	"command_operand:simple_command\n"\
-	"command_operand:redirection_command\n"\
+	"command_factor:parenthesis\n"\
+	"command_factor:simple_command\n"\
+	"command_operand:command_factor\n"\
+	"command_operand:command_operand ='|' $'4'\n"\
+	"command_operand:command_operand ='|' command_factor\n"\
 
-	"command:command_operand\n"\
+	"command:redirection_command\n"\
 	"command:command ='&&' $'4'\n"\
 	"command:command ='||' $'4'\n"\
-	"command:command ='|' $'4'\n"\
-	"command:command ='|' command_operand\n"\
 	"command:command ='||' command_operand\n"\
-	"command:command ='&&' command_operand\n";
+	"command:command ='&&' command_operand\n"\
+	"command:command_operand\n";
 	
 
 char	**ft_reverse_strings(char **strings)

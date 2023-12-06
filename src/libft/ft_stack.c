@@ -1,16 +1,18 @@
 #include "libft.h"
-#include <stdio.h>
 
 int	ft_stack_init(t_stack *stack, t_darray *elements)
 {
 	stack->size = elements->size;
 	stack->elements = elements;
+	stack->mode = FT_LIFO;
 	return (1);
 }
 
 void	*ft_stack_pop(t_stack *stack)
 {
 	stack->size -= 1;
+	if (stack->mode == FT_FIFO)
+		return (ft_darray_get(stack->elements, stack->elements->size - 1 - stack->size));
 	return (ft_darray_get(stack->elements, stack->size));
 }
 

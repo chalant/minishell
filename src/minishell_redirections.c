@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/06 12:52:52 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 17:48:26 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ int	create_files(t_command *command, t_darray *redirections)
 		else
 			fd = open(MS_HEREDOC_PATH, redirection->file_flags, redirection->mode);
 		if (fd < 0)
-			return (ms_perror(redirection->file_path, NULL, NULL, errno) - 2);
+			return (ms_perror(redirection->file_path, NULL, NULL, errno));
 		if (redirection->redirection_flags & MS_READ && !command->input)
 			command->input = fd;
 		else if (redirection->redirection_flags & MS_WRITE && !command->output)

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/06 12:46:27 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 18:22:03 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,18 +50,17 @@ int	redirect_out(t_command *command)
 {
 	if (dup2(command->output, STDOUT_FILENO) < 0)
 		return (ms_perror("dup", NULL, NULL, errno) - 2);
-	return (0);
+	return (1);
 }
 
 int	pipe_out(t_command *command, int _pipe[2])
 {
-	//todo: print errors here
-	if (command->output)
+	if (command->output != STDOUT_FILENO)
 		return (redirect_out(command));
 	if (_pipe[1] == -1)
 		return (0);
 	if (dup2(_pipe[1], STDOUT_FILENO) < 0)
-		return (-1);
+		return (ms_perror("pipe", NULL, NULL, errno) - 2);
 	return (0);
 }
 
@@ -70,16 +69,7 @@ int	pipe_in(t_command *command, int _pipe[2])
 	if (command->input)
 		return (redirect_in(command));
 	if (dup2(_pipe[0], STDIN_FILENO) < 0)
-		return (-1);
-	return (0);
-}
-
-int	ms_redirect(t_command *command)
-{
-	if (command->input && redirect_in(command) < 0)
-		exit(1);
-	if (command->output && redirect_out(command) < 0)
-		exit(1);
+		return (ms_perror("pipe", NULL, NULL, errno) - 2);
 	return (0);
 }
 
@@ -105,7 +95,6 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		//todo: print error
 		if (pipe_io(command, in_pipe, out_pipe) < 0)
 			exit(1);
 		status = execute_command(command, in_pipe, out_pipe);
@@ -196,16 +185,17 @@ int	launch_execve(t_command *command)
 	exit(127);
 }
 
-int	execute_builtin(t_command *command)
+int	execute_builtin(t_command *command, int in_fd, int out_fd)
 {
 	int		status;
 	char	**arguments;
+	(void)in_fd;
 
 	status = 0;
 	arguments = make_arguments(command);
 	if (strcmp(command->command_name, "echo") == 0)
-		status = ms_echo(arguments);
-	else if (strcmp(command->command_name, "cd") == 0)
+		status = ms_echo(arguments, out_fd);
+	if (strcmp(command->command_name, "cd") == 0)
 		status = ms_cd(command->context, arguments);
 	else if (strcmp(command->command_name, "pwd") == 0)
 		status = ms_pwd();
@@ -221,26 +211,42 @@ int	execute_builtin(t_command *command)
 	return (status);
 }
 
-//this is the core execution function.
-int	execute_simple_command(t_command *command)
+//todo: 
+int	execute_simple_command(t_command *command, int in_fd, int out_fd)
 {
 	pid_t	pid;
+	(void)in_fd;
+	(void)out_fd;
 
+	if (command->command_flags & MS_BUILTIN && !(command->command_flags & MS_FORKED))
+	{
+		if (command->output)
+			return (execute_builtin(command, command->input, command->output));
+		else
+			return (execute_builtin(command, command->input, STDOUT_FILENO));
+	}
 	if (command->command_flags & MS_BUILTIN)
-		return (execute_builtin(command));
+	{
+		if (command->input)
+			redirect_in(command);
+		if (command->output)
+			redirect_out(command);
+		return (execute_builtin(command, STDIN_FILENO, STDOUT_FILENO));
+	}
 	if (!(command->command_flags & MS_FORKED))
 	{
 		pid = fork();
 		if (pid == 0)
 		{
-			if (command->input && redirect_in(command) < 0)
-				exit(1);
-			if (command->output && redirect_out(command) < 0)
-				exit(1);
+			if (command->input)
+				redirect_in(command);
+			if (command->output)
+				redirect_out(command);
 			launch_execve(command);
 		}
 		return (get_exit_status(pid));
 	}
+	printf("HERE!\n");
 	launch_execve(command);
 	return (1);
 }
@@ -250,7 +256,7 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	if (!command)
 		return (0);
 	if (command->command_flags & MS_OPERAND)
-		return (execute_simple_command(command));
+		return (execute_simple_command(command, STDIN_FILENO, STDOUT_FILENO));
 	else if (command->command_flags & MS_AND)
 		return (execute_and(command, in_pipe, out_pipe));
 	else if (command->command_flags & MS_OR)
@@ -297,11 +303,11 @@ int	minishell_execute(t_command *command)
 	int	status;
 
 	// printf("Commands: \n");
-	// print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	if (pipe(in_pipe) < 0)
 		return (-1);
 	status = execute_command(command, in_pipe, out_pipe);
+	print_commands(command, 0);
 	while (wait(NULL) != -1)
 		continue ;
 	close(in_pipe[0]);
