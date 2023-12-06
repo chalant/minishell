@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/04 14:20:13 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 15:19:28 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 		return (0);
 	if (node->children->size >= 4 && ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name)
 	{
+		printf("PARENT %d %s\n", node->children->size, ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name);
 		if (!command->redirections)
 		{
 			command->redirections = malloc(sizeof(t_darray));

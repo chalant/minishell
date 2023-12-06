@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 14:19:11 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 16:41:35 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ extern int	g_global_status;
 
 int		ms_exit(t_ms_context *context, char **arg);
 void	ms_flush_exit(t_ms_context *context, int exit_value);
-int		ms_echo(char **arg);
+int     ms_echo(char **arg, int fd);
 int		ms_cd(t_ms_context *context, char **arg);
 int		ms_pwd(void);
 int		ms_env(void);
