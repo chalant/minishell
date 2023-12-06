@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+//todo: check for leaks
 int	init_rule(char ***result, t_ms_grammar *grammar, char **rules, int i)
 {
 	char		**rule;
@@ -13,6 +14,8 @@ int	init_rule(char ***result, t_ms_grammar *grammar, char **rules, int i)
 	if (!grammar->rules[i])
 		return (-1);
 	grammar->rules[i]->name = rule[0];
+	if (!grammar->rules[i]->name)
+		return (-1);
 	symbols = ft_split(rule[1], ' ');
 	free(rule[1]);
 	if (!symbols)

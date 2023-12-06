@@ -25,6 +25,7 @@ typedef struct	s_ms_rule
 {
 	int			rule_id;
 	int			length;
+	int			parent;
 	char		*name;
 	t_ms_symbol	**symbols;
 }				t_ms_rule;

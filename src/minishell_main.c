@@ -108,13 +108,15 @@ static int	ms_process_line(t_ms_context *data, char *line)
 		return (1);
 	}
 	recogniser_status = recognize_input(&(data->parse_data));
-	if (recogniser_status == 2)
-		return (0);
-	else if (recogniser_status < 0)
+	if (recogniser_status < 0)
 		return (-1);
-	parse_input(&(data->parse_data), &(data->tree));
-	data->status = execute(data, &(data->tree), &(data->commands));
-	//reset_parse_data(&(data->parse_data), &(data->tree));
+	if (recogniser_status != 2)
+	{
+		parse_input(&(data->parse_data), &(data->tree));
+		data->status = execute(data, &(data->tree), &(data->commands));
+		return (ms_add_herstory(line));
+	}
+	data->status = 2;
 // arg = ms_convert_tokens_arg(&tokens);
 // ft_darray_delete(&tokens, ms_clear_token);
 // if (!arg)

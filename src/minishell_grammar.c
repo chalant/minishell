@@ -22,9 +22,6 @@ static const char	*g_test_grammar = "sum:sum <'+-' product\n"\
 	"number:<'0123456789'\n";
 
 static const char	*g_minishell_grammar = "word:$'3'\n"\
-	"number:$'2'\n"\
-
-	"assignment-word:$'1'\n"\
 
 	"redirection:='>' word\n"\
 	"redirection:='<' word\n"\
@@ -47,22 +44,26 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 
 	"redirection_command:redirection_list\n"\
 	"redirection_command:='(' redirection_list =')' redirection_list\n"\
+	"redirection_command:='(' redirection_list $'4' redirection_list\n"\
 	"redirection_command:redirection_list simple_command\n"\
 
 	"parenthesis:='(' command =')' redirection_list\n"\
+	"parenthesis:='(' command $'4' redirection_list\n"\
 	"parenthesis:='(' command =')'\n"\
+	"parenthesis:='(' command $'4'\n"\
 
-	"command:command_operand\n"\
 	"command_operand:parenthesis\n"\
 	"command_operand:simple_command\n"\
 	"command_operand:redirection_command\n"\
 
-	"command:command ='|' $'4'\n"\
-	"command:command ='||' $'4'\n"\
+	"command:command_operand\n"\
 	"command:command ='&&' $'4'\n"\
-	"command:command ='|' command\n"\
-	"command:command ='||' command\n"\
-	"command:command ='&&' command\n";
+	"command:command ='||' $'4'\n"\
+	"command:command ='|' $'4'\n"\
+	"command:command ='|' command_operand\n"\
+	"command:command ='||' command_operand\n"\
+	"command:command ='&&' command_operand\n";
+	
 
 char	**ft_reverse_strings(char **strings)
 {

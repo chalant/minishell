@@ -27,6 +27,7 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 	return (ft_stack_push(stack, &command));
 }
 
+//
 int	handle_parenthesis(t_parse_tree *node, t_command *command)
 {
 	if (!command || !command->command_name)

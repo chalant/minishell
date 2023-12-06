@@ -136,6 +136,8 @@ int	init_command_fields(t_command *command)
 	return (0);
 }
 
+//todo: need to handle the parenthesis and the redirections
+//after the parenthesis -> children >= 5
 int	redirection_command(t_parse_tree *node, t_command *command)
 {
 	t_parse_tree	*tmp;

@@ -54,13 +54,46 @@ int	print_earley(t_earley_set **sets, t_ms_grammar *grammar, int size)
 	return (0);
 }
 
+int	print_dearley(t_darray *sets, t_ms_grammar *grammar, int size)
+{
+	int				i;
+	int				j;
+	int				k;
+	t_earley_item	*item;
+	t_earley_set	*set;
+
+	i = -1;
+	while (++i < size)
+	{
+		j = -1;
+		set = ft_darray_get(sets, i);
+		printf("=================(%d)==================\n\n", i);
+		while (++j < set->items->size)
+		{
+			item = (t_earley_item *)set->items->contents + j;
+			printf("%s -> ", grammar->rules[item->rule]->name);
+			k = -1;
+			while (++k < grammar->rules[item->rule]->length)
+			{
+				if (k == item->next)
+					printf("• ");
+				if (k != grammar->rules[item->rule]->length - 1)
+					printf("%s ", grammar->rules[item->rule]->symbols[k]->name);
+			}
+			printf("(%d)\n", item->start);
+		}
+		printf("\n");
+	}
+	return (0);
+}
+
 int	reverse_earley(t_darray *sets, t_ms_grammar *grammar)
 {
 	int				i;
 	int				j;
 	int				k;
 	t_earley_item	*item;
-    t_earley_set    *set;
+	t_earley_set	*set;
 	t_earley_set	**reversed;
 
 	i = -1;
@@ -333,14 +366,25 @@ void	print_tokens(t_parsing_data *data)
 
 int	ms_syntax_error(void *input)
 {
+	int				i;
 	t_parsing_data	*data;
-
+	//todo: look for the last set before NULL.
 	data = (t_parsing_data *)(input);
+	i = data->earley_sets->size - 1;
+	while (i > -1 &&
+		!((t_earley_set *)ft_darray_get(data->earley_sets, i))->items->size)
+		i--;
 	printf("syntax error near unexpected token '%s'\n",
-			((t_token*)(ft_darray_get(data->tokens, data->tokens->size-2)))->string);
+			((t_token*)(ft_darray_get(data->tokens, i)))->string);
 	return (2);
 }
 
+/*
+attempts to match the input with the grammar.
+returns 2 if there is a syntax error
+returns -1 if there is an internal error
+returns 0 otherwise
+*/
 int	recognize_input(t_parsing_data *data)
 {
 	t_earley_set	*last_set;
@@ -348,6 +392,7 @@ int	recognize_input(t_parsing_data *data)
 	update_parsing_data(data, data->tokens->size);
 	if (build_earley_items(data) < 0)
 		return (-1);
+	//print_dearley(data->earley_sets, data->grammar, data->earley_sets->size);
 	last_set = ft_darray_get(data->earley_sets, data->earley_sets->size - 1);
 	if (!last_set->items->size)
 	{
@@ -359,7 +404,6 @@ int	recognize_input(t_parsing_data *data)
 	//reverse_earley(data->earley_sets, data->grammar);
 	data->input_length = data->tokens->size;
 	data->chart_size = data->tokens->size;
-	//todo: free sets.
 	return (0);
 }
 

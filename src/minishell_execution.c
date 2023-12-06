@@ -19,8 +19,6 @@ static int	get_exit_status(pid_t pid)
 
 	status = 0;
 	waitpid(pid, &status, 2);
-	while (wait(NULL) != -1)
-		continue ;
 	if (g_global_status)
 	{
 		status = g_global_status;
@@ -79,16 +77,15 @@ int	pipe_in(t_command *command, int _pipe[2])
 
 int	ms_redirect(t_command *command)
 {
-	// // todo: dup file errors
 	if (command->input)
 	{
 		if (dup2(command->input, STDIN_FILENO) < 0)
-			return (-1);
+			return (ms_perror("dup", NULL, NULL, perror) - 2);
 	}
 	if (command->output)
 	{
 		if (dup2(command->output, STDOUT_FILENO) < 0)
-			return (-1);
+			return (ms_perror("dup", NULL, NULL, perror) - 2);
 	}
 	return (0);
 }
@@ -110,9 +107,8 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 	int		status;
 
 	pid = fork();
-	//todo: maybe print an error ?
 	if (pid < 0)
-		return (-1);
+		return (ms_perror("fork", "", NULL, errno) - 2);
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
@@ -149,6 +145,7 @@ int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (status);
 }
 
+//todo: should wait for the very last process... otherwise it hangs...
 int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
@@ -156,7 +153,6 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	if (pipe(out_pipe) < 0)
 		return (-1);
 	pid = execute_process(command->left, in_pipe, out_pipe);
-	//todo: print error
 	if (pid < 0)
 		return (1);
 	close(in_pipe[0]);
@@ -166,7 +162,6 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	pid = execute_process(command->right, in_pipe, out_pipe);
 	close(in_pipe[0]);
 	close(in_pipe[1]);
-	//todo: print error
 	if (pid < 0)
 		return (1);
 	return (get_exit_status(pid));
@@ -245,7 +240,6 @@ int	execute_simple_command(t_command *command)
 		pid = fork();
 		if (pid == 0)
 		{
-			//todo: handle errors
 			if (ms_redirect(command) < 0)
 				exit(1);
 			launch_execve(command);
@@ -313,6 +307,8 @@ int	minishell_execute(t_command *command)
 	if (pipe(in_pipe) < 0)
 		return (-1);
 	status = execute_command(command, in_pipe, out_pipe);
+	while (wait(NULL) != -1)
+		continue ;
 	close(in_pipe[0]);
 	close(in_pipe[1]);
 	if (!access(MS_HEREDOC_PATH, F_OK))
