@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/06 12:19:57 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 12:46:27 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,16 +41,15 @@ void	copy_pipe(int src_pipe[2], int dest_pipe[2])
 
 int	redirect_in(t_command *command)
 {
-	// // todo: dup file errors
 	if (dup2(command->input, STDIN_FILENO) < 0)
-		return (-1);
+		return (ms_perror("dup", NULL, NULL, errno) - 2);
 	return (0);
 }
 
 int	redirect_out(t_command *command)
 {
 	if (dup2(command->output, STDOUT_FILENO) < 0)
-		return (-1);
+		return (ms_perror("dup", NULL, NULL, errno) - 2);
 	return (0);
 }
 
@@ -77,16 +76,10 @@ int	pipe_in(t_command *command, int _pipe[2])
 
 int	ms_redirect(t_command *command)
 {
-	if (command->input)
-	{
-		if (dup2(command->input, STDIN_FILENO) < 0)
-			return (ms_perror("dup", NULL, NULL, errno) - 2);
-	}
-	if (command->output)
-	{
-		if (dup2(command->output, STDOUT_FILENO) < 0)
-			return (ms_perror("dup", NULL, NULL, errno) - 2);
-	}
+	if (command->input && redirect_in(command) < 0)
+		exit(1);
+	if (command->output && redirect_out(command) < 0)
+		exit(1);
 	return (0);
 }
 
@@ -108,7 +101,7 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 
 	pid = fork();
 	if (pid < 0)
-		return (ms_perror("fork", "", NULL, errno) - 2);
+		return (ms_perror("fork", NULL, NULL, errno) - 2);
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
@@ -240,7 +233,9 @@ int	execute_simple_command(t_command *command)
 		pid = fork();
 		if (pid == 0)
 		{
-			if (ms_redirect(command) < 0)
+			if (command->input && redirect_in(command) < 0)
+				exit(1);
+			if (command->output && redirect_out(command) < 0)
 				exit(1);
 			launch_execve(command);
 		}
