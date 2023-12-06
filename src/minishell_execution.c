@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/06 18:15:25 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 18:22:03 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,33 +218,29 @@ int	execute_simple_command(t_command *command, int in_fd, int out_fd)
 	(void)in_fd;
 	(void)out_fd;
 
-	printf("WHAT!\n");
 	if (command->command_flags & MS_BUILTIN && !(command->command_flags & MS_FORKED))
 	{
-		printf("THERE!\n");
 		if (command->output)
 			return (execute_builtin(command, command->input, command->output));
 		else
-			return (execute_builtin(command, command->input, command->output));
+			return (execute_builtin(command, command->input, STDOUT_FILENO));
 	}
 	if (command->command_flags & MS_BUILTIN)
 	{
-		// if (command->input)
-		// 	redirect_in(command);
-		// if (command->output)
-		// 	redirect_out(command);
-		fprintf(stderr, "HERE!\n");
-		return (execute_builtin(command, STDIN_FILENO, 1));
+		if (command->input)
+			redirect_in(command);
+		if (command->output)
+			redirect_out(command);
+		return (execute_builtin(command, STDIN_FILENO, STDOUT_FILENO));
 	}
 	if (!(command->command_flags & MS_FORKED))
 	{
-		printf("YOOO!\n");
 		pid = fork();
 		if (pid == 0)
 		{
 			if (command->input)
 				redirect_in(command);
-			if (command->output != STDOUT_FILENO)
+			if (command->output)
 				redirect_out(command);
 			launch_execve(command);
 		}
