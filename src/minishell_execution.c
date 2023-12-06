@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/05 15:46:45 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 12:19:57 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,12 +80,12 @@ int	ms_redirect(t_command *command)
 	if (command->input)
 	{
 		if (dup2(command->input, STDIN_FILENO) < 0)
-			return (ms_perror("dup", NULL, NULL, perror) - 2);
+			return (ms_perror("dup", NULL, NULL, errno) - 2);
 	}
 	if (command->output)
 	{
 		if (dup2(command->output, STDOUT_FILENO) < 0)
-			return (ms_perror("dup", NULL, NULL, perror) - 2);
+			return (ms_perror("dup", NULL, NULL, errno) - 2);
 	}
 	return (0);
 }
