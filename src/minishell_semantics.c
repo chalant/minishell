@@ -34,7 +34,6 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 		return (0);
 	if (node->children->size >= 4 && ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name)
 	{
-		printf("PARENT %d %s\n", node->children->size, ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name);
 		if (!command->redirections)
 		{
 			command->redirections = malloc(sizeof(t_darray));

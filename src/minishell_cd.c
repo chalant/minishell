@@ -47,7 +47,7 @@ static int	ms_update_pwd_env(t_ms_context *data)
 }
 
 // seems to always return 1 on error
-int	ms_cd(t_ms_context *data, char **arg)
+int	ms_cd(t_ms_context *data, char **arg, int fd)
 {
 	char	*path;
 
@@ -69,7 +69,7 @@ int	ms_cd(t_ms_context *data, char **arg)
 	if (chdir(path))
 		return (ms_perror("cd", path, NULL, errno));
 	if (arg[1] && !ft_strncmp(arg[1], "-", 2))
-		if (ms_pwd())
+		if (ms_pwd(fd))
 			return (1);
 // error!? (can only be malloc i think? kinda? except for getcwd maybe)
 	if (ms_update_pwd_env(data))

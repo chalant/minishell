@@ -55,7 +55,7 @@ int	redirect_out(t_command *command)
 
 int	pipe_out(t_command *command, int _pipe[2])
 {
-	if (command->output != STDOUT_FILENO)
+	if (command->output)
 		return (redirect_out(command));
 	if (_pipe[1] == -1)
 		return (0);
@@ -196,9 +196,9 @@ int	execute_builtin(t_command *command, int in_fd, int out_fd)
 	if (strcmp(command->command_name, "echo") == 0)
 		status = ms_echo(arguments, out_fd);
 	if (strcmp(command->command_name, "cd") == 0)
-		status = ms_cd(command->context, arguments);
+		status = ms_cd(command->context, arguments, out_fd);
 	else if (strcmp(command->command_name, "pwd") == 0)
-		status = ms_pwd();
+		status = ms_pwd(out_fd);
 	else if (strcmp(command->command_name, "export") == 0)
 		status = ms_export(command->context, arguments);
 	else if (strcmp(command->command_name, "env") == 0)
@@ -211,12 +211,10 @@ int	execute_builtin(t_command *command, int in_fd, int out_fd)
 	return (status);
 }
 
-//todo: 
-int	execute_simple_command(t_command *command, int in_fd, int out_fd)
+//todo: make this more compact.
+int	execute_simple_command(t_command *command)
 {
 	pid_t	pid;
-	(void)in_fd;
-	(void)out_fd;
 
 	if (command->command_flags & MS_BUILTIN && !(command->command_flags & MS_FORKED))
 	{
@@ -246,7 +244,6 @@ int	execute_simple_command(t_command *command, int in_fd, int out_fd)
 		}
 		return (get_exit_status(pid));
 	}
-	printf("HERE!\n");
 	launch_execve(command);
 	return (1);
 }
@@ -256,7 +253,7 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	if (!command)
 		return (0);
 	if (command->command_flags & MS_OPERAND)
-		return (execute_simple_command(command, STDIN_FILENO, STDOUT_FILENO));
+		return (execute_simple_command(command));
 	else if (command->command_flags & MS_AND)
 		return (execute_and(command, in_pipe, out_pipe));
 	else if (command->command_flags & MS_OR)
@@ -307,7 +304,7 @@ int	minishell_execute(t_command *command)
 	if (pipe(in_pipe) < 0)
 		return (-1);
 	status = execute_command(command, in_pipe, out_pipe);
-	print_commands(command, 0);
+	//print_commands(command, 0);
 	while (wait(NULL) != -1)
 		continue ;
 	close(in_pipe[0]);
