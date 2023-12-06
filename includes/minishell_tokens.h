@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/30 14:55:10 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/06 16:08:12 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 # define RESERVED_SINGLE "|<>() \n"
 # define RESERVED_DOUBLE "<>&|"
 # define RESERVED_SKIP " \n"
+
+# define SPECIAL_VAR "?"
 
 # define IS_RESERVED 1 << 0
 # define IS_QUOTED 1 << 1

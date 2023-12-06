@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_export.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 17:41:16 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,12 +101,11 @@ int	ms_export_var(t_ms_context *data, char *var)
 		free(*temp_envp);
 		*temp_envp = var;
 	}
-	else
-		if (ms_add_var_env(data, var))
-		{
-			free(var);
-			return (ERR_MALLOC);
-		}
+	else if (ms_add_var_env(data, var))
+	{
+		free(var);
+		return (ERR_MALLOC);
+	}
 // malloc failed
 	environ = data->env;
 	return (0);

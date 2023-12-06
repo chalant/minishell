@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_variable_util.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:44:01 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/06 17:38:21 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	ms_check_varname(char *var)
 		return (1);
 	while (*var && *var != '=')
 	{
-		if ( !('a' <= *var && *var <= 'z') && !('A' <= *var && *var <= 'Z')
+		if (!('a' <= *var && *var <= 'z') && !('A' <= *var && *var <= 'Z')
 			&& *var != '_' && !('0' <= *var && *var <= '9'))
 			return (1);
 		var++;

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 16:32:07 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/06 20:35:54 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ char	*ms_end_of_name(const char *str)
 {
 	if (*str == '$')
 		str++;
+	if (ft_strchr(SPECIAL_VAR, *str))
+		return ((char *) str + 1);
 	if ('0' <= *str && *str <= '9')
 		return ((char *) str + 1);
 	while (('a' <= *str && *str <= 'z') || ('A' <= *str && *str <= 'Z')
@@ -130,11 +132,33 @@ static int	ms_append_tokens_var(t_darray *tokens, t_token *new, char **value, in
 	return (0);
 }
 
-static char	**ms_handle_getenv(char *str, int *qt)
+static char	**ms_special_getenv(char *str, int *qt, char *mask_fill)
+{
+	char	**ret;
+
+	(void) str;
+	(void) qt;
+	ret = malloc(sizeof(char *) * 2);
+	if (!ret)
+		return (NULL);
+	ret[0] = ft_strdup("$$?");
+	if (!ret[0])
+	{
+		free(ret);
+		return (NULL);
+	}
+	ret[1] = NULL;
+	*mask_fill = '3';
+	return (ret);
+}
+
+static char	**ms_handle_getenv(char *str, int *qt, char *mask_fill)
 {
 	char	**ret;
 	char	*value;
 
+	if (ft_strchr(SPECIAL_VAR, *str))
+		return (ms_special_getenv(str, qt, mask_fill));
 	value = getenv(str);
 	if (!value || !*value)
 	{
@@ -164,13 +188,15 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 	char	temp;
 	char	**value;
 	int		i;
+	char	mask_fill;
 
 	end = ms_end_of_name(*str);
 	if (*str == end)
 		return (0);
+	mask_fill = '1';
 	temp = *end;
 	*end = 0;
-	value = ms_handle_getenv(*str + 1, qt);
+	value = ms_handle_getenv(*str + 1, qt, &mask_fill);
 	if (!value)
 	{
 		ms_perror("expansion", NULL, NULL, errno);
@@ -183,7 +209,7 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 		free(value);
 		return (0);
 	}
-	if (ms_join_str(new, value[0], '1'))
+	if (ms_join_str(new, value[0], mask_fill))
 	{
 		ft_clear_ds(value);
 		return (ERR_MALLOC);
