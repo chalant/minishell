@@ -6,14 +6,14 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 14:56:22 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/13 13:34:02 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 15:45:38 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // shifts as long as a[i++]
-static void	ms_shift_strings(char *a, char *b, int i)
+void	ms_shift_strings(char *a, char *b, int i)
 {
 	while (a[i])
 	{

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/06 16:08:12 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 15:47:50 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # define IS_WILDCARD 1 << 3
 # define IS_HEREDOC 1 << 4
 # define IS_DELIMITER 1 << 5
+# define IS_SPECIAL 1 << 6
 
 // # define RESERVED_SYMBOLS "+-*/() "
 // # define SKIP_SYMBOLS " "
@@ -47,8 +48,9 @@ typedef struct s_token_info
 typedef struct dirent t_dirent;
 
 t_token_info	*ms_token_info(t_token_info *ti, const char *res_single,
-	const char *res_double, const char *res_skip);
-int				ms_tokeniser(char **input, t_darray *tokens, t_token_info *info);
+					const char *res_double, const char *res_skip);
+int				ms_tokeniser(char **input, t_darray *tokens,
+					t_token_info *info);
 t_token			*ms_init_token(t_token *token);
 void			ms_clear_token(void *token);
 
@@ -59,5 +61,6 @@ char			*ms_end_of_name(const char *str);
 int				ms_expand_wildcard(t_darray *tokens, t_token *token);
 void			ms_token_expansion(t_darray *tokens);
 void			ms_remove_quotes(char *str, char *mask_exp);
+void			ms_shift_strings(char *a, char *b, int i);
 
 #endif

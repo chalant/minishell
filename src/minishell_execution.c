@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 14:03:20 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/07 17:40:09 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,56 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (get_exit_status(pid));
 }
 
+static void	fill_in_status(char *status, t_token *token, int *j)
+{
+	if (!token->string[*j])
+		return ;
+	token->string[*j] = *status;
+	(*j)++;
+	status++;
+	if (*status)
+	{
+		token->string[*j] = *status;
+		(*j)++;
+		status++;
+	}
+	else
+		ms_shift_strings(token->string, token->mask_exp, *j);
+	if (*status)
+	{
+		token->string[*j] = *status;
+		(*j)++;
+		status++;
+	}
+	else
+		ms_shift_strings(token->string, token->mask_exp, *j);
+}
+
+static char *make_argi(t_command *command, int i)
+{
+	t_token	*token;
+	int		j;
+	char	*status;
+
+	token = (t_token *)ft_darray_get(command->arguments, i - 1);
+	if (token->flags & IS_SPECIAL)
+	{
+		status = ft_itoa((unsigned char) command->context->status);
+		if (!status)
+			return (NULL);
+		j = 0;
+		while (token->string[j])
+		{
+			while (token->string[j] && token->mask_exp[j] != '3')
+				j++;
+			fill_in_status(status, token, &j);
+		}
+		free(status);
+	}
+	return (token->string);
+}
+
+// returns NULL on malloc fail
 char	**make_arguments(t_command *command)
 {
 	int			nargs;
@@ -163,8 +213,15 @@ char	**make_arguments(t_command *command)
 		return (NULL);
 	arguments[0] = command->command_name;
 	i = 0;
-	while (++i < nargs - 1 && nargs != 2)
-		arguments[i] = ((t_token *)ft_darray_get(command->arguments, i - 1))->string;
+	while (++i < nargs - 1)
+	{
+		arguments[i] = make_argi(command, i);
+		if (!arguments[i])
+		{
+			ft_clear_ds(arguments);
+			return (NULL);
+		}
+	}
 	arguments[i] = NULL;
 	return (arguments);
 }

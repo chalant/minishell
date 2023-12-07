@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/06 20:35:54 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 17:29:04 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char	*ms_end_of_name(const char *str)
 {
 	if (*str == '$')
 		str++;
-	if (ft_strchr(SPECIAL_VAR, *str))
+	if (*str && ft_strchr(SPECIAL_VAR, *str))
 		return ((char *) str + 1);
 	if ('0' <= *str && *str <= '9')
 		return ((char *) str + 1);
@@ -132,12 +132,13 @@ static int	ms_append_tokens_var(t_darray *tokens, t_token *new, char **value, in
 	return (0);
 }
 
-static char	**ms_special_getenv(char *str, int *qt, char *mask_fill)
+static char	**ms_special_getenv(char *str, int *qt, char *mask_f, t_token *new)
 {
 	char	**ret;
 
 	(void) str;
 	(void) qt;
+	new->flags |= IS_SPECIAL;
 	ret = malloc(sizeof(char *) * 2);
 	if (!ret)
 		return (NULL);
@@ -148,17 +149,17 @@ static char	**ms_special_getenv(char *str, int *qt, char *mask_fill)
 		return (NULL);
 	}
 	ret[1] = NULL;
-	*mask_fill = '3';
+	*mask_f = '3';
 	return (ret);
 }
 
-static char	**ms_handle_getenv(char *str, int *qt, char *mask_fill)
+static char	**ms_handle_getenv(char *str, int *qt, char *mask_f, t_token *new)
 {
 	char	**ret;
 	char	*value;
 
 	if (ft_strchr(SPECIAL_VAR, *str))
-		return (ms_special_getenv(str, qt, mask_fill));
+		return (ms_special_getenv(str, qt, mask_f, new));
 	value = getenv(str);
 	if (!value || !*value)
 	{
@@ -196,7 +197,7 @@ static int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 	mask_fill = '1';
 	temp = *end;
 	*end = 0;
-	value = ms_handle_getenv(*str + 1, qt, &mask_fill);
+	value = ms_handle_getenv(*str + 1, qt, &mask_fill, new);
 	if (!value)
 	{
 		ms_perror("expansion", NULL, NULL, errno);
