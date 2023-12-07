@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 16:04:42 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 16:56:00 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ static char *make_argi(t_command *command, int i)
 	char	*status;
 
 	token = (t_token *)ft_darray_get(command->arguments, i - 1);
-printf("argi in: string = %s, mask = %s\n", token->string, token->mask_exp);
+printf("argi in: string = %s, mask = %s, special = %i\n", token->string, token->mask_exp, token->flags & IS_SPECIAL);
 	if (token->flags & IS_SPECIAL)
 	{
 		status = ft_itoa((unsigned char) command->context->status);
