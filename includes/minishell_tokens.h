@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/06 16:08:12 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 14:35:47 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # define IS_WILDCARD 1 << 3
 # define IS_HEREDOC 1 << 4
 # define IS_DELIMITER 1 << 5
+# define IS_SPECIAL 1 << 6
 
 // # define RESERVED_SYMBOLS "+-*/() "
 // # define SKIP_SYMBOLS " "

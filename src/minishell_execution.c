@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 14:03:20 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/07 14:47:11 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,11 @@ char	**make_arguments(t_command *command)
 	int			i;
 	char		**arguments;
 
+printf("make_arguments:\ntoken of %s: ", command->command_name);
+printf("%p: ", command->token);
+if (command->token)
+printf("%s", command->token->string);
+printf("\n\n");
 	nargs = 2;
 	if (command->arguments)
 		nargs = command->arguments->size + 2;
@@ -163,7 +168,7 @@ char	**make_arguments(t_command *command)
 		return (NULL);
 	arguments[0] = command->command_name;
 	i = 0;
-	while (++i < nargs - 1 && nargs != 2)
+	while (++i < nargs - 1)
 		arguments[i] = ((t_token *)ft_darray_get(command->arguments, i - 1))->string;
 	arguments[i] = NULL;
 	return (arguments);
