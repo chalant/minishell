@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/07 17:08:02 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 17:40:28 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,22 +107,22 @@ static int	ms_process_line(t_ms_context *data, char *line)
 	}
 
 // TOKEN PRINT IN PROGRESS
-printf("tokens after tokenising:\ntokens: ");
-int i = 0;
-while (i < data->parse_data.tokens->size)
-{
-	printf("%2i|", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->flags & IS_SPECIAL);
-	printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->string);
-	i++;
-}
-printf("\nmasks : ");
-i = 0;
-while (i < data->parse_data.tokens->size)
-{
-	printf("%9s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->mask_exp);
-	i++;
-}
-printf("\n\n");
+// printf("tokens after tokenising:\ntokens: ");
+// int i = 0;
+// while (i < data->parse_data.tokens->size)
+// {
+// 	printf("%2i|", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->flags & IS_SPECIAL);
+// 	printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->string);
+// 	i++;
+// }
+// printf("\nmasks : ");
+// i = 0;
+// while (i < data->parse_data.tokens->size)
+// {
+// 	printf("%9s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->mask_exp);
+// 	i++;
+// }
+// printf("\n\n");
 // TOKEN PRINT IS OVER
 
 	recogniser_status = recognize_input(&(data->parse_data));
