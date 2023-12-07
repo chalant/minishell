@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/06 15:19:28 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/07 16:20:05 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 	return (ft_stack_push(stack, &command));
 }
 
-//
 int	handle_parenthesis(t_parse_tree *node, t_command *command)
 {
 	if (!command || !command->command_name)
@@ -80,7 +79,7 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 	if (strcmp(node->rule_name, "simple_command") == 0)
 		return (create_command(node, commands, set_command_fields));
 	else if (strcmp(node->rule_name, "redirection_command") == 0)
-		return (create_command(node, commands, redirection_command));
+		return (redirection_command(node, commands));
 	return (handle_semantic_rule(node, commands));
 }
 

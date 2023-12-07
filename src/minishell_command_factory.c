@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 13:45:44 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/07 18:16:28 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ int	set_command_elements(t_command *command, t_parse_tree *tree)
 
 int	is_builtin(char *command_name)
 {
-	//todo: add more builtins
 	if (strcmp(command_name, "cd") == 0)
 		return (1);
 	else if (strcmp(command_name, "echo") == 0)
@@ -89,10 +88,11 @@ int	is_builtin(char *command_name)
 	return (0);
 }
 
-int	set_command_fields(t_parse_tree *node, t_command *command)
+int	set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack)
 {
 	char	*command_name;
 
+	(void)stack;
 	if (!node->rule_name)
 		return (0);
 	//todo: need an error when the command is not found.
@@ -108,9 +108,9 @@ int	set_command_fields(t_parse_tree *node, t_command *command)
 		return (-1);
 	node = ft_darray_get(node->children, 1);
 	if (node->children && set_command_elements(command, node) < 0)
-			return (-1);
+		return (-1);
 	if (command->redirections && create_files(command, command->redirections) < 0)
-			return (-1);
+		return (-1);
 	command->command_flags |= MS_OPERAND;
 	return (0);
 }
@@ -131,24 +131,54 @@ int	init_command_fields(t_command *command)
 	return (0);
 }
 
-//todo: need to handle the parenthesis and the redirections
-//after the parenthesis -> children >= 5
-int	redirection_command(t_parse_tree *node, t_command *command)
+//todo: create files
+int	redirection_command(t_parse_tree *node, t_stack *stack)
 {
 	t_parse_tree	*tmp;
+	t_command		*command;
+	t_command		new;
 
-	if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
-		return (-1);
-	if (node->children->size >= 2)
+	printf("CHILDREN %s %d\n", node->rule_name, node->children->size);
+	if (node->children->size >= 3)
 	{
+		//todo: the child could either be a command or parenthesis with redirections..
 		tmp = ft_darray_get(node->children, 1);
-		if (tmp->rule_name)
-			return (set_command_fields(tmp, command));
+		if (!tmp->rule_name)
+			return (0);
+		if (strcmp(tmp->rule_name, "command") == 0)
+		{
+			flatten_tree(tmp, stack);
+			command = ft_stack_peek(stack);
+			if (!command)
+				return (0);
+			if (!command->redirections)
+			{
+				command->redirections = malloc(sizeof(t_darray));
+				if (!command->redirections)
+					return (-1);
+				if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
+					return (-1);
+			}
+			if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
+				return (-1);
+			return (create_files(command, command->redirections));
+		}
+		return (0);
 	}
-	return (create_files(command, command->redirections));
+	init_command(&new);
+	new.redirections = malloc(sizeof(t_darray));
+	if (!new.redirections)
+		return (-1);
+	if (ft_darray_init(new.redirections, sizeof(t_redirection), 3) < 0)
+		return (-1);
+	if (set_redirections(&new, node) < 0)
+		return (-1);
+	return (create_files(&new, new.redirections));
+	//todo: make redirections and create_files.
+	return (0);
 }
 
-int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *))
+int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *))
 {
 	t_command	*command;
 	t_command	new;
@@ -157,11 +187,11 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	if (!command || !command->redirections || !command->arguments)
 	{
 		init_command_fields(&new);
-		if (factory(node, &new) < 0)
+		if (factory(node, &new, stack) < 0)
 			return (-1);
 		return (ft_stack_push(stack, &new));
 	}
-	if (factory(node, command) < 0)
+	if (factory(node, command, stack) < 0)
 		return (-1);
 	return (ft_stack_push(stack, command));
 }

@@ -12,7 +12,7 @@ int		ft_darray_exists(t_darray *darray, int index)
 {
 	unsigned char *target;
 
-	if (index >= darray->max_size)
+	if (index >= darray->actual_size)
 		return (0);
 	else if (index < 0)
 		return (0);
