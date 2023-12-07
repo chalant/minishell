@@ -126,7 +126,7 @@ int	init_command_fields(t_command *command)
 	command->arguments = malloc(sizeof(t_darray));
 	if (!command->arguments)
 		return (-1);
-	if (ft_darray_init(command->arguments, sizeof(char *), 3) < 0)
+	if (ft_darray_init(command->arguments, sizeof(t_token), 3) < 0)
 		return (-1);
 	return (0);
 }
