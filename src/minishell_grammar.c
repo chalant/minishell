@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/06 15:12:39 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/07 13:35:51 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"redirection_command:redirection_list\n"\
 	"redirection_command:='(' redirection_list =')' redirection_list\n"\
 	"redirection_command:='(' redirection_list $'4' redirection_list\n"\
-	"redirection_command:redirection_list simple_command\n"\
+	"redirection_command:redirection_list command\n"\
 
 	"parenthesis:='(' command =')' redirection_list\n"\
 	"parenthesis:='(' command $'4' redirection_list\n"\
@@ -53,12 +53,12 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"parenthesis:='(' command $'4'\n"\
 
 	"command_factor:parenthesis\n"\
+	"command_factor:redirection_command\n"\
 	"command_factor:simple_command\n"\
 	"command_operand:command_factor\n"\
 	"command_operand:command_operand ='|' $'4'\n"\
 	"command_operand:command_operand ='|' command_factor\n"\
 
-	"command:redirection_command\n"\
 	"command:command ='&&' $'4'\n"\
 	"command:command ='||' $'4'\n"\
 	"command:command ='||' command_operand\n"\

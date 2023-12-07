@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/06 18:22:03 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/07 14:03:20 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ char	**make_arguments(t_command *command)
 	arguments[0] = command->command_name;
 	i = 0;
 	while (++i < nargs - 1 && nargs != 2)
-		arguments[i] = *(char **)ft_darray_get(command->arguments, i - 1);
+		arguments[i] = ((t_token *)ft_darray_get(command->arguments, i - 1))->string;
 	arguments[i] = NULL;
 	return (arguments);
 }
@@ -250,17 +250,21 @@ int	execute_simple_command(t_command *command)
 
 int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 {
+	int	status;
+
 	if (!command)
 		return (0);
+	status = 1;
 	if (command->command_flags & MS_OPERAND)
-		return (execute_simple_command(command));
+		status = execute_simple_command(command);
 	else if (command->command_flags & MS_AND)
-		return (execute_and(command, in_pipe, out_pipe));
+		status = execute_and(command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_OR)
-		return (execute_or(command, in_pipe, out_pipe));
+		status = execute_or(command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_PIPE)
-		return (execute_pipe(command, in_pipe, out_pipe));
-	return (1);
+		status = execute_pipe(command, in_pipe, out_pipe);
+	command->context->status = status;
+	return (status);
 }
 
 void	print_commands(t_command *command, int depth)
@@ -277,7 +281,7 @@ void	print_commands(t_command *command, int depth)
 	if (command->arguments)
 	{
 		while(++i < command->arguments->size)
-			printf("%s ", *(char **)ft_darray_get(command->arguments, i));
+			printf("%s ", ((t_token *)ft_darray_get(command->arguments, i))->string);
 	}
 	i = -1;
 	if (command->redirections)
@@ -300,11 +304,11 @@ int	minishell_execute(t_command *command)
 	int	status;
 
 	// printf("Commands: \n");
+	print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	if (pipe(in_pipe) < 0)
 		return (-1);
 	status = execute_command(command, in_pipe, out_pipe);
-	//print_commands(command, 0);
 	while (wait(NULL) != -1)
 		continue ;
 	close(in_pipe[0]);
