@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 14:47:11 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 14:51:29 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,10 +155,11 @@ char	**make_arguments(t_command *command)
 	int			i;
 	char		**arguments;
 
-printf("make_arguments:\ntoken of %s: ", command->command_name);
+printf("make_arguments %s:\ntoken: ", command->command_name);
 printf("%p: ", command->token);
 if (command->token)
 printf("%s", command->token->string);
+printf("\ncontext status = %i", command->context->status);
 printf("\n\n");
 	nargs = 2;
 	if (command->arguments)
