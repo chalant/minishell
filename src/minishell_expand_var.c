@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/07 14:39:35 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 17:29:04 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char	*ms_end_of_name(const char *str)
 {
 	if (*str == '$')
 		str++;
-	if (ft_strchr(SPECIAL_VAR, *str))
+	if (*str && ft_strchr(SPECIAL_VAR, *str))
 		return ((char *) str + 1);
 	if ('0' <= *str && *str <= '9')
 		return ((char *) str + 1);

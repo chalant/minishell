@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 16:56:00 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/07 17:35:31 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,29 +149,29 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (get_exit_status(pid));
 }
 
-static void	fill_in_status(char *status, t_token *token, int j)
+static void	fill_in_status(char *status, t_token *token, int *j)
 {
-	if (!token->string[j])
+	if (!token->string[*j])
 		return ;
-	token->string[j] = *status;
-	j++;
+	token->string[*j] = *status;
+	(*j)++;
 	status++;
 	if (*status)
 	{
-		token->string[j] = *status;
-		j++;
+		token->string[*j] = *status;
+		(*j)++;
 		status++;
 	}
 	else
-		ms_shift_strings(token->string, token->mask_exp, j);
+		ms_shift_strings(token->string, token->mask_exp, *j);
 	if (*status)
 	{
-		token->string[j] = *status;
-		j++;
+		token->string[*j] = *status;
+		(*j)++;
 		status++;
 	}
 	else
-		ms_shift_strings(token->string, token->mask_exp, j);
+		ms_shift_strings(token->string, token->mask_exp, *j);
 }
 
 static char *make_argi(t_command *command, int i)
@@ -187,12 +187,14 @@ printf("argi in: string = %s, mask = %s, special = %i\n", token->string, token->
 		status = ft_itoa((unsigned char) command->context->status);
 		if (!status)
 			return (NULL);
+printf("status = %s\n", status);
 		j = 0;
 		while (token->string[j])
 		{
-			while (token->mask_exp[j] && token->mask_exp[j] < '3')
+printf("curr token string = %s\n", token->string + j);
+			while (token->string[j] && token->mask_exp[j] != '3')
 				j++;
-			fill_in_status(status, token, j);
+			fill_in_status(status, token, &j);
 		}
 		free(status);
 	}
