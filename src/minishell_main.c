@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_main.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/05 16:22:50 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/07 16:08:51 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,6 @@ static int	ms_process_line(t_ms_context *data, char *line)
 	// t_darray		tokens;
 	// char			**arg;
 
-// if (!ft_strncmp(line, "exit", 5))
-// ms_flush_exit(data, data->status);
 	// ft_darray_init(data->parse_data.tokens, sizeof(t_token), 20);
 	if (ms_tokeniser(&line, data->parse_data.tokens, ms_token_info(&info,
 				RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP)))
@@ -107,6 +105,23 @@ static int	ms_process_line(t_ms_context *data, char *line)
 		free(line);
 		return (1);
 	}
+// TOKEN PRINT IN PROGRESS
+printf("tokens after tokenising:\ntokens: ");
+int i = 0;
+while (i < data->parse_data.tokens->size)
+{
+	printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->string);
+	i++;
+}
+printf("\nmasks : ");
+i = 0;
+while (i < data->parse_data.tokens->size)
+{
+	printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->mask_exp);
+	i++;
+}
+printf("\n\n");
+// TOKEN PRINT IS OVER
 	recogniser_status = recognize_input(&(data->parse_data));
 	if (recogniser_status < 0)
 		return (-1);
@@ -117,13 +132,6 @@ static int	ms_process_line(t_ms_context *data, char *line)
 		return (ms_add_herstory(line));
 	}
 	data->status = 2;
-// arg = ms_convert_tokens_arg(&tokens);
-// ft_darray_delete(&tokens, ms_clear_token);
-// if (!arg)
-// 	return (ms_perror("create arg", NULL, NULL, errno));
-// malloc error
-// ms_parse_builtins(data, arg, line);
-// ft_clear_ds(arg);
 	return (ms_add_herstory(line));
 }
 
