@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 17:40:09 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/08 14:00:40 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,28 +56,24 @@ int	redirect_out(t_command *command)
 int	pipe_out(t_command *command, int _pipe[2])
 {
 	if (command->output)
-	{
-		close(_pipe[0]);
-		close(_pipe[1]);
 		return (redirect_out(command));
-	}
 	if (_pipe[1] == -1)
 		return (0);
-	if (dup2(_pipe[1], STDOUT_FILENO) < 0)
-		return (ms_perror("dup", NULL, NULL, errno) - 2);
+	if (dup2(_pipe[1], STDOUT_FILENO) < 0){
+		printf("DUP %d ", _pipe[1]);
+		return (ms_perror("dup out", NULL, NULL, errno) - 2);}
 	return (0);
 }
 
 int	pipe_in(t_command *command, int _pipe[2])
 {
 	if (command->input)
-	{
-		close(_pipe[0]);
-		close(_pipe[1]);
 		return (redirect_in(command));
-	}
 	if (dup2(_pipe[0], STDIN_FILENO) < 0)
-		return (ms_perror("dup", NULL, NULL, errno) - 2);
+	{
+		printf("DUP %d ", _pipe[0]);
+		return (ms_perror("dup in", NULL, NULL, errno) - 2);
+	}
 	return (0);
 }
 
@@ -110,10 +106,10 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 			exit(status);
 		exit(126);
 	}
-	if (out_pipe[1] != -1)
-		close(out_pipe[1]);
-	if (in_pipe[0] != -1)
-		close(in_pipe[0]);
+	// if (out_pipe[1] != -1)
+	// 	close(out_pipe[1]);
+	// if (in_pipe[0] != -1)
+	// 	close(in_pipe[0]);
 	return (pid);
 }
 
@@ -142,23 +138,31 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 
+	if (in_pipe[0] != -1)
+		close(in_pipe[0]);
+	if (in_pipe[1] != -1)
+		close(in_pipe[1]);
 	//todo: close pipes on error!
-	if (in_pipe[0] == -1 && pipe(in_pipe) < 0)
+	if (pipe(in_pipe) < 0)
 		return ((ms_perror("pipe", NULL, NULL, errno) - 2));
-	if (pipe(out_pipe) < 0 && close(out_pipe[0]) && close(out_pipe[1]))
-		return ((ms_perror("pipe", NULL, NULL, errno) - 2));
+	//todo: need to create the pipe only when is it needed.
+	if (out_pipe[0] != -1)
+		close(out_pipe[0]);
+	if (out_pipe[1] != -1)
+		close(out_pipe[1]);
+	if (pipe(out_pipe) < 0)
+		return ((ms_perror("pipe out", NULL, NULL, errno) - 2));
 	pid = execute_process(command->left, in_pipe, out_pipe);
 	if (pid < 0)
 		return (1);
-	pid = close(in_pipe[0]) && close (in_pipe[1]);
+	close(in_pipe[0]);
+	close (in_pipe[1]);
 	copy_pipe(out_pipe, in_pipe);
 	close(out_pipe[1]);
 	out_pipe[1] = -1;
 	pid = execute_process(command->right, in_pipe, out_pipe);
 	close(in_pipe[0]);
 	close(in_pipe[1]);
-	close(out_pipe[0]);
-	in_pipe[0] = -1;
 	if (pid < 0)
 		return (1);
 	return (get_exit_status(pid));
@@ -382,10 +386,12 @@ int	minishell_execute(t_command *command)
 	// printf("Commands: \n");
 	//print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
-	if (pipe(in_pipe) < 0)
-		return (-1);
+	// if (pipe(in_pipe) < 0)
+	// 	return (-1);
 	out_pipe[0] = -1;
 	out_pipe[1] = -1;
+	in_pipe[0] = -1;
+	in_pipe[1] = -1;
 	status = execute_command(command, in_pipe, out_pipe);
 	while (wait(NULL) != -1)
 		continue ;
