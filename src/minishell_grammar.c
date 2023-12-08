@@ -42,16 +42,6 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"simple_command:word command_element\n"\
 	"simple_command:word\n"\
 
-	"redirection_parenthesis:='(' redirection_list =')' redirection_list\n"\
-	"redirection_parenthesis:='(' redirection_list $'4' redirection_list\n"\
-	"redirection_parenthesis:='(' redirection_list =')'\n"\
-	"redirection_parenthesis:='(' redirection_list $'4'\n"\
-
-	"redirection_command:redirection_list\n"\
-	"redirection_command:redirection_parenthesis\n"\
-	"redirection_command:redirection_parenthesis\n"\
-	"redirection_command:redirection_list command\n"\
-
 	"parenthesis:='(' command =')' redirection_list\n"\
 	"parenthesis:='(' command $'4' redirection_list\n"\
 	"parenthesis:='(' command =')'\n"\
@@ -62,15 +52,16 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"command_operand:command_factor\n"\
 	"command_operand:command_operand ='|' $'4'\n"\
 	"command_operand:command_operand ='|' command_factor\n"\
+	"red_command:simple_command\n"\
+	"red_command:red_command ='|' simple_command\n"\
 
+	"command:redirection_list\n"\
+	"command:redirection_list red_command\n"\
+	"command:command_operand\n"\
 	"command:command ='&&' $'4'\n"\
 	"command:command ='||' $'4'\n"\
 	"command:command ='||' command_operand\n"\
-	"command:command ='&&' command_operand\n"\
-	"command:command_operand\n"\
-	
-	"minishell:redirection_command\n"\
-	"minishell:command\n";
+	"command:command ='&&' command_operand\n";
 	
 
 char	**ft_reverse_strings(char **strings)

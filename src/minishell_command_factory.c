@@ -132,39 +132,13 @@ int	init_command_fields(t_command *command)
 }
 
 //todo: create files
+//todo: if there is a second element, then it is a command, and uses the redirection.
 int	redirection_command(t_parse_tree *node, t_stack *stack)
 {
-	t_parse_tree	*tmp;
-	t_command		*command;
+	// t_command		*command;
 	t_command		new;
 
-	printf("CHILDREN %s %d\n", node->rule_name, node->children->size);
-	if (node->children->size >= 3)
-	{
-		//todo: the child could either be a command or parenthesis with redirections..
-		tmp = ft_darray_get(node->children, 1);
-		if (!tmp->rule_name)
-			return (0);
-		if (strcmp(tmp->rule_name, "command") == 0)
-		{
-			flatten_tree(tmp, stack);
-			command = ft_stack_peek(stack);
-			if (!command)
-				return (0);
-			if (!command->redirections)
-			{
-				command->redirections = malloc(sizeof(t_darray));
-				if (!command->redirections)
-					return (-1);
-				if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
-					return (-1);
-			}
-			if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
-				return (-1);
-			return (create_files(command, command->redirections));
-		}
-		return (0);
-	}
+	(void)stack;
 	init_command(&new);
 	new.redirections = malloc(sizeof(t_darray));
 	if (!new.redirections)
@@ -174,8 +148,6 @@ int	redirection_command(t_parse_tree *node, t_stack *stack)
 	if (set_redirections(&new, node) < 0)
 		return (-1);
 	return (create_files(&new, new.redirections));
-	//todo: make redirections and create_files.
-	return (0);
 }
 
 int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *))

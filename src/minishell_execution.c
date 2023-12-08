@@ -56,20 +56,28 @@ int	redirect_out(t_command *command)
 int	pipe_out(t_command *command, int _pipe[2])
 {
 	if (command->output)
+	{
+		close(_pipe[0]);
+		close(_pipe[1]);
 		return (redirect_out(command));
+	}
 	if (_pipe[1] == -1)
 		return (0);
 	if (dup2(_pipe[1], STDOUT_FILENO) < 0)
-		return (ms_perror("pipe", NULL, NULL, errno) - 2);
+		return (ms_perror("dup", NULL, NULL, errno) - 2);
 	return (0);
 }
 
 int	pipe_in(t_command *command, int _pipe[2])
 {
 	if (command->input)
+	{
+		close(_pipe[0]);
+		close(_pipe[1]);
 		return (redirect_in(command));
+	}
 	if (dup2(_pipe[0], STDIN_FILENO) < 0)
-		return (ms_perror("pipe", NULL, NULL, errno) - 2);
+		return (ms_perror("dup", NULL, NULL, errno) - 2);
 	return (0);
 }
 
@@ -104,6 +112,8 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 	}
 	if (out_pipe[1] != -1)
 		close(out_pipe[1]);
+	if (in_pipe[0] != -1)
+		close(in_pipe[0]);
 	return (pid);
 }
 
@@ -132,18 +142,23 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 
-	if (pipe(out_pipe) < 0)
-		return (-1);
+	//todo: close pipes on error!
+	if (in_pipe[0] == -1 && pipe(in_pipe) < 0)
+		return ((ms_perror("pipe", NULL, NULL, errno) - 2));
+	if (pipe(out_pipe) < 0 && close(out_pipe[0]) && close(out_pipe[1]))
+		return ((ms_perror("pipe", NULL, NULL, errno) - 2));
 	pid = execute_process(command->left, in_pipe, out_pipe);
 	if (pid < 0)
 		return (1);
-	close(in_pipe[0]);
-	close(in_pipe[1]);
+	pid = close(in_pipe[0]) && close (in_pipe[1]);
 	copy_pipe(out_pipe, in_pipe);
+	close(out_pipe[1]);
 	out_pipe[1] = -1;
 	pid = execute_process(command->right, in_pipe, out_pipe);
 	close(in_pipe[0]);
 	close(in_pipe[1]);
+	close(out_pipe[0]);
+	in_pipe[0] = -1;
 	if (pid < 0)
 		return (1);
 	return (get_exit_status(pid));
@@ -180,7 +195,7 @@ static char *make_argi(t_command *command, int i)
 	int		j;
 	char	*status;
 
-	token = (t_token *)ft_darray_get(command->arguments, i - 1);
+	token = ft_darray_get(command->arguments, i - 1);
 	if (token->flags & IS_SPECIAL)
 	{
 		status = ft_itoa((unsigned char) command->context->status);
@@ -321,6 +336,10 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	else if (command->command_flags & MS_PIPE)
 		status = execute_pipe(command, in_pipe, out_pipe);
 	command->context->status = status;
+	if (out_pipe[0] != -1)
+		close(out_pipe[0]);
+	if (out_pipe[1] != -1)
+		close(out_pipe[1]);
 	return (status);
 }
 
@@ -361,14 +380,17 @@ int	minishell_execute(t_command *command)
 	int	status;
 
 	// printf("Commands: \n");
-	print_commands(command, 0);
+	//print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	if (pipe(in_pipe) < 0)
 		return (-1);
+	out_pipe[0] = -1;
+	out_pipe[1] = -1;
 	status = execute_command(command, in_pipe, out_pipe);
 	while (wait(NULL) != -1)
 		continue ;
-	close(in_pipe[0]);
+	if (in_pipe[0] != -1)
+		close(in_pipe[0]);
 	close(in_pipe[1]);
 	if (!access(MS_HEREDOC_PATH, F_OK))
 		if (unlink(MS_HEREDOC_PATH))

@@ -30,6 +30,8 @@ static int  build_right_operator(t_command *right, t_command *parent, t_stack *c
 
 static int  build_left_operator(t_command *left, t_command *parent, t_stack *commands)
 {
+	if (!left)
+		return (0);
 	if (left->command_flags & MS_OPERATOR)
 	{
 		if (!left->input)
@@ -51,11 +53,11 @@ int	build_operator(t_command *command, t_stack *commands)
 	build_right_operator(right, command, commands);
 	left = (t_command *)ft_stack_pop(commands);
 	build_left_operator(left, command, commands);
-	if (!left->output && !(command->command_flags & MS_PIPE))
+	if (left && !left->output && !(command->command_flags & MS_PIPE))
 		left->output = command->output;
 	if (!right->output)
 		right->output = command->output;
-	if (!left->input)
+	if (left && !left->input)
 		left->input = command->input;
 	if (!right->input && !(command->command_flags & MS_PIPE))
 		right->input = command->input;

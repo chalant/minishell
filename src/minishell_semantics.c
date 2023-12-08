@@ -31,6 +31,7 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 {
 	if (!command || !command->command_name)
 		return (0);
+	//todo: checking the children isn't safe
 	if (node->children->size >= 4 && ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name)
 	{
 		if (!command->redirections)
@@ -78,7 +79,7 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 		return (1);
 	if (strcmp(node->rule_name, "simple_command") == 0)
 		return (create_command(node, commands, set_command_fields));
-	else if (strcmp(node->rule_name, "redirection_command") == 0)
+	else if (strcmp(node->rule_name, "redirection_list") == 0)
 		return (redirection_command(node, commands));
 	return (handle_semantic_rule(node, commands));
 }
