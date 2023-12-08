@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/08 13:26:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/08 16:46:32 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # define MS_OPERAND 1 << 4
 # define MS_BUILTIN 1 << 5
 # define MS_FORKED 1 << 6
+# define MS_CMD_INIT 1 << 7
 
 // redirection flags:
 # define MS_HEREDOC 1 << 0
@@ -64,7 +65,6 @@ typedef struct	s_command
 	t_darray			*arguments;
 	struct	s_command	*left;
 	struct	s_command	*right;
-	t_token				*token;
 	t_ms_context		*context;
 }				t_command;
 

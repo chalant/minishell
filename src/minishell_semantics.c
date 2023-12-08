@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 16:20:05 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/08 16:01:01 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,8 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 		return (1);
 	if (strcmp(node->rule_name, "simple_command") == 0)
 		return (create_command(node, commands, set_command_fields));
-	else if (strcmp(node->rule_name, "redirection_list") == 0)
-		return (redirection_command(node, commands));
+	else if (strcmp(node->rule_name, "command") == 0)
+		redirection_command(node, commands);
 	return (handle_semantic_rule(node, commands));
 }
 

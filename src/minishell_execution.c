@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/08 14:00:40 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/08 16:35:52 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,10 +106,10 @@ static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]
 			exit(status);
 		exit(126);
 	}
-	// if (out_pipe[1] != -1)
-	// 	close(out_pipe[1]);
-	// if (in_pipe[0] != -1)
-	// 	close(in_pipe[0]);
+	if (out_pipe[1] != -1)
+		close(out_pipe[1]);
+	if (in_pipe[0] != -1)
+		close(in_pipe[0]);
 	return (pid);
 }
 
@@ -133,7 +133,7 @@ int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (status);
 }
 
-//todo: should wait for the very last process... otherwise it hangs...
+//todo: make this cleaner
 int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
@@ -142,16 +142,14 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 		close(in_pipe[0]);
 	if (in_pipe[1] != -1)
 		close(in_pipe[1]);
-	//todo: close pipes on error!
 	if (pipe(in_pipe) < 0)
 		return ((ms_perror("pipe", NULL, NULL, errno) - 2));
-	//todo: need to create the pipe only when is it needed.
 	if (out_pipe[0] != -1)
 		close(out_pipe[0]);
 	if (out_pipe[1] != -1)
 		close(out_pipe[1]);
-	if (pipe(out_pipe) < 0)
-		return ((ms_perror("pipe out", NULL, NULL, errno) - 2));
+	if (pipe(out_pipe) < 0 && close(in_pipe[0]) && close(in_pipe[1]))
+		return ((ms_perror("pipe", NULL, NULL, errno) - 2));
 	pid = execute_process(command->left, in_pipe, out_pipe);
 	if (pid < 0)
 		return (1);
@@ -309,6 +307,7 @@ int	execute_simple_command(t_command *command)
 	}
 	if (!(command->command_flags & MS_FORKED))
 	{
+		//todo: errors
 		pid = fork();
 		if (pid == 0)
 		{
@@ -340,10 +339,6 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 	else if (command->command_flags & MS_PIPE)
 		status = execute_pipe(command, in_pipe, out_pipe);
 	command->context->status = status;
-	if (out_pipe[0] != -1)
-		close(out_pipe[0]);
-	if (out_pipe[1] != -1)
-		close(out_pipe[1]);
 	return (status);
 }
 
@@ -384,7 +379,7 @@ int	minishell_execute(t_command *command)
 	int	status;
 
 	// printf("Commands: \n");
-	//print_commands(command, 0);
+	print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	// if (pipe(in_pipe) < 0)
 	// 	return (-1);
@@ -395,9 +390,6 @@ int	minishell_execute(t_command *command)
 	status = execute_command(command, in_pipe, out_pipe);
 	while (wait(NULL) != -1)
 		continue ;
-	if (in_pipe[0] != -1)
-		close(in_pipe[0]);
-	close(in_pipe[1]);
 	if (!access(MS_HEREDOC_PATH, F_OK))
 		if (unlink(MS_HEREDOC_PATH))
 			ms_perror("unlink", MS_HEREDOC_PATH, NULL, errno);
