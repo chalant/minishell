@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/06 17:41:16 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/09 15:19:00 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static int	ms_env_alpha()
 	return (0);
 }
 
-// returns 1 if malloc in ms_realloc failed
+// returns ERR_MALLOC if malloc in ms_realloc failed
 static int	ms_add_var_env(t_ms_context *data, char *var)
 {
 	char		**envp;
