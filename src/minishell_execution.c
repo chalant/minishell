@@ -59,9 +59,8 @@ int	pipe_out(t_command *command, int _pipe[2])
 		return (redirect_out(command));
 	if (_pipe[1] == -1)
 		return (0);
-	if (dup2(_pipe[1], STDOUT_FILENO) < 0){
-		printf("DUP %d ", _pipe[1]);
-		return (ms_perror("dup out", NULL, NULL, errno) - 2);}
+	if (dup2(_pipe[1], STDOUT_FILENO) < 0)
+		return (ms_perror("dup out", NULL, NULL, errno) - 2);
 	return (0);
 }
 
@@ -69,6 +68,8 @@ int	pipe_in(t_command *command, int _pipe[2])
 {
 	if (command->input)
 		return (redirect_in(command));
+	if (_pipe[0] == -1)
+		return (0);
 	if (dup2(_pipe[0], STDIN_FILENO) < 0)
 	{
 		printf("DUP %d ", _pipe[0]);
@@ -90,6 +91,7 @@ int	pipe_io(t_command *command, int in_pipe[2], int out_pipe[2])
 with the returned status, if is not, we exit with an error code. */
 static pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 {
+	//todo:create pipe here ?
 	pid_t	pid;
 	int		status;
 
@@ -150,7 +152,9 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 		close(out_pipe[1]);
 	if (pipe(out_pipe) < 0 && close(in_pipe[0]) && close(in_pipe[1]))
 		return ((ms_perror("pipe", NULL, NULL, errno) - 2));
-	pid = execute_process(command->left, in_pipe, out_pipe);
+	pid = 0;
+	if (command->left)
+		pid = execute_process(command->left, in_pipe, out_pipe);
 	if (pid < 0)
 		return (1);
 	close(in_pipe[0]);
@@ -286,7 +290,8 @@ int	execute_builtin(t_command *command, int in_fd, int out_fd)
 }
 
 //todo: make this more compact.
-int	execute_simple_command(t_command *command)
+//todo: if pipes exists, use them as redirections!
+int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 
@@ -311,10 +316,8 @@ int	execute_simple_command(t_command *command)
 		pid = fork();
 		if (pid == 0)
 		{
-			if (command->input)
-				redirect_in(command);
-			if (command->output)
-				redirect_out(command);
+			if (pipe_io(command, in_pipe, out_pipe) < 0)
+				exit(1);
 			launch_execve(command);
 		}
 		return (get_exit_status(pid));
@@ -331,7 +334,7 @@ int	execute_command(t_command *command, int in_pipe[2], int out_pipe[2])
 		return (0);
 	status = 1;
 	if (command->command_flags & MS_OPERAND)
-		status = execute_simple_command(command);
+		status = execute_simple_command(command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_AND)
 		status = execute_and(command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_OR)

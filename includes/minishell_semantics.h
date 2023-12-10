@@ -15,5 +15,6 @@ char		    **get_word(t_parse_tree *node);
 t_parse_tree	*get_leaf(t_parse_tree *node);
 
 t_command	*build_command(t_darray *command_array,	t_parse_tree *tree);
+int			handle_semantic_rule(t_parse_tree *node, t_stack *commands);
 
 #endif

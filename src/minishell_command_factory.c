@@ -130,14 +130,14 @@ int	init_command_fields(t_command *command)
 	return (0);
 }
 
-//todo: create files
-//todo: if there is a second element, then it is a command, and uses the redirection.
+//todo: handle parenthesis as-well.
 int	redirection_command(t_parse_tree *node, t_stack *stack)
 {
 	t_parse_tree	*subtree;
 	t_command		new;
 	t_command		*command;
 	int				i;
+
 
 	subtree = ft_darray_get(node->children, 0);
 	if (strcmp(subtree->rule_name, "redirection_list") != 0)
@@ -150,8 +150,10 @@ int	redirection_command(t_parse_tree *node, t_stack *stack)
 			break;
 	}
 	subtree = ft_darray_get(node->children, i - 1);
-	if (i == 1)
+	printf("PARENTHESIS %d\n", i);
+	if (i == 1 && strcmp(subtree->rule_name, "redirection_list") == 0)
 	{
+		//todo: this could be parenthesis or redirection_list
 		init_command(&new);
 		new.redirections = malloc(sizeof(t_darray));
 		if (!new.redirections)
@@ -160,23 +162,23 @@ int	redirection_command(t_parse_tree *node, t_stack *stack)
 			return (-1);
 		if (set_redirections(&new, ft_darray_get(node->children, 0)) < 0)
 			return (-1);
+		//todo delete redirections
 		return (create_files(&new, new.redirections));
 	}
 	else if (i == 2)
 	{
 		flatten_tree(subtree, stack);
-		//todo: this will not give the command only the leaf.
 		command = ft_stack_peek(stack);
-		//todo: still need to create files if it is an operator;
 		if (command->command_flags & MS_OPERATOR)
-			return (0);
-		if (!command->redirections)
 		{
-			command->redirections = malloc(sizeof(t_darray));
 			if (!command->redirections)
-				return (-1);
-			if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
-				return (-1);
+			{
+				command->redirections = malloc(sizeof(t_darray));
+				if (!command->redirections)
+					return (-1);
+				if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
+					return (-1);
+			}
 		}
 		// todo: the redirections must be prepended!
 		if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
@@ -185,6 +187,7 @@ int	redirection_command(t_parse_tree *node, t_stack *stack)
 		printf("set redirections! %s %d %d\n", command->command_name, command->input, command->output);
 		return (0);
 	}
+	//todo: handle redirections after parenthesis
 	return (0);
 }
 
@@ -194,13 +197,11 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	t_command	new;
 
 	command = ft_darray_get(stack->elements, stack->elements->size);
-	if (!command || !(command->command_flags & MS_CMD_INIT))
+	if (!command || !command->redirections || !command->arguments)
 	{
-		printf("NEW!");
 		init_command_fields(&new);
 		if (factory(node, &new, stack) < 0)
 			return (-1);
-		command->command_flags |= MS_CMD_INIT;
 		return (ft_stack_push(stack, &new));
 	}
 	if (factory(node, command, stack) < 0)

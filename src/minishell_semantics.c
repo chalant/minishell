@@ -27,10 +27,12 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 	return (ft_stack_push(stack, &command));
 }
 
+//todo: this only retrieves stuff as arguments for the subshell
 int	handle_parenthesis(t_parse_tree *node, t_command *command)
 {
 	if (!command || !command->command_name)
 		return (0);
+	command->command_flags |= MS_SUBSHELL;
 	//todo: checking the children isn't safe
 	if (node->children->size >= 4 && ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name)
 	{
@@ -79,8 +81,8 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 		return (1);
 	if (strcmp(node->rule_name, "simple_command") == 0)
 		return (create_command(node, commands, set_command_fields));
-	else if (strcmp(node->rule_name, "command") == 0)
-		redirection_command(node, commands);
+	if (strcmp(node->rule_name, "redirection_command") == 0)
+		return (redirection_command(node, commands));
 	return (handle_semantic_rule(node, commands));
 }
 
@@ -100,5 +102,7 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 		return (NULL);
 	if (command->command_flags & MS_OPERATOR)
 		build_operator(command, &commands);
+	//todo: the deepest left-most command should read
+	//the deepest
 	return (command);
 }

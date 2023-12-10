@@ -23,7 +23,7 @@
 # define MS_OPERAND 1 << 4
 # define MS_BUILTIN 1 << 5
 # define MS_FORKED 1 << 6
-# define MS_CMD_INIT 1 << 7
+# define MS_SUBSHELL 1 << 7
 
 // redirection flags:
 # define MS_HEREDOC 1 << 0
