@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_env.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:32:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/09 15:26:37 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ int	ms_envcpy(t_ms_context *data)
 	new = malloc(sizeof(char *) * (i + 1));
 	if (!new)
 		return (1);
-// malloc fail
 	i = 0;
 	while (environ[i])
 	{
@@ -50,7 +49,6 @@ int	ms_envcpy(t_ms_context *data)
 		{
 			ft_clear_ds(new);
 			return (1);
-// malloc fail
 		}
 		i++;
 	}
@@ -60,9 +58,19 @@ int	ms_envcpy(t_ms_context *data)
 	return (0);
 }
 
-// for ENVIRON: call with data->env = ft(data->env) and assign environ after
+static char	**ms_realloc_error(char **ptr, char **new)
+{
+	ms_perror("ms_realloc", NULL, NULL, errno);
+	if (ptr)
+		ft_clear_ds(ptr);
+	if (new)
+		ft_clear_ds(new);
+	return (NULL);
+}
+
+// for ENVIRON: call with data->env and assign environ after
 // mallocs size of 'ptr' + 'add', copies content of 'ptr' over and clears it
-// returns new 'ptr' or NULL if malloc failed (always clears 'ptr')
+// returns new 'ptr' or NULL if malloc failed (always clears 'ptr', prints msg)
 char	**ms_realloc(char **ptr, int add)
 {
 	size_t	i;
@@ -75,22 +83,13 @@ char	**ms_realloc(char **ptr, int add)
 		i++;
 	new = malloc(sizeof(char *) * (i + add + 1));
 	if (!new)
-	{
-		ft_clear_ds(ptr);
-		return (NULL);
-// malloc failed
-	}
+		return (ms_realloc_error(ptr, NULL));
 	i = 0;
 	while (ptr[i])
 	{
 		new[i] = ft_strdup(ptr[i]);
 		if (!new[i])
-		{
-			ft_clear_ds(new);
-			ft_clear_ds(ptr);
-			return (NULL);
-// malloc failed
-		}
+			return (ms_realloc_error(ptr, new));
 		i++;
 	}
 	new[i] = NULL;
