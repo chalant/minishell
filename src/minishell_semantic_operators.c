@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 14:23:39 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 15:53:32 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 static int  build_right_operator(t_command *right, t_command *parent, t_stack *commands)
 {
+	if (!right)
+		return (0);
 	if (parent->command_flags & MS_LAST)
 	{
 		parent->command_flags &= ~(MS_LAST);
@@ -52,6 +54,8 @@ int	build_operator(t_command *command, t_stack *commands)
 	t_command	*left;
 
 	right = (t_command *)ft_stack_pop(commands);
+	if (!right)
+		return (0);
 	build_right_operator(right, command, commands);
 	left = (t_command *)ft_stack_pop(commands);
 	build_left_operator(left, command, commands);

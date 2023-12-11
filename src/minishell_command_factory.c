@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 14:40:46 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:23:42 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ int	init_command_fields(t_command *command)
 }
 
 //todo: handle parenthesis as-well.
+//todo: handle alternaning operators and redirections.
 int	redirection_command(t_parse_tree *node, t_stack *stack)
 {
 	t_parse_tree	*subtree;
@@ -182,8 +183,7 @@ int	redirection_command(t_parse_tree *node, t_stack *stack)
 		}
 		if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
 			return (-1);
-		create_files(command, command->redirections);
-		return (0);
+		return (create_files(command, command->redirections));
 	}
 	return (0);
 }

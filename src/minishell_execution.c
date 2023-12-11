@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 15:09:47 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:30:44 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,17 @@ int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_p
 	return (status);
 }
 
+//todo: if the left command fails, we shouldn't close the fds... how ?
 int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
-	(void)parent;
+
+	if (!parent || !(command->command_flags & MS_OR))
+	{
+		if (out_pipe[1] != -1)
+			close(out_pipe[1]);
+		out_pipe[1] = -1;
+	}
 	status = execute_command(command, command->left, in_pipe, out_pipe);
 	if (status > 0)
 		return (execute_command(command, command->right, in_pipe, out_pipe));
