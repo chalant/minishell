@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 18:25:24 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 18:34:40 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,15 +70,6 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 			return ((ms_perror("pipe", NULL, NULL, errno) - 2));
 	}
 	status = execute_command(command, command->left, in_pipe, out_pipe);
-	if (in_pipe[0] == -1)
-	{
-		if(in_pipe[1] != -1)
-			close(in_pipe[1]);
-		if (pipe(in_pipe) < 0)
-			return ((ms_perror("pipe", NULL, NULL, errno) - 2));
-	}
-	close(in_pipe[0]);
-	close (in_pipe[1]);
 	copy_pipe(out_pipe, in_pipe);
 	pipe(out_pipe);
 	command->command_flags |= MS_RIGHT;
