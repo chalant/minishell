@@ -268,7 +268,6 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 	{
 		if (command->command_flags & MS_LAST)
 		{
-			fprintf(stderr, "last %s\n", command->command_name);
 			if (out_pipe[1] != -1)
 				close(out_pipe[1]);
 			out_pipe[1] = -1;
@@ -276,8 +275,8 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 		pid = execute_process(parent, command, in_pipe, out_pipe);
 		if (pid < 0)
 			return (1);
-		//if (command->command_flags & MS_RIGHT)
-		return (get_exit_status(pid));
+		if (command->command_flags & MS_RIGHT)
+			return (get_exit_status(pid));
 		return (0);
 	}
 	return (execute_simple_command(parent,command, in_pipe, out_pipe));

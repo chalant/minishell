@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/08 16:48:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:40:46 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,10 +150,10 @@ int	redirection_command(t_parse_tree *node, t_stack *stack)
 			break;
 	}
 	subtree = ft_darray_get(node->children, i - 1);
-	printf("PARENTHESIS %d\n", i);
 	if (i == 1 && strcmp(subtree->rule_name, "redirection_list") == 0)
 	{
 		//todo: this could be parenthesis or redirection_list
+		//todo: handle redirections after parenthesis
 		init_command(&new);
 		new.redirections = malloc(sizeof(t_darray));
 		if (!new.redirections)
@@ -180,14 +180,11 @@ int	redirection_command(t_parse_tree *node, t_stack *stack)
 					return (-1);
 			}
 		}
-		// todo: the redirections must be prepended!
 		if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
 			return (-1);
 		create_files(command, command->redirections);
-		printf("set redirections! %s %d %d\n", command->command_name, command->input, command->output);
 		return (0);
 	}
-	//todo: handle redirections after parenthesis
 	return (0);
 }
 

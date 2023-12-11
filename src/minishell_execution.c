@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 14:25:17 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 15:09:47 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 			close(in_pipe[1]);
 		if (pipe(in_pipe) < 0)
 			return ((ms_perror("pipe", NULL, NULL, errno) - 2));
-		//printf("PIPE IN %d %d\n", in_pipe[0], in_pipe[1]);
 	}
 	if (out_pipe[1] == -1)
 	{
@@ -78,28 +77,27 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 		close(out_pipe[1]);
 		out_pipe[1] = -1;
 	}
-	status = execute_command(command, command->right, in_pipe, out_pipe);
-	return (status);
+	return (execute_command(command, command->right, in_pipe, out_pipe));
 }
 
 
 int	execute_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
-	int	status;
-
 	if (!command)
+	{
+		close(out_pipe[1]);
+		out_pipe[1] = -1;
 		return (0);
-	status = 1;
+	}
 	if (command->command_flags & MS_OPERAND)
-		status = execute_command_core(parent, command, in_pipe, out_pipe);
+		command->context->status = execute_command_core(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_AND)
-		status = execute_and(parent, command, in_pipe, out_pipe);
+		command->context->status = execute_and(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_OR)
-		status = execute_or(parent, command, in_pipe, out_pipe);
+		command->context->status = execute_or(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_PIPE)
-		status = execute_pipe(parent, command, in_pipe, out_pipe);
-	command->context->status = status;
-	return (status);
+		command->context->status = execute_pipe(parent, command, in_pipe, out_pipe);
+	return (command->context->status);
 }
 
 void	print_commands(t_command *command, int depth)
