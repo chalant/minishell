@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/08 16:01:01 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:25:26 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 				return (-1);
 		}
 		set_redirections(command, ft_darray_get(node->children, 3));
-		create_files(command, command->redirections);
+		return (create_files(command, command->redirections));
 	}
 	return (1);
 }
@@ -67,7 +67,10 @@ int	handle_semantic_rule(t_parse_tree *node, t_stack *commands)
 		else if (strcmp(child->rule_name, "||") == 0)
 			return (create_operator(node, commands, MS_OR, "OR"));
 		if (strcmp(node->rule_name, "parenthesis") == 0)
-			handle_parenthesis(node, ft_stack_peek(commands));
+		{
+			if (handle_parenthesis(node, ft_stack_peek(commands)) < 0)
+				return (-1);
+		}
 		if (flatten_tree(child, commands) < 0)
 			return (-1);
 	}

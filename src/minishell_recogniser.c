@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:34 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/05 15:09:36 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:11:13 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,6 @@ int	earley_safe_append(t_earley_set *set, t_earley_item *item)
 	if (ft_darray_append(set->items, item) < 0)
 		return (-1);
 	return (1);
-}
-
-int	contains_token(t_ms_rule *rule, t_token *token)
-{
-	int	i;
-
-	i = -1;
-	while (++i < rule->length)
-	{
-		if (strcmp(rule->symbols[i]->name, token->string) == 0)
-		{
-			return (1);
-		}
-	}
-	return (0);
 }
 
 int	earley_complete(t_parsing_data *data, int j, int state_id)
@@ -123,6 +108,7 @@ int	earley_scan(t_parsing_data *data, t_ms_symbol *symbol, int state_id, int ite
 		new_item.start = item->start;
 		new_item.rule = item->rule;
 		new_item.completed = 0;
+		//todo check if there is an item before (segfaults in case of a EOF prompt)
 		if (ft_darray_append(((t_earley_set *)(ft_darray_get(data->earley_sets, state_id + 1)))->items, &new_item) < 0)
 			return (-1);
 	}
