@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/11 16:38:43 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/11 18:54:02 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ static int	ms_process_line(t_ms_context *data, char *line)
 void	ms_new_prompt(int sig)
 {
 	pid_t	check;
-//todo: need to reset data here!
 
 	check = wait3(NULL, WNOHANG, NULL);
 	if (sig != SIGINT)
