@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 18:16:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 18:25:24 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,11 @@ int	execute_command(t_command *parent, t_command *command, int in_pipe[2], int o
 		command->context->status = execute_or(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_PIPE)
 		command->context->status = execute_pipe(parent, command, in_pipe, out_pipe);
+	if (g_global_status)
+	{
+		command->context->status = g_global_status;
+		g_global_status = 0;
+	}
 	return (command->context->status);
 }
 
