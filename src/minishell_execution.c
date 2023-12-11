@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 14:25:17 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:20:15 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,11 @@ int	execute_command(t_command *parent, t_command *command, int in_pipe[2], int o
 		status = execute_or(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_PIPE)
 		status = execute_pipe(parent, command, in_pipe, out_pipe);
+	if (g_global_status)
+	{
+		status = g_global_status;
+		g_global_status = 0;
+	}
 	command->context->status = status;
 	return (status);
 }

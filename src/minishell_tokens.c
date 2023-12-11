@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 17:02:20 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:52:57 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	ms_prompt_quote(char **end, char **start, char **line)
 	if (!add_line)
 	{
 		free(temp);
-		return (ms_perror("readline", NULL, NULL, errno));
+		return (ERR_EOF_QUOTED);
 	}
 	*line = ft_strjoin(temp, add_line);
 	free(temp);
@@ -61,6 +61,7 @@ static int	ms_prompt_quote(char **end, char **start, char **line)
 static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 {
 	char	quote;
+	int		check;
 
 	tkn->flags |= IS_QUOTED;
 	quote = **end;
@@ -75,8 +76,12 @@ static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 				if (**end == '$')
 					tkn->flags |= IS_VAR;
 		}
-		if (ms_prompt_quote(end, start, line))
-			return (1);
+		check = ms_prompt_quote(end, start, line);
+		if (check == ERR_EOF_QUOTED)
+			printf("shellshock: unexpected EOF while looking for matching `%c'\n", quote);
+// put this in stderr instead
+		if (check)
+			return (check);
 	}
 }
 

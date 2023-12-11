@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/09 14:57:13 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:38:43 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,11 @@ static int	ms_process_line(t_ms_context *data, char *line)
 	t_token_info	info;
 	int				recogniser_status;
 
+	if (g_global_status)
+	{
+		data->status = g_global_status;
+		g_global_status = 0;
+	}
 	if (ms_tokeniser(&line, data->parse_data.tokens, ms_token_info(&info,
 				RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP)))
 	{
@@ -76,12 +81,10 @@ void	ms_new_prompt(int sig)
 		return ;
 	if (check == -1)
 		write(STDOUT_FILENO, "^C", 2);
+	g_global_status = 130;
 	write(STDOUT_FILENO, "\n", 1);
 	if (check > -1)
-	{
-		g_global_status = 130;
 		return ;
-	}
 	rl_replace_line("", 1);
 	rl_on_new_line();
 	rl_redisplay();

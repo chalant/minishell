@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/06 16:41:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:58:31 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@
 # include "minishell_semantics.h"
 # include "libft.h"
 
-extern int	g_global_status;
-
 # define MS_PROMPT_MSG "shellshock$ "
+
+int	g_global_status;
 
 int		ms_exit(t_ms_context *context, char **arg);
 void	ms_flush_exit(t_ms_context *context, int exit_value);

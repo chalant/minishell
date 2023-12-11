@@ -7,12 +7,6 @@ int	get_exit_status(pid_t pid)
 
 	status = 0;
 	waitpid(pid, &status, 2);
-	if (g_global_status)
-	{
-		status = g_global_status;
-		g_global_status = 0;
-		return (status);
-	}
 	if (WIFSIGNALED(status))
 		return (WTERMSIG(status));
 	if (WIFEXITED(status))
