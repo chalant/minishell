@@ -12,6 +12,8 @@
 
 #include "minishell.h"
 
+int	g_global_status;
+
 // TOKEN PRINT IN PROGRESS
 // printf("tokens after tokenising:\ntokens: ");
 // int i = 0;

@@ -33,7 +33,7 @@
 
 # define MS_PROMPT_MSG "shellshock$ "
 
-int	g_global_status;
+extern int	g_global_status;
 
 int		ms_exit(t_ms_context *context, char **arg);
 void	ms_flush_exit(t_ms_context *context, int exit_value);

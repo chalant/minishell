@@ -57,8 +57,6 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 //todo: make this cleaner
 int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
-	int	status;
-
 	if (out_pipe[1] == -1)
 	{
 		if (out_pipe[0] != -1)
@@ -66,10 +64,10 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 		if (pipe(out_pipe) < 0)
 			return ((ms_perror("pipe", NULL, NULL, errno) - 2));
 	}
-	status = execute_command(command, command->left, in_pipe, out_pipe);
+	execute_command(command, command->left, in_pipe, out_pipe);
 	copy_pipe(out_pipe, in_pipe);
 	pipe(out_pipe);
-	command->command_flags |= MS_RIGHT;
+	command->right->command_flags |= MS_RIGHT;
 	if (!parent || !(parent->command_flags & MS_PIPE))
 	{
 		close(out_pipe[1]);
@@ -116,13 +114,13 @@ void	print_commands(t_command *command, int depth)
 	i = -1;
 	if (command->arguments)
 	{
-		while(++i < command->arguments->size)
+		while (++i < command->arguments->size)
 			printf("%s ", ((t_token *)ft_darray_get(command->arguments, i))->string);
 	}
 	i = -1;
 	if (command->redirections)
 	{
-		while(++i < command->redirections->size)
+		while (++i < command->redirections->size)
 			printf("> %s ", ((t_redirection *)ft_darray_get(command->redirections, i))->file_path);
 	}
 	printf("input %d output %d\n", command->input, command->output);

@@ -260,6 +260,7 @@ pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int
 	return (pid);
 }
 
+//todo: make a special function for pipes
 int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
@@ -278,7 +279,7 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 		if (command->command_flags & MS_RIGHT)
 			return (get_exit_status(pid));
 		//todo: this is the wrong status!
-		return (1);
+		return (0);
 	}
 	return (execute_simple_command(parent,command, in_pipe, out_pipe));
 }

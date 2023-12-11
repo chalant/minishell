@@ -275,8 +275,10 @@ int	free_parse_data(t_parsing_data *data, t_parse_tree *tree)
 int	clear_command(t_command *command)
 {
 	free(command->command_name);
-	ft_darray_reset(command->redirections, NULL);
-	ft_darray_reset(command->arguments, NULL);
+	ft_darray_delete(command->redirections, NULL);
+	ft_darray_delete(command->arguments, NULL);
+	free(command->redirections);
+	free(command->arguments);
 	command->left = NULL;
 	command->right = NULL;
 	command->command_name = NULL;
@@ -287,6 +289,8 @@ int	clear_command(t_command *command)
 		close(command->output);
 	command->input = 0;
 	command->output = 0;
+	command->redirections = NULL;
+	command->arguments = NULL;
 	return (0);
 }
 
