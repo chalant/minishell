@@ -40,11 +40,8 @@ int	pipe_out(t_command *command, int _pipe[2])
 		return (redirect_out(command));
 	if (_pipe[1] == -1)
 		return (0);
-	fprintf(stderr, "writing to %d\n", _pipe[1]);
 	if (dup2(_pipe[1], STDOUT_FILENO) < 0)
 		return (ms_perror("dup out", NULL, NULL, errno) - 2);
-	// close(_pipe[0]);
-	// close(_pipe[1]);
 	return (0);
 }
 
@@ -56,8 +53,6 @@ int	pipe_in(t_command *command, int _pipe[2])
 		return (0);
 	if (dup2(_pipe[0], STDIN_FILENO) < 0)
 		return (ms_perror("dup in", NULL, NULL, errno) - 2);
-	// close(_pipe[1]);
-	// close(_pipe[0]);
 	return (0);
 }
 
@@ -65,7 +60,6 @@ int	pipe_io(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	if (pipe_in(command, in_pipe) < 0)
 		return (-1);
-	fprintf(stderr, "reading from %d\n", in_pipe[0]);
 	if (pipe_out(command, out_pipe) < 0)
 		return (-1);
 	return (0);
@@ -279,8 +273,6 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 				close(out_pipe[1]);
 			out_pipe[1] = -1;
 		}
-		fprintf(stderr, "PIPE IN %d %d\n", in_pipe[0], in_pipe[1]);
-		fprintf(stderr, "PIPE OUT %d %d\n", out_pipe[0], out_pipe[1]);
 		pid = execute_process(parent, command, in_pipe, out_pipe);
 		if (pid < 0)
 			return (1);

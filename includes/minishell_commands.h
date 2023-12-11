@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/08 16:46:32 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:14:42 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,9 +81,9 @@ int		execute_simple_command(t_command *parent, t_command *command, int in_pipe[2
 int		minishell_execute(t_command *command);
 int		execute_command_core(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 int		execute_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
-int		execute_or(t_command *command, int in_pipe[2], int out_pipe[2]);
-int		execute_and(t_command *command, int in_pipe[2], int out_pipe[2]);
-int		execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2]);
+int		execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
+int		execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
+int		execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 
 pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/08 16:35:52 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:25:17 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,12 @@ void	copy_pipe(int *src_pipe, int *dest_pipe)
 
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
-int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
-	//todo: checking for the last command is not sufficient!
-	if (command->right->command_flags & MS_LAST)
+	if (!parent || !(command->command_flags & MS_AND))
 	{
-		fprintf(stderr, "last %s\n", command->right->command_name);
 		if (out_pipe[1] != -1)
 			close(out_pipe[1]);
 		out_pipe[1] = -1;
@@ -39,10 +37,10 @@ int	execute_and(t_command *command, int in_pipe[2], int out_pipe[2])
 	return (status);
 }
 
-int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
-
+	(void)parent;
 	status = execute_command(command, command->left, in_pipe, out_pipe);
 	if (status > 0)
 		return (execute_command(command, command->right, in_pipe, out_pipe));
@@ -50,7 +48,7 @@ int	execute_or(t_command *command, int in_pipe[2], int out_pipe[2])
 }
 
 //todo: make this cleaner
-int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
+int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
@@ -75,6 +73,11 @@ int	execute_pipe(t_command *command, int in_pipe[2], int out_pipe[2])
 	copy_pipe(out_pipe, in_pipe);
 	pipe(out_pipe);
 	command->command_flags |= MS_RIGHT;
+	if (!parent || !(parent->command_flags & MS_PIPE))
+	{
+		close(out_pipe[1]);
+		out_pipe[1] = -1;
+	}
 	status = execute_command(command, command->right, in_pipe, out_pipe);
 	return (status);
 }
@@ -90,11 +93,11 @@ int	execute_command(t_command *parent, t_command *command, int in_pipe[2], int o
 	if (command->command_flags & MS_OPERAND)
 		status = execute_command_core(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_AND)
-		status = execute_and(command, in_pipe, out_pipe);
+		status = execute_and(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_OR)
-		status = execute_or(command, in_pipe, out_pipe);
+		status = execute_or(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_PIPE)
-		status = execute_pipe(command, in_pipe, out_pipe);
+		status = execute_pipe(parent, command, in_pipe, out_pipe);
 	command->context->status = status;
 	return (status);
 }

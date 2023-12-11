@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/06 17:47:47 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 14:23:39 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int  build_left_operator(t_command *left, t_command *parent, t_stack *com
 	return (1);
 }
 
-//builds the operator and distributes redirections if any.
+//builds the operator and distributes redirections accordingly
 int	build_operator(t_command *command, t_stack *commands)
 {
 	t_command	*right;
