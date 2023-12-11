@@ -34,24 +34,28 @@ int	redirect_out(t_command *command)
 	return (1);
 }
 
-int	pipe_out(t_command *command, int _pipe[2])
+int	pipe_out(t_command *command, int pipe_[2])
 {
-	if (command->output)
+	if (command->output > 0)
 		return (redirect_out(command));
-	if (_pipe[1] == -1)
+	else if (command->output < 0)
+		return (-1);
+	else if (pipe_[1] == -1)
 		return (0);
-	if (dup2(_pipe[1], STDOUT_FILENO) < 0)
+	else if (dup2(pipe_[1], STDOUT_FILENO) < 0)
 		return (ms_perror("dup out", NULL, NULL, errno) - 2);
 	return (0);
 }
 
-int	pipe_in(t_command *command, int _pipe[2])
+int	pipe_in(t_command *command, int pipe_[2])
 {
-	if (command->input)
+	if (command->input > 0)
 		return (redirect_in(command));
-	if (_pipe[0] == -1)
+	else if (command->input < 0)
+		return (-1);
+	else if (pipe_[0] == -1)
 		return (0);
-	if (dup2(_pipe[0], STDIN_FILENO) < 0)
+	else if (dup2(pipe_[0], STDIN_FILENO) < 0)
 		return (ms_perror("dup in", NULL, NULL, errno) - 2);
 	return (0);
 }
@@ -187,6 +191,7 @@ int	launch_execve(t_command *command)
 int	execute_simple_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
+	int		status;
 	(void)parent;
 
 	//not in a processs
@@ -227,7 +232,8 @@ int	execute_simple_command(t_command *parent, t_command *command, int in_pipe[2]
 		//close(in_pipe[0]);
 		// in_pipe[0] = -1;
 		out_pipe[1] = -1;
-		return (get_exit_status(pid));
+		status = get_exit_status(pid);
+		return (status);
 	}
 	launch_execve(command);
 	return (1);
@@ -277,7 +283,8 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 			return (1);
 		if (command->command_flags & MS_RIGHT)
 			return (get_exit_status(pid));
-		return (0);
+		//todo: this is the wrong status!
+		return (1);
 	}
 	return (execute_simple_command(parent,command, in_pipe, out_pipe));
 }

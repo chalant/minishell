@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 16:25:26 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:55:58 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 				return (-1);
 		}
 		set_redirections(command, ft_darray_get(node->children, 3));
-		return (create_files(command, command->redirections));
+		create_files(command, command->redirections);
 	}
 	return (1);
 }

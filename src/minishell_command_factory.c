@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 16:23:42 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/11 16:46:35 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,9 @@ int	set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack)
 	node = ft_darray_get(node->children, 1);
 	if (node->children && set_command_elements(command, node) < 0)
 		return (-1);
-	if (command->redirections && create_files(command, command->redirections) < 0)
+	if (!command->redirections)
 		return (-1);
+	create_files(command, command->redirections);
 	command->command_flags |= MS_OPERAND;
 	return (0);
 }
