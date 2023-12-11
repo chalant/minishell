@@ -14,15 +14,17 @@
 
 static int  build_right_operator(t_command *right, t_command *parent, t_stack *commands)
 {
+	if (parent->command_flags & MS_LAST)
+	{
+		parent->command_flags &= ~(MS_LAST);
+		right->command_flags |= MS_LAST;
+	}
 	if (right->command_flags & MS_OPERATOR)
 	{
-		if (!(parent->command_flags & MS_PIPE))
-		{
-			if (!right->input)
-				right->input = parent->input;
-			if (!right->output)
-				right->output = parent->output;
-		}
+		if (!right->input && !(parent->command_flags & MS_PIPE))
+			right->input = parent->input;
+		if (!right->output)
+			right->output = parent->output;
 		return (build_operator(right, commands));
 	}
 	return (1);
@@ -36,7 +38,7 @@ static int  build_left_operator(t_command *left, t_command *parent, t_stack *com
 	{
 		if (!left->input)
 			left->input = parent->input;
-		if (!left->output)
+		if (!left->output && !(parent->command_flags & MS_PIPE))
 			left->output = parent->output;
 		return (build_operator(left, commands));
 	}

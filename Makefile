@@ -48,6 +48,7 @@ SRC_FILES =	minishell_main.c \
 			minishell_grammar_symbols.c \
 			minishell_grammar_matching.c \
 			minishell_semantics.c \
+			minishell_execution_core.c \
 			minishell_execution.c \
 			minishell_path.c \
 			minishell_command_factory.c \
