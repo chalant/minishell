@@ -146,7 +146,7 @@ int	execute_builtin(t_command *command, int in_fd, int out_fd)
 	arguments = make_arguments(command);
 	if (strcmp(command->command_name, "echo") == 0)
 		status = ms_echo(arguments, out_fd);
-	if (strcmp(command->command_name, "cd") == 0)
+	else if (strcmp(command->command_name, "cd") == 0)
 		status = ms_cd(command->context, arguments, out_fd);
 	else if (strcmp(command->command_name, "pwd") == 0)
 		status = ms_pwd(out_fd);
