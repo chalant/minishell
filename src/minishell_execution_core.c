@@ -178,7 +178,7 @@ int	launch_execve(t_command *command)
 		exit(1);
 	execve(command->command_name, arguments, environ);
 	free(arguments);
-	ms_perror("execve", NULL, NULL, errno);
+	ms_perror(command->command_name, NULL, NULL, errno);
 	exit(127);
 }
 

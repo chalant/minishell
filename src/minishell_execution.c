@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 18:49:29 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/12 11:16:23 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,6 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 //todo: make this cleaner
 int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
-	int	status;
-
 	if (out_pipe[1] == -1)
 	{
 		if (out_pipe[0] != -1)
