@@ -57,10 +57,14 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 //todo: make this cleaner
 int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
+	int	status;
+
 	if (out_pipe[1] == -1)
 	{
 		if (out_pipe[0] != -1)
 			close(out_pipe[0]);
+		if (out_pipe[1] != -1)
+			close(out_pipe[1]);
 		if (pipe(out_pipe) < 0)
 			return ((ms_perror("pipe", NULL, NULL, errno) - 2));
 	}
@@ -138,7 +142,7 @@ int	minishell_execute(t_command *command)
 	int	status;
 
 	// printf("Commands: \n");
-	print_commands(command, 0);
+	//print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	// if (pipe(in_pipe) < 0)
 	// 	return (-1);

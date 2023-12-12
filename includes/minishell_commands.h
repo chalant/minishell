@@ -62,6 +62,7 @@ typedef struct	s_command
 	int					command_flags;
 	int					input;
 	int					output;
+	int					pid;
 	t_darray			*redirections;
 	t_darray			*arguments;
 	struct	s_command	*left;
@@ -77,6 +78,7 @@ int		set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack);
 int		redirection_command(t_parse_tree *node, t_stack *stack);
 int		create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *));
 
+int		execute_and_wait(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 int		execute_simple_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 int		minishell_execute(t_command *command);
 int		execute_command_core(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);

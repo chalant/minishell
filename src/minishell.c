@@ -283,9 +283,9 @@ int	clear_command(t_command *command)
 	command->right = NULL;
 	command->command_name = NULL;
 	command->command_flags = 0;
-	if (command->input)
+	if (command->input > 0)
 		close(command->input);
-	if (command->output)
+	if (command->output > 0)
 		close(command->output);
 	command->input = 0;
 	command->output = 0;
@@ -370,14 +370,18 @@ int	ms_syntax_error(void *input)
 {
 	int				i;
 	t_parsing_data	*data;
-	//todo: look for the last set before NULL.
+	t_token			*token;
+
 	data = (t_parsing_data *)(input);
 	i = data->earley_sets->size - 1;
 	while (i > -1 &&
 		!((t_earley_set *)ft_darray_get(data->earley_sets, i))->items->size)
 		i--;
-	printf("syntax error near unexpected token '%s'\n",
-			((t_token*)(ft_darray_get(data->tokens, i)))->string);
+	token = ft_darray_get(data->tokens, i);
+	if (!(token->flags & IS_EOF))
+		printf("syntax error near unexpected token '%s'\n", token->string);
+	else
+		printf("syntax error: unexpected end of file\n");
 	return (2);
 }
 
