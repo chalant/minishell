@@ -6,37 +6,47 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:45:06 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 15:33:38 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/12 19:37:08 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	ms_errprintstrcol(const char *str)
+{
+	if (!str)
+		return ;
+	write(STDERR_FILENO, str, ft_strlen(str));
+	write(STDERR_FILENO, ": ", 2);
+}
 
 // prints error like (shellshock: cmd: item: msg: err)
 // handles NULL pointers, and err <= 0 (takes 'msg' as last arg)
 // returns 1
 int	ms_perror(const char *cmd, const char *item, const char *msg, int err)
 {
-// maybe error msg in the STD_ERROR?
-	printf("shellshock: ");
-	if (cmd)
-		printf("%s: ", cmd);
-	if (item)
-		printf("%s: ", item);
+	char	*strerr;
+
+	write(STDERR_FILENO, "shellshock: ", 12);
+	ms_errprintstrcol(cmd);
+	ms_errprintstrcol(item);
 	if (msg)
 	{
-		printf("%s", msg);
+		write(STDERR_FILENO, msg, ft_strlen(msg));
 		if (err > 0)
-			printf(": ");
+			write(STDERR_FILENO, ": ", 2);
 	}
 	if (err > 0)
-		printf("%s", strerror(err));
-	printf("\n");
+	{
+		strerr = strerror(err);
+		write(STDERR_FILENO, strerr, ft_strlen(strerr));
+	}
+	write(STDERR_FILENO, "\n", 1);
 	return (1);
 }
 
-int	ms_message_header(void *data, int(*printer)(void *), int fd)
+int	ms_message_header(void *data, int (*printer)(void *), int fd)
 {
-	write(fd, "shellshock: ", 13);
+	write(fd, "shellshock: ", 12);
 	return (printer(data));
 }
