@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_unset.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 18:31:09 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/12 15:56:23 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,11 @@ int	ms_unset(t_ms_context *data, char **arg)
 	}
 	if (data->env_excess > 20)
 	{
-		i = -1 * (data->env_excess - 10);
-		data->env = ms_realloc(data->env, i);
+		data->env = ms_realloc(data->env, 5);
 		if (!data->env)
 			return (ERR_MALLOC);
 // error: malloc failed
-		data->env_excess += i;
+		data->env_excess = 5;
 	}
 	environ = data->env;
 	return (0);

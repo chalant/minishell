@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/09 15:19:00 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/12 15:55:26 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,10 @@ static int	ms_add_var_env(t_ms_context *data, char *var)
 
 	if (!data->env_excess)
 	{
-		data->env = ms_realloc(data->env, 3);
+		data->env = ms_realloc(data->env, 5);
 		if (!data->env)
 			return (ERR_MALLOC);
-		data->env_excess += 3;
+		data->env_excess = 5;
 	}
 	envp = data->env;
 	i = 0;

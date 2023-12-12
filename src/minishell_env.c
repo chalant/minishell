@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:32:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/09 15:26:37 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/12 15:54:40 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,19 +58,9 @@ int	ms_envcpy(t_ms_context *data)
 	return (0);
 }
 
-static char	**ms_realloc_error(char **ptr, char **new)
-{
-	ms_perror("ms_realloc", NULL, NULL, errno);
-	if (ptr)
-		ft_clear_ds(ptr);
-	if (new)
-		ft_clear_ds(new);
-	return (NULL);
-}
-
 // for ENVIRON: call with data->env and assign environ after
-// mallocs size of 'ptr' + 'add', copies content of 'ptr' over and clears it
-// returns new 'ptr' or NULL if malloc failed (always clears 'ptr', prints msg)
+// mallocs size of 'ptr' + 'add', free's 'ptr'
+// error: returns NULL, clears 'ptr', prints msg
 char	**ms_realloc(char **ptr, int add)
 {
 	size_t	i;
@@ -83,16 +73,18 @@ char	**ms_realloc(char **ptr, int add)
 		i++;
 	new = malloc(sizeof(char *) * (i + add + 1));
 	if (!new)
-		return (ms_realloc_error(ptr, NULL));
+	{
+		ms_perror("malloc", NULL, NULL, errno);
+		ft_clear_ds(ptr);
+		return (NULL);
+	}
 	i = 0;
 	while (ptr[i])
 	{
-		new[i] = ft_strdup(ptr[i]);
-		if (!new[i])
-			return (ms_realloc_error(ptr, new));
+		new[i] = ptr[i];
 		i++;
 	}
 	new[i] = NULL;
-	ft_clear_ds(ptr);
+	free(ptr);
 	return (new);
 }
