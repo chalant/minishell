@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/12 11:16:23 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/12 17:27:35 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	execute_command(command, command->left, in_pipe, out_pipe);
 	copy_pipe(out_pipe, in_pipe);
 	pipe(out_pipe);
-	command->right->command_flags |= MS_RIGHT;
 	if (!parent || !(parent->command_flags & MS_PIPE))
 	{
 		close(out_pipe[1]);
