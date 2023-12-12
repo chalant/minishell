@@ -260,28 +260,6 @@ pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int
 	return (pid);
 }
 
-int	execute_and_wait(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
-{
-	pid_t	pid;
-
-	if (parent && parent->command_flags & MS_PIPE)
-	{
-		if (command->command_flags & MS_LAST)
-		{
-			if (out_pipe[1] != -1)
-				close(out_pipe[1]);
-			out_pipe[1] = -1;
-		}
-		pid = execute_process(parent, command, in_pipe, out_pipe);
-		if (pid < 0)
-			return (1);
-		//todo: this is the wrong status!
-		return (get_exit_status(pid));
-	}
-	return (execute_simple_command(parent,command, in_pipe, out_pipe));
-}
-
-
 //todo: make it so that we only
 int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
@@ -300,7 +278,6 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 			return (1);
 		if (command->command_flags & MS_LAST)
 			return (get_exit_status(pid));
-		//todo: this is the wrong status!
 		return (0);
 	}
 	return (execute_simple_command(parent,command, in_pipe, out_pipe));

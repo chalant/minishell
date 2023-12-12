@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 16:55:58 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/12 17:21:35 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 	//todo: checking the children isn't safe
 	if (node->children->size >= 4 && ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name)
 	{
+		printf("COMMAND NAME: %s\n", command->command_name);
 		if (!command->redirections)
 		{
 			command->redirections = malloc(sizeof(t_darray));
@@ -66,29 +67,70 @@ int	handle_semantic_rule(t_parse_tree *node, t_stack *commands)
 			return (create_operator(node, commands, MS_AND, "AND"));
 		else if (strcmp(child->rule_name, "||") == 0)
 			return (create_operator(node, commands, MS_OR, "OR"));
-		if (strcmp(node->rule_name, "parenthesis") == 0)
-		{
-			if (handle_parenthesis(node, ft_stack_peek(commands)) < 0)
-				return (-1);
-		}
 		if (flatten_tree(child, commands) < 0)
 			return (-1);
 	}
 	return (1);
 }
 
+//todo: free all on failure
+int	create_redirections(t_command *new, t_parse_tree *node)
+{
+	init_command(new);
+	new->redirections = malloc(sizeof(t_darray));
+	//todo: need to free the redirections in case of failure
+	if (!new->redirections)
+		return (-1);
+	if (ft_darray_init(new->redirections, sizeof(t_redirection), 3) < 0)
+		return (-1);
+	if (set_redirections(new, node) < 0)
+		return (-1);
+	return (0);
+}
+
+int	handle_redirection_list(t_parse_tree *node, t_stack *commands)
+{
+	t_command	*command;
+	t_command	new;
+
+	//todo: if there is no command, the redirection has to go to next command... how ?
+	//push it to the stack ?
+	command = ft_stack_peek(commands);
+	if (!command || !command->command_name)
+	{
+		init_command(&new);
+		if (create_redirections(&new, node) < 0)
+			return (-1);
+		new.command_flags |= MS_REDIR;
+		set_redirections(&new, node);
+		ft_stack_push(commands, &new);
+		return (1);
+	}
+	if (!command->redirections)
+	{
+		command->redirections = malloc(sizeof(t_darray));
+		if (!command->redirections)
+			return (-1);
+		if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
+			return (-1);
+	}
+	set_redirections(command, node);
+	return (create_files(command, command->redirections));
+}
+
 int	flatten_tree(t_parse_tree *node, t_stack *commands)
 {
 	if (node->terminal)
 		return (1);
-	if (strcmp(node->rule_name, "simple_command") == 0)
+	else if (strcmp(node->rule_name, "simple_command") == 0)
 		return (create_command(node, commands, set_command_fields));
-	if (strcmp(node->rule_name, "redirection_command") == 0)
-		return (redirection_command(node, commands));
+	else if (strcmp(node->rule_name, "redirection_list") == 0)
+		return (handle_redirection_list(node, commands));
 	return (handle_semantic_rule(node, commands));
 }
 
 //builds a command tree to be executed.
+//todo: need a status?
 t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 {
 	t_stack		commands;
@@ -101,7 +143,13 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 	if (!command)
 		return (NULL);
 	if (!command->command_name)
+	{
+		//todo: file creation might fail, so we would need a status...
+		if (command->command_flags & MS_REDIR)
+			create_files(command, command->redirections);
 		return (NULL);
+	}
+	//todo: could push back the command on top...
 	command->command_flags |= MS_LAST;
 	if (command->command_flags & MS_OPERATOR)
 		build_operator(command, &commands);

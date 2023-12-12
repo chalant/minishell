@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 17:44:51 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/12 11:44:09 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"command:command ='||' $'4'\n"\
 	"command:command ='||' command_operand\n"\
 	"command:command ='&&' command_operand\n";
-	
 
 char	**ft_reverse_strings(char **strings)
 {

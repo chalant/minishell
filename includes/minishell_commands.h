@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 14:14:42 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/12 17:27:25 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # define MS_BUILTIN 1 << 5
 # define MS_FORKED 1 << 6
 # define MS_LAST 1 << 7
-# define MS_RIGHT 1 << 8
+# define MS_REDIR 1 << 8
 
 // redirection flags:
 # define MS_HEREDOC 1 << 0
@@ -78,7 +78,6 @@ int		set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack);
 int		redirection_command(t_parse_tree *node, t_stack *stack);
 int		create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *));
 
-int		execute_and_wait(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 int		execute_simple_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 int		minishell_execute(t_command *command);
 int		execute_command_core(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);

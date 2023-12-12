@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/11 16:46:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/12 16:37:49 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,77 +115,23 @@ int	set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack)
 	return (0);
 }
 
+//todo: free stuff here in case of failed mallocs?
 int	init_command_fields(t_command *command)
 {
-	init_command(command);
-	command->redirections = malloc(sizeof(t_darray));
 	if (!command->redirections)
-		return (-1);
-	if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
-		return (-1);
-	command->arguments = malloc(sizeof(t_darray));
+	{
+		command->redirections = malloc(sizeof(t_darray));
+		if (!command->redirections)
+			return (-1);
+		if (ft_darray_init(command->redirections, sizeof(t_redirection), 3) < 0)
+			return (-1);
+	}
+	if (!command->arguments)
+		command->arguments = malloc(sizeof(t_darray));
 	if (!command->arguments)
 		return (-1);
 	if (ft_darray_init(command->arguments, sizeof(t_token), 3) < 0)
 		return (-1);
-	return (0);
-}
-
-//todo: handle parenthesis as-well.
-//todo: handle alternaning operators and redirections.
-int	redirection_command(t_parse_tree *node, t_stack *stack)
-{
-	t_parse_tree	*subtree;
-	t_command		new;
-	t_command		*command;
-	int				i;
-
-
-	subtree = ft_darray_get(node->children, 0);
-	if (strcmp(subtree->rule_name, "redirection_list") != 0)
-		return (0);
-	i = -1;
-	while (++i < node->children->size)
-	{
-		subtree = ft_darray_get(node->children, i);
-		if (!subtree->rule_name)
-			break;
-	}
-	subtree = ft_darray_get(node->children, i - 1);
-	if (i == 1 && strcmp(subtree->rule_name, "redirection_list") == 0)
-	{
-		//todo: this could be parenthesis or redirection_list
-		//todo: handle redirections after parenthesis
-		init_command(&new);
-		new.redirections = malloc(sizeof(t_darray));
-		if (!new.redirections)
-			return (-1);
-		if (ft_darray_init(new.redirections, sizeof(t_redirection), 3) < 0)
-			return (-1);
-		if (set_redirections(&new, ft_darray_get(node->children, 0)) < 0)
-			return (-1);
-		//todo delete redirections
-		return (create_files(&new, new.redirections));
-	}
-	else if (i == 2)
-	{
-		flatten_tree(subtree, stack);
-		command = ft_stack_peek(stack);
-		if (command->command_flags & MS_OPERATOR)
-		{
-			if (!command->redirections)
-			{
-				command->redirections = malloc(sizeof(t_darray));
-				if (!command->redirections)
-					return (-1);
-				if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
-					return (-1);
-			}
-		}
-		if (set_redirections(command, ft_darray_get(node->children, 0)) < 0)
-			return (-1);
-		return (create_files(command, command->redirections));
-	}
 	return (0);
 }
 
@@ -194,15 +140,23 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	t_command	*command;
 	t_command	new;
 
-	command = ft_darray_get(stack->elements, stack->elements->size);
-	if (!command || !command->redirections || !command->arguments)
+	command = ft_stack_peek(stack);
+	if (command && command->command_flags & MS_REDIR)
 	{
+		init_command_fields(command);
+		if (factory(node, command, stack) < 0)
+			return (-1);
+		command->command_flags &= ~(MS_REDIR);
+		return (1);
+	}
+	command = ft_darray_get(stack->elements, stack->elements->size);
+	if (!command || !command->command_name)
+	{
+		init_command(&new);
 		init_command_fields(&new);
 		if (factory(node, &new, stack) < 0)
 			return (-1);
 		return (ft_stack_push(stack, &new));
 	}
-	if (factory(node, command, stack) < 0)
-		return (-1);
-	return (ft_stack_push(stack, command));
+	return (0);
 }
