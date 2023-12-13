@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/11 14:58:31 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/13 15:09:35 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 # include "minishell_errors.h"
 # include "minishell_commands.h"
 # include "minishell_semantics.h"
+# include "minishell_execution.h"
 # include "libft.h"
 
 # define MS_PROMPT_MSG "shellshock$ "

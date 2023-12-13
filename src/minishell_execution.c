@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/13 14:02:13 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/13 14:45:49 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	if (command->left && !command->left->input)
 		command->left->input = command->input;
 	//todo: if the left command fails, close and return -1;
-	if (command->left->redirections)
+	if (command->left && command->left->redirections)
 		ms_heredoc(command->left->redirections);
 	if (command->right->redirections)
 		ms_heredoc(command->right->redirections);

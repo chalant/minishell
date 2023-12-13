@@ -6,7 +6,7 @@
 #    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/12 17:23:41 by ychalant         ###   ########.fr        #
+#    Updated: 2023/12/13 15:32:47 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,8 @@ INCLUDES_FILES = minishell.h \
 				 minishell_parsing.h \
 				 minishell_grammar.h \
 				 minishell_commands.h \
-				 minishell_semantics.h
+				 minishell_semantics.h \
+				 minishell_execution.h
 
 SRC_FILES =	minishell_main.c \
 			minishell.c \
@@ -48,6 +49,8 @@ SRC_FILES =	minishell_main.c \
 			minishell_grammar_symbols.c \
 			minishell_grammar_matching.c \
 			minishell_semantics.c \
+			minishell_execution_io.c \
+			minishell_execution_args.c \
 			minishell_execution_core.c \
 			minishell_execution.c \
 			minishell_path.c \

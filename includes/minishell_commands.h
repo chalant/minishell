@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/13 13:34:08 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/13 15:14:11 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define MINISHELL_COMMANDS_H
 
 # include <fcntl.h>
-# include "minishell.h"
 
 # define MS_PIPE 1 << 0
 # define MS_OR 1 << 1
@@ -70,22 +69,11 @@ typedef struct	s_command
 	t_ms_context		*context;
 }				t_command;
 
-int		get_exit_status(pid_t pid);
 int		ms_heredoc(t_darray *redirections);
 
 int		init_command(t_command *command);
+int		create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *));
 int		delete_commands(t_darray *commands);
 int		set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack);
-int		create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *));
-
-int		execute_simple_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
-int		minishell_execute(t_command *command);
-int		execute_command_core(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
-int		execute_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
-int		execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
-int		execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
-int		execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
-
-pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 
 #endif

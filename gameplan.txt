@@ -22,12 +22,6 @@ TODO:
 
 	must delay opening files until execution! -> DONE
 	
-	problem: parenthesis behave differently with rediretions. -> WORKS
-	
-	maybe store the output and input file, along with the fds. -> DON'T NEED TO
-	
-	when building commands, pass around fds. -> OBSOLETE
-	
 	need to close file descriptors directly after a single command execution. -> FIXED
 
 	protect against fork fails: either retry or interrupt the execution of the commands -> FIXED ? need to choose a proper exit status
@@ -36,7 +30,13 @@ TODO:
 
 	norm the "minishell_execution" file.
 
+	norm the "semantics file" and "command factory file"
+
+	malloc protection when creating redirections
+
 	heredocs seem to be done before launching processes -> DONE!
 
 	make the operators create heredocs for left and right elements. (if there are redirections)
+
+	the operator should disable redirection for the right command if there is no left command. 
 

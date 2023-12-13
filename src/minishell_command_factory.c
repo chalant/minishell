@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/12 16:37:49 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/13 14:39:30 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,6 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	command = ft_stack_peek(stack);
 	if (command && command->command_flags & MS_REDIR)
 	{
-		printf("NO COMMAND! %s\n", command->command_name);
 		init_command_fields(command);
 		if (factory(node, command, stack) < 0)
 			return (-1);
