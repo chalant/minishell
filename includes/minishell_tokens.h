@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/07 15:47:50 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/13 18:20:26 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ t_token_info	*ms_token_info(t_token_info *ti, const char *res_single,
 					const char *res_double, const char *res_skip);
 int				ms_tokeniser(char **input, t_darray *tokens,
 					t_token_info *info);
+int				ms_until_reserved(char **input, char **start_end,
+					t_token *token, t_token_info *info);
 t_token			*ms_init_token(t_token *token);
 void			ms_clear_token(void *token);
 
@@ -60,7 +62,7 @@ void			ms_add_flags_str(t_token *new);
 int				ms_expand_var(t_darray *tokens, t_token *token);
 char			*ms_end_of_name(const char *str);
 int				ms_expand_wildcard(t_darray *tokens, t_token *token);
-void			ms_token_expansion(t_darray *tokens);
+void			ms_token_expansion(t_darray *tokens, int start_index);
 void			ms_remove_quotes(char *str, char *mask_exp);
 void			ms_shift_strings(char *a, char *b, int i);
 

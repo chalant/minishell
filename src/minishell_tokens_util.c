@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:30:35 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/11/22 14:49:36 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/13 16:34:01 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ void	ms_add_flags_str(t_token *new)
 		return ;
 	while (new->string[i])
 	{
-		if (!qt && new->mask_exp[i] == '0' && (new->string[i] == '"' || new->string[i] == '\''))
+		if (!qt && new->mask_exp[i] == '0'
+			&& (new->string[i] == '"' || new->string[i] == '\''))
 		{
 			qt = new->string[i];
 			new->flags |= IS_QUOTED;

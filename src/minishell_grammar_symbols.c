@@ -49,8 +49,7 @@ int	ms_prompt_command(t_ms_symbol *symbol, t_token *token)
 
 	if (token->string)
 		return (0);
-	ms_token_info(&info,
-		RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
+	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
 	line = readline("> ");
 	if (!line)
 	{
@@ -64,10 +63,10 @@ int	ms_prompt_command(t_ms_symbol *symbol, t_token *token)
 		add_earley_set(symbol->earley_sets, 1);
 		return (0);
 	}
-	symbol->tokens->size -= 1;
-	init_size = symbol->tokens->size;
+	init_size = symbol->tokens->size - 1;
 	ms_tokeniser(&line, symbol->tokens, &info);
 	i = -1;
+	// you don't really need this 'i', could do it with just init_size
 	//todo: errors
 	while (++i < symbol->tokens->size - init_size - 1)
 	{
