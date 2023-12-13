@@ -110,7 +110,7 @@ int	set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack)
 		return (-1);
 	if (!command->redirections)
 		return (-1);
-	create_files(command, command->redirections);
+	//create_files(command, command->redirections);
 	command->command_flags |= MS_OPERAND;
 	return (0);
 }
@@ -143,9 +143,20 @@ int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tr
 	command = ft_stack_peek(stack);
 	if (command && command->command_flags & MS_REDIR)
 	{
+		printf("NO COMMAND! %s\n", command->command_name);
 		init_command_fields(command);
 		if (factory(node, command, stack) < 0)
 			return (-1);
+		//todo: check if it not an operator
+		if (command->command_flags & MS_OPERATOR)
+		{
+			if (command->input)
+				close(command->input);
+			if (command->output)
+				close(command->output);
+			command->input = 0;
+			command->output = 0;
+		}
 		command->command_flags &= ~(MS_REDIR);
 		return (1);
 	}

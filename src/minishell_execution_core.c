@@ -17,14 +17,14 @@ int	get_exit_status(pid_t pid)
 int	redirect_in(t_command *command)
 {
 	if (dup2(command->input, STDIN_FILENO) < 0)
-		return (ms_perror("dup", NULL, NULL, errno) - 2);
+		return (ms_perror("dup in", NULL, NULL, errno) - 2);
 	return (0);
 }
 
 int	redirect_out(t_command *command)
 {
 	if (dup2(command->output, STDOUT_FILENO) < 0)
-		return (ms_perror("dup", NULL, NULL, errno) - 2);
+		return (ms_perror("dup out", NULL, NULL, errno) - 2);
 	return (1);
 }
 
@@ -214,9 +214,12 @@ int	execute_simple_command(t_command *parent, t_command *command, int in_pipe[2]
 		}
 		pid = fork();
 		if (pid < 0)
-			return (ms_perror("fork", NULL, NULL, errno));
+			return (ms_perror("fork", NULL, NULL, errno) - 2);
 		if (pid == 0)
 		{
+			//todo: handle errors
+	if (command->redirections && command->redirections->size)
+		create_files(command, command->redirections);
 			if (pipe_io(command, in_pipe, out_pipe) < 0)
 				exit(1);
 			launch_execve(command);
@@ -227,6 +230,8 @@ int	execute_simple_command(t_command *parent, t_command *command, int in_pipe[2]
 		// in_pipe[0] = -1;
 		out_pipe[1] = -1;
 		status = get_exit_status(pid);
+		if (command->output > 0)
+			close(command->output);
 		return (status);
 	}
 	launch_execve(command);
@@ -244,6 +249,9 @@ pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
+		//todo: handle errors
+		if (command->redirections && command->redirections->size)
+			create_files(command, command->redirections);
 		if (pipe_io(command, in_pipe, out_pipe) < 0)
 			exit(1);
 		status = execute_simple_command(parent, command, in_pipe, out_pipe);
@@ -260,11 +268,11 @@ pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int
 	return (pid);
 }
 
-//todo: make it so that we only
 int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 
+	//todo: handle errors
 	if (parent && parent->command_flags & MS_PIPE)
 	{
 		if (command->command_flags & MS_LAST)
@@ -275,10 +283,12 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 		}
 		pid = execute_process(parent, command, in_pipe, out_pipe);
 		if (pid < 0)
-			return (1);
+			return (-1);
 		if (command->command_flags & MS_LAST)
 			return (get_exit_status(pid));
 		return (0);
 	}
+	if (command->redirections && command->redirections->size)
+		create_files(command, command->redirections);
 	return (execute_simple_command(parent,command, in_pipe, out_pipe));
 }

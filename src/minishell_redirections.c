@@ -66,6 +66,8 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 	t_parse_tree	*node;
 	t_redirection	redirection;
 
+	printf("set_redirections\n");
+
 	set_redirection(&redirection, ft_darray_get(tree->children, 0));
 	if (ft_darray_append(command->redirections, &redirection) < 0)
 		return (-1);
@@ -147,6 +149,8 @@ int	ms_heredoc(t_darray *redirections)
 	return (1);
 }
 
+//todo: open same files only once.
+//todo: should 
 int	create_files(t_command *command, t_darray *redirections)
 {
 	int				i;
@@ -154,8 +158,8 @@ int	create_files(t_command *command, t_darray *redirections)
 	t_redirection	*redirection;
 
 	ms_heredoc(redirections);
-	i = redirections->size;
-	while (--i > -1)
+	i = -1;
+	while (++i < redirections->size)
 	{
 		redirection = ft_darray_get(redirections, i);
 		//todo: handle errors
@@ -163,12 +167,18 @@ int	create_files(t_command *command, t_darray *redirections)
 			fd = open(redirection->file_path, redirection->file_flags, redirection->mode);
 		else
 			fd = open(MS_HEREDOC_PATH, redirection->file_flags, redirection->mode);
-		if (redirection->redirection_flags & MS_READ && !command->input)
+		if (redirection->redirection_flags & MS_READ)
+		{
+			if (command->input > 0)
+				close(command->input);
 			command->input = fd;
-		else if (redirection->redirection_flags & MS_WRITE && !command->output)
+		}
+		else if (redirection->redirection_flags & MS_WRITE)
+		{
+			if (command->output > 0)
+				close(command->output);
 			command->output = fd;
-		else
-			close(fd);
+		}
 		if (fd < 0)
 			return (ms_perror(redirection->file_path, NULL, NULL, errno) - 2);
 	}

@@ -23,8 +23,9 @@
 # define MS_OPERAND 1 << 4
 # define MS_BUILTIN 1 << 5
 # define MS_FORKED 1 << 6
-# define MS_LAST 1 << 7
-# define MS_REDIR 1 << 8
+# define MS_FIRST 1 << 7
+# define MS_LAST 1 << 8
+# define MS_REDIR 1 << 9
 
 // redirection flags:
 # define MS_HEREDOC 1 << 0
@@ -62,7 +63,6 @@ typedef struct	s_command
 	int					command_flags;
 	int					input;
 	int					output;
-	int					pid;
 	t_darray			*redirections;
 	t_darray			*arguments;
 	struct	s_command	*left;
@@ -75,7 +75,6 @@ int		get_exit_status(pid_t pid);
 int		init_command(t_command *command);
 int		delete_commands(t_darray *commands);
 int		set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack);
-int		redirection_command(t_parse_tree *node, t_stack *stack);
 int		create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *));
 
 int		execute_simple_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);

@@ -35,7 +35,6 @@ int	handle_parenthesis(t_parse_tree *node, t_command *command)
 	//todo: checking the children isn't safe
 	if (node->children->size >= 4 && ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name)
 	{
-		printf("COMMAND NAME: %s\n", command->command_name);
 		if (!command->redirections)
 		{
 			command->redirections = malloc(sizeof(t_darray));
@@ -83,9 +82,7 @@ int	create_redirections(t_command *new, t_parse_tree *node)
 		return (-1);
 	if (ft_darray_init(new->redirections, sizeof(t_redirection), 3) < 0)
 		return (-1);
-	if (set_redirections(new, node) < 0)
-		return (-1);
-	return (0);
+	return (set_redirections(new, node));
 }
 
 int	handle_redirection_list(t_parse_tree *node, t_stack *commands)
@@ -93,8 +90,6 @@ int	handle_redirection_list(t_parse_tree *node, t_stack *commands)
 	t_command	*command;
 	t_command	new;
 
-	//todo: if there is no command, the redirection has to go to next command... how ?
-	//push it to the stack ?
 	command = ft_stack_peek(commands);
 	if (!command || !command->command_name)
 	{
@@ -102,7 +97,6 @@ int	handle_redirection_list(t_parse_tree *node, t_stack *commands)
 		if (create_redirections(&new, node) < 0)
 			return (-1);
 		new.command_flags |= MS_REDIR;
-		set_redirections(&new, node);
 		ft_stack_push(commands, &new);
 		return (1);
 	}
@@ -114,8 +108,7 @@ int	handle_redirection_list(t_parse_tree *node, t_stack *commands)
 		if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
 			return (-1);
 	}
-	set_redirections(command, node);
-	return (create_files(command, command->redirections));
+	return (set_redirections(command, node));
 }
 
 int	flatten_tree(t_parse_tree *node, t_stack *commands)
@@ -146,11 +139,15 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 	{
 		//todo: file creation might fail, so we would need a status...
 		if (command->command_flags & MS_REDIR)
+		{
+			printf("creating files\n");
 			create_files(command, command->redirections);
+		}
 		return (NULL);
 	}
 	//todo: could push back the command on top...
 	command->command_flags |= MS_LAST;
+	command->command_flags |= MS_FIRST;
 	if (command->command_flags & MS_OPERATOR)
 		build_operator(command, &commands);
 	return (command);

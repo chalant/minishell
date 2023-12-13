@@ -25,6 +25,19 @@ int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_p
 {
 	int	status;
 
+	//todo: handle errors
+	if (command->redirections && command->redirections->size)
+	{
+		create_files(command, command->redirections);
+	}
+	if (!command->left->input)
+		command->left->input = command->input;
+	if (!command->left->output)
+		command->left->output = command->output;
+	if (!command->right->input)
+		command->right->input = command->input;
+	if (!command->right->output)
+		command->right->output = command->output;
 	if (!parent || !(command->command_flags & MS_AND))
 	{
 		if (out_pipe[1] != -1)
@@ -42,6 +55,20 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 {
 	int	status;
 
+	//todo: handle errors
+	if (command->redirections && command->redirections->size)
+	{
+		printf("creating files\n");
+		create_files(command, command->redirections);
+	}
+	if (!command->left->input)
+		command->left->input = command->input;
+	if (!command->left->output)
+		command->left->output = command->output;
+	if (!command->right->input)
+		command->right->input = command->input;
+	if (!command->right->output)
+		command->right->output = command->output;
 	if (!parent || !(command->command_flags & MS_OR))
 	{
 		if (out_pipe[1] != -1)
@@ -54,7 +81,6 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 	return (status);
 }
 
-//todo: make this cleaner
 int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	if (out_pipe[1] == -1)
@@ -66,6 +92,15 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 		if (pipe(out_pipe) < 0)
 			return ((ms_perror("pipe", NULL, NULL, errno) - 2));
 	}
+	// //todo: handle errors
+	if (command->redirections && command->redirections->size)
+	{
+		printf("left input %d\n", command->left->input);
+		create_files(command, command->redirections);
+	}
+	if (command->left && !command->left->input)
+		command->left->input = command->input;
+	//todo: if the left command fails, close and return -1;
 	execute_command(command, command->left, in_pipe, out_pipe);
 	copy_pipe(out_pipe, in_pipe);
 	pipe(out_pipe);
@@ -74,6 +109,11 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 		close(out_pipe[1]);
 		out_pipe[1] = -1;
 	}
+	if (!command->right->output)
+		command->right->output = command->output;
+	//todo: if there is no left command, the right command should no redirect in.
+	if (!command->left)
+		command->right->command_flags &= ~(MS_REDIR);
 	return (execute_command(command, command->right, in_pipe, out_pipe));
 }
 
@@ -139,7 +179,7 @@ int	minishell_execute(t_command *command)
 	int	status;
 
 	// printf("Commands: \n");
-	//print_commands(command, 0);
+	print_commands(command, 0);
 	//todo: we either create a pipe or open a redirection as input here.
 	// if (pipe(in_pipe) < 0)
 	// 	return (-1);

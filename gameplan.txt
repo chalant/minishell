@@ -17,3 +17,17 @@ Parser:
 Notes:
 	if the a special character is the result of an expansion, should we
 	mark it as not reserved ? that way the recogniser will exclude them?
+
+TODO:
+
+	must delay opening files until execution! -> DONE
+	
+	problem: parenthesis behave differently with rediretions. -> WORKS
+	
+	maybe store the output and input file, along with the fds. -> DON'T NEED TO
+	
+	when building commands, pass around fds. -> OBSOLETE
+
+TODO:
+	need to close file descriptor directly after a single command execution. -> FIXED
+
