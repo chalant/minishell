@@ -218,8 +218,6 @@ int	execute_simple_command(t_command *parent, t_command *command, int in_pipe[2]
 		if (pid == 0)
 		{
 			//todo: handle errors
-	if (command->redirections && command->redirections->size)
-		create_files(command, command->redirections);
 			if (pipe_io(command, in_pipe, out_pipe) < 0)
 				exit(1);
 			launch_execve(command);
@@ -243,15 +241,17 @@ pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int
 	pid_t	pid;
 	int		status;
 
+	// if (command->redirections && command->redirections->size)
+	// 	ms_heredoc(command->redirections);
 	pid = fork();
 	if (pid < 0)
 		return (ms_perror("fork", NULL, NULL, errno) - 2);
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		//todo: handle errors
 		if (command->redirections && command->redirections->size)
 			create_files(command, command->redirections);
+		//todo: handle errors
 		if (pipe_io(command, in_pipe, out_pipe) < 0)
 			exit(1);
 		status = execute_simple_command(parent, command, in_pipe, out_pipe);

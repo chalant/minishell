@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/12 16:06:00 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/13 13:47:09 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,6 @@ int	create_files(t_command *command, t_darray *redirections)
 	int				fd;
 	t_redirection	*redirection;
 
-	ms_heredoc(redirections);
 	i = -1;
 	while (++i < redirections->size)
 	{

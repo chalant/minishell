@@ -27,7 +27,16 @@ TODO:
 	maybe store the output and input file, along with the fds. -> DON'T NEED TO
 	
 	when building commands, pass around fds. -> OBSOLETE
+	
+	need to close file descriptors directly after a single command execution. -> FIXED
 
-TODO:
-	need to close file descriptor directly after a single command execution. -> FIXED
+	protect against fork fails: either retry or interrupt the execution of the commands -> FIXED ? need to choose a proper exit status
+
+	norm the "execute_simple_command" function.
+
+	norm the "minishell_execution" file.
+
+	heredocs seem to be done before launching processes -> DONE!
+
+	make the operators create heredocs for left and right elements. (if there are redirections)
 

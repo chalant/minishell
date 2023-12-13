@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/12 17:27:25 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/13 13:34:08 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ typedef struct	s_command
 }				t_command;
 
 int		get_exit_status(pid_t pid);
+int		ms_heredoc(t_darray *redirections);
 
 int		init_command(t_command *command);
 int		delete_commands(t_darray *commands);

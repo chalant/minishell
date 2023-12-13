@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/12 17:27:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/13 14:02:13 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 	//todo: handle errors
 	if (command->redirections && command->redirections->size)
 	{
-		printf("creating files\n");
 		create_files(command, command->redirections);
 	}
 	if (!command->left->input)
@@ -95,13 +94,17 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	// //todo: handle errors
 	if (command->redirections && command->redirections->size)
 	{
-		printf("left input %d\n", command->left->input);
 		create_files(command, command->redirections);
 	}
 	if (command->left && !command->left->input)
 		command->left->input = command->input;
 	//todo: if the left command fails, close and return -1;
-	execute_command(command, command->left, in_pipe, out_pipe);
+	if (command->left->redirections)
+		ms_heredoc(command->left->redirections);
+	if (command->right->redirections)
+		ms_heredoc(command->right->redirections);
+	if (execute_command(command, command->left, in_pipe, out_pipe) < 0)
+		return (-1);
 	copy_pipe(out_pipe, in_pipe);
 	pipe(out_pipe);
 	if (!parent || !(parent->command_flags & MS_PIPE))
@@ -111,7 +114,7 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	}
 	if (!command->right->output)
 		command->right->output = command->output;
-	//todo: if there is no left command, the right command should no redirect in.
+	//todo: if there is no left command, the right command should'nt redirect in.
 	if (!command->left)
 		command->right->command_flags &= ~(MS_REDIR);
 	return (execute_command(command, command->right, in_pipe, out_pipe));
@@ -180,14 +183,12 @@ int	minishell_execute(t_command *command)
 
 	// printf("Commands: \n");
 	print_commands(command, 0);
-	//todo: we either create a pipe or open a redirection as input here.
-	// if (pipe(in_pipe) < 0)
-	// 	return (-1);
 	out_pipe[0] = -1;
 	out_pipe[1] = -1;
 	in_pipe[0] = -1;
 	in_pipe[1] = -1;
 	status = execute_command(NULL, command, in_pipe, out_pipe);
+	//todo: check if pipes are opened first.
 	close(in_pipe[0]);
 	close(in_pipe[1]);
 	close(out_pipe[0]);
