@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 14:56:22 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/07 15:45:38 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/13 17:08:34 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,17 @@ void	ms_remove_quotes(char *str, char *mask_exp)
 }
 
 // removes quotes
-void	ms_token_expansion(t_darray *tokens)
+void	ms_token_expansion(t_darray *tokens, int start_index)
 {
-	int	i;
+	int		i;
+	t_token	*token;
 
-	i = 0;
+	i = start_index;
 	while (i < tokens->size)
 	{
-		if (((t_token *) (tokens->contents + (i * tokens->type_size)))->flags & IS_QUOTED)
-			ms_remove_quotes(((t_token *) (tokens->contents + (i * tokens->type_size)))->string,
-				((t_token *) (tokens->contents + (i * tokens->type_size)))->mask_exp);
+		token = ((t_token *) tokens->contents) + i;
+		if (token->flags & IS_QUOTED)
+			ms_remove_quotes(token->string, token->mask_exp);
 		i++;
 	}
 }

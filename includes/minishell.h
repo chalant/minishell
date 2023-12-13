@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 15:09:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/13 16:06:11 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,25 +36,25 @@
 
 extern int	g_global_status;
 
-int		ms_exit(t_ms_context *context, char **arg);
-void	ms_flush_exit(t_ms_context *context, int exit_value);
-int     ms_echo(char **arg, int fd);
-int		ms_cd(t_ms_context *context, char **arg, int fd);
+int		ms_exit(t_ms_context *data, char **arg);
+void	ms_flush_exit(t_ms_context *data, int exit_value);
+int		ms_echo(char **arg, int fd);
+int		ms_cd(t_ms_context *data, char **arg, int fd);
 int		ms_pwd(int);
 int		ms_env(void);
-int		ms_export(t_ms_context *context, char **arg);
-int		ms_export_var(t_ms_context *context, char *var);
-int		ms_unset(t_ms_context *context, char **arg);
-void	ms_unset_var(t_ms_context *context, char *name);
-int		ms_envcpy(t_ms_context *context);
-char	*ms_get_var_env(t_ms_context *context, char *var);
+int		ms_export(t_ms_context *data, char **arg);
+int		ms_export_var(t_ms_context *data, char *var);
+int		ms_unset(t_ms_context *data, char **arg);
+void	ms_unset_var(t_ms_context *data, char *name);
+int		ms_envcpy(t_ms_context *data);
+char	*ms_get_var_env(t_ms_context *data, char *var);
 char	**ms_realloc(char **ptr, int add);
-char	**ms_get_var_envp(t_ms_context *context, char *var);
+char	**ms_get_var_envp(t_ms_context *data, char *var);
 int		ms_check_varname(char *var);
 
-int		execute(t_ms_context *context, t_parse_tree *tree, t_darray *commands);
+int		execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
-int		ms_message_header(void *data, int(*printer)(void *), int fd);
+int		ms_message_header(void *data, int (*printer)(void *), int fd);
 
 #endif

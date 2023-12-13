@@ -6,86 +6,22 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/11 16:52:57 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/13 18:19:25 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// returns 1 if *symbol is a reserved sequence
-static int	ms_is_reserved(const char *symbol, t_token_info *info)
+static int	ms_tokeniser_error(char *input, char perror)
 {
-if (*symbol == '\n')
-printf("found a nl!\n");
-	if (ft_strchr(info->reserved_single, *symbol))
-		return (1);
-	if (ft_strchr(info->reserved_double, *symbol) && symbol[0] == symbol[1])
-		return (1);
-	return (0);
-}
-
-// on error, *line = NULL
-static int	ms_prompt_quote(char **end, char **start, char **line)
-{
-	char	*temp;
-	char	*add_line;
-	size_t	start_index;
-	size_t	end_index;
-
-	start_index = *start - *line;
-	end_index = *end - *line;
-	temp = ft_strjoin(*line, "\n");
-	free(*line);
-	*line = NULL;
-	if (!temp)
-		return (ms_perror("tokenising", NULL, NULL, errno));
-	add_line = readline("> ");
-	if (!add_line)
-	{
-		free(temp);
-		return (ERR_EOF_QUOTED);
-	}
-	*line = ft_strjoin(temp, add_line);
-	free(temp);
-	free(add_line);
-	if (!*line)
-		return (ms_perror("tokenising", NULL, NULL, errno));
-	*start = (*line) + start_index;
-	*end = (*line) + end_index;
-	return (0);
-}
-
-// returns 1 on error, and *line = NULL
-// returns the next instance of *end
-// adds the IS_VAR flag if applicable
-static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
-{
-	char	quote;
-	int		check;
-
-	tkn->flags |= IS_QUOTED;
-	quote = **end;
-	while (1)
-	{
-		while (**end)
-		{
-			(*end)++;
-			if (**end == quote)
-				return (0);
-			if (quote == '"')
-				if (**end == '$')
-					tkn->flags |= IS_VAR;
-		}
-		check = ms_prompt_quote(end, start, line);
-		if (check == ERR_EOF_QUOTED)
-			printf("shellshock: unexpected EOF while looking for matching `%c'\n", quote);
-// put this in stderr instead
-		if (check)
-			return (check);
-	}
+	free(input);
+	if (perror)
+		ms_perror("tokeniser", NULL, NULL, errno);
+	return (ERR_MALLOC);
 }
 
 // mallocs and adds token including start but not end
+// error: prints msg
 static int	ms_add_token(char *start, char *end, t_darray *tkns, t_token *token)
 {
 	if (start == end)
@@ -113,7 +49,8 @@ static int	ms_add_token(char *start, char *end, t_darray *tkns, t_token *token)
 	return (0);
 }
 
-static char	*ms_handle_symbol(char *end, t_darray *tokens, t_token *token, t_token_info *info)
+static char	*ms_handle_symbol(char *end,
+	t_darray *tokens, t_token *token, t_token_info *info)
 {
 	char	*start;
 
@@ -140,43 +77,27 @@ static char	*ms_handle_symbol(char *end, t_darray *tokens, t_token *token, t_tok
 // error: free '*input', print error msg
 int	ms_tokeniser(char **input, t_darray *tokens, t_token_info *info)
 {
-	char	*start;
-	char	*end;
+	char	*start_end[2];
 	t_token	token;
+	int		start_size;
 
-	end = *input;
-	while (end && *end)
+	if (tokens->size)
+		tokens->size--;
+	start_size = tokens->size;
+	start_end[1] = *input;
+	while (start_end[1] && *(start_end[1]))
 	{
 		ms_init_token(&token);
-		start = end;
-		while (*end && !ms_is_reserved(end, info))
-		{
-			if (*end == '"' || *end == '\'')
-			{
-				if (ms_skip_quoted(&token, &end, &start, input))
-					return (1);
-			}
-			ms_add_flags_char(&token, *end);
-			end++;
-		}
-		if (ms_add_token(start, end, tokens, &token))
-		{
-			free(*input);
-			return (ERR_MALLOC);
-		}
-		end = ms_handle_symbol(end, tokens, &token, info);
-		if (!end)
-		{
-			free(*input);
-			return (ERR_MALLOC);
-		}
+		if (ms_until_reserved(input, start_end, &token, info))
+			return (1);
+		if (ms_add_token(start_end[0], start_end[1], tokens, &token))
+			return (ms_tokeniser_error(*input, 0));
+		start_end[1] = ms_handle_symbol(start_end[1], tokens, &token, info);
+		if (!start_end[1])
+			return (ms_tokeniser_error(*input, 0));
 	}
-	ms_token_expansion(tokens);
+	ms_token_expansion(tokens, start_size);
 	if (ft_darray_append(tokens, ms_init_token(&token)))
-	{
-		free(*input);
-		ms_perror("tokeniser", NULL, NULL, errno);
-		return (ERR_MALLOC);
-	}
+		return (ms_tokeniser_error(*input, 1));
 	return (0);
 }
