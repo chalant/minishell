@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:44:01 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/06 17:38:21 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/13 19:28:17 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,22 @@ int	ms_check_varname(char *var)
 		var++;
 	}
 	return (0);
+}
+
+// it's advised to pass the pointer of the starting '$'
+// returns pointer to right after the name
+char	*ms_end_of_name(const char *str)
+{
+	if (*str == '$')
+		str++;
+	if (*str && ft_strchr(SPECIAL_VAR, *str))
+		return ((char *) str + 1);
+	if ('0' <= *str && *str <= '9')
+		return ((char *) str + 1);
+	while (('a' <= *str && *str <= 'z') || ('A' <= *str && *str <= 'Z')
+		|| *str == '_' || ('0' <= *str && *str <= '9'))
+		str++;
+	return ((char *) str);
 }
 
 // 'var' is of type [name]=[value] or just [name]

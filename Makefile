@@ -6,7 +6,7 @@
 #    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/13 18:27:41 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/12/13 19:58:44 by bvercaem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,8 @@ SRC_FILES =	minishell_main.c \
 			minishell_echo.c \
 			minishell_wildcard.c \
 			minishell_expand_var.c \
+			minishell_malloc_getenv.c \
+			minishell_add_variable_token.c \
 			minishell_error.c \
 			minishell_tokens.c \
 			minishell_tokeniser_parser.c \
