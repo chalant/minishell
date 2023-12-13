@@ -6,62 +6,61 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/09 15:19:00 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/12 20:38:51 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	ms_cmp_and_swap(char **pa, char **pb)
+static void	ms_sort_env(char **envp, int size)
 {
+	int		i;
 	char	*temp;
 
-	if (ft_strncmp(*pa, *pb, ft_strlen(*pb)) <= 0)
-		return ;
-	temp = *pa;
-	*pa = *pb;
-	*pb = temp;
-}
-
-// prints env but in order of ascending ascii value
-// don't print $_
-static int	ms_env_alpha()
-{
-	extern char	**environ;
-	char		**envp;
-	int			i;
-	int			last;
-
-	last = 0;
-	while (environ[last])
-		last++;
-	envp = malloc(sizeof(char *) * (last + 1));
-	last = 0;
-	while (environ[last])
-	{
-		envp[last] = environ[last];
-		last++;
-	}
-	envp[last] = NULL;
-	while (last > 1)
+	while (size > 1)
 	{
 		i = 0;
-		while (i + 1 < last)
+		while (i + 1 < size)
 		{
-			ms_cmp_and_swap(&envp[i], &envp[i + 1]);
+			if (ft_strncmp(envp[i], envp[i + 1], ft_strlen(envp[i])) > 0)
+			{
+				temp = envp[i];
+				envp[i] = envp[i + 1];
+				envp[i + 1] = temp;
+			}
 			i++;
 		}
-		last--;
+		size--;
 	}
+}
+
+// prints env but in order of ascending ascii value (except $_)
+// error: 1, prints msg
+static int	ms_env_alpha(char **env)
+{
+	char		**temp_envp;
+	int			i;
+
 	i = 0;
-	while (envp[i])
+	while (env[i])
+		i++;
+	temp_envp = malloc(sizeof(char *) * (i + 1));
+	if (!temp_envp)
+		return (ms_perror("export", NULL, NULL, errno));
+	i = -1;
+	while (env[++i])
+		temp_envp[i] = env[i];
+	temp_envp[i] = NULL;
+	ms_sort_env(temp_envp, i);
+	i = 0;
+	while (temp_envp[i])
 	{
-		if (ft_strncmp(envp[i], "_=", 2))
-			printf("%s\n", envp[i]);
+		if (ft_strncmp(temp_envp[i], "_=", 2))
+			printf("%s\n", temp_envp[i]);
 // this printf is leaking 'still reachable' mem?
 		i++;
 	}
-	free(envp);
+	free(temp_envp);
 	return (0);
 }
 
@@ -73,10 +72,11 @@ static int	ms_add_var_env(t_ms_context *data, char *var)
 
 	if (!data->env_excess)
 	{
-		data->env = ms_realloc(data->env, 3);
+		data->env = ms_realloc(data->env, 5);
 		if (!data->env)
 			return (ERR_MALLOC);
-		data->env_excess += 3;
+// exit here? it's pretty bad...
+		data->env_excess = 5;
 	}
 	envp = data->env;
 	i = 0;
@@ -89,7 +89,7 @@ static int	ms_add_var_env(t_ms_context *data, char *var)
 }
 
 // 'var' is an allocated string of valid format [name]=[value]
-// on error, 'var' is free'd
+// error: free(var), print msg
 int	ms_export_var(t_ms_context *data, char *var)
 {
 	extern char	**environ;
@@ -106,12 +106,12 @@ int	ms_export_var(t_ms_context *data, char *var)
 		free(var);
 		return (ERR_MALLOC);
 	}
-// malloc failed
 	environ = data->env;
 	return (0);
 }
 
-// no arguments: prints env in alphabetical order (all uppercase before any lowercase)
+// no args: prints env in ascii order
+// error: 1, prints msg
 int	ms_export(t_ms_context *data, char **arg)
 {
 	char		*var;
@@ -121,7 +121,7 @@ int	ms_export(t_ms_context *data, char **arg)
 	if (arg)
 		arg++;
 	if (!arg || !*arg)
-		return (ms_env_alpha());
+		return (ms_env_alpha(data->env));
 	ret = 0;
 	i = 0;
 	while (arg[i])
@@ -130,11 +130,9 @@ int	ms_export(t_ms_context *data, char **arg)
 		{
 			var = ft_strdup(arg[i]);
 			if (!var)
-				return (ERR_MALLOC);
-// malloc failed
+				return (ms_perror("export", arg[i], NULL, errno));
 			if (ms_export_var(data, var))
-				return (ERR_MALLOC);
-// malloc failed
+				return (1);
 		}
 		else
 			ret = ms_perror("export", arg[i], "not a valid identifier", 0);

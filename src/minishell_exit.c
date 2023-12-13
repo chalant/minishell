@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_exit.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 15:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/07 12:29:45 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/12 19:58:32 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,23 @@ void	ms_flush_exit(t_ms_context *data, int exit_value)
 	exit(exit_value);
 }
 
-// doesn't clear arg if error occured
+static void	ms_exit_exit(t_ms_context *data, char **arg, int e)
+{
+	if (arg)
+		free(arg);
+	free(data->line);
+	ms_flush_exit(data, e);
+}
+
+// doesn't free arg if error occured and didn't exit
 // any tokens should be cleared before this command
 int	ms_exit(t_ms_context *data, char **arg)
 {
 	int	i;
 
+// immediately print exit???
 	if (!arg || !arg[1])
-	{
-		if (arg)
-			free(arg);
-		free(data->line);
-		ms_flush_exit(data, data->status);
-	}
+		ms_exit_exit(data, arg, data->status);
 	i = 0;
 	if (arg[1][i] == '-' || arg[1][i] == '+')
 		i++;
@@ -44,17 +48,13 @@ int	ms_exit(t_ms_context *data, char **arg)
 		if ('0' > arg[1][i] || arg[1][i] > '9')
 		{
 			ms_perror("exit", arg[1], "numeric argument required", 0);
-			free(arg);
-			free(data->line);
-			ms_flush_exit(data, 2);
+			ms_exit_exit(data, arg, 2);
 		}
 		i++;
 	}
 	if (arg[2])
 		return (ms_perror("exit", NULL, "too many arguments", 0));
 	i = (char) ft_atoi(arg[1]);
-	free(arg);
-	free(data->line);
-	ms_flush_exit(data, i);
+	ms_exit_exit(data, arg, i);
 	return (1);
 }

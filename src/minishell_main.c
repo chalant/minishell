@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/11 18:54:02 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/12 18:20:30 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,18 +44,16 @@ static int	ms_add_herstory(char *line)
 }
 
 // should free 'line'
-static int	ms_process_line(t_ms_context *data, char *line)
+static int	ms_process_line(t_ms_context *data, char *line, t_token_info *info)
 {
-	t_token_info	info;
-	int				recogniser_status;
+	int	recogniser_status;
 
 	if (g_global_status)
 	{
 		data->status = g_global_status;
 		g_global_status = 0;
 	}
-	if (ms_tokeniser(&line, data->parse_data.tokens, ms_token_info(&info,
-				RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP)))
+	if (ms_tokeniser(&line, data->parse_data.tokens, info))
 	{
 		ft_darray_delete(data->parse_data.tokens, ms_clear_token);
 		return (1);
@@ -138,6 +136,7 @@ static int	ms_init_parse(t_ms_context *data)
 int	main(void)
 {
 	t_ms_context	data;
+	t_token_info	info;
 
 	g_global_status = 0;
 	data.env_excess = 0;
@@ -148,10 +147,11 @@ int	main(void)
 	data.status = 0;
 // todo: error management
 	ms_init_parse(&data);
+	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
 	data.line = readline(MS_PROMPT_MSG);
 	while (data.line)
 	{
-		if (ms_process_line(&data, data.line))
+		if (ms_process_line(&data, data.line, &info))
 			ms_flush_exit(&data, 1);
 		reset_parse_data(&data.parse_data, &data.tree);
 		data.line = readline(MS_PROMPT_MSG);

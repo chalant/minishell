@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_cd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 17:20:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 14:13:56 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/12 19:19:42 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,30 +23,25 @@ static int	ms_update_pwd_env(t_ms_context *data)
 	{
 		oldpwd = ft_strjoin("OLD", pwd);
 		if (!oldpwd)
-			return (ERR_MALLOC);
-// malloc failed
+			return (ms_perror("cd", NULL, NULL, errno));
 		if (ms_export_var(data, oldpwd))
-			return (ERR_MALLOC);
-// malloc failed (i think this is the only fail from export_var)
+			return (1);
 	}
 	else
 		ms_unset_var(data, "OLDPWD");
 	oldpwd = getcwd(NULL, 0);
 	if (!oldpwd)
 		return (ms_perror("cd", NULL, NULL, errno));
-// error from getcwd
 	pwd = ft_strjoin("PWD=", oldpwd);
 	free(oldpwd);
 	if (!pwd)
-		return (ERR_MALLOC);
-// error from ft_strjoin
+		return (ms_perror("cd", NULL, NULL, errno));
 	if (ms_export_var(data, pwd))
-		return (ERR_MALLOC);
-// malloc failed (i think this is the only fail from export_var)
+		return (1);
 	return (0);
 }
 
-// seems to always return 1 on error
+// error: 1, prints msg
 int	ms_cd(t_ms_context *data, char **arg, int fd)
 {
 	char	*path;
@@ -71,9 +66,7 @@ int	ms_cd(t_ms_context *data, char **arg, int fd)
 	if (arg[1] && !ft_strncmp(arg[1], "-", 2))
 		if (ms_pwd(fd))
 			return (1);
-// error!? (can only be malloc i think? kinda? except for getcwd maybe)
 	if (ms_update_pwd_env(data))
 		return (1);
-// error!? (can only be malloc i think? kinda? except for getcwd maybe)
 	return (0);
 }
