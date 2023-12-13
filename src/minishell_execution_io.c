@@ -56,6 +56,7 @@ int redirect_io(t_command *command)
 {
 	int	status;
 
+	status = 0;
 	if (command->input > 0)
 		status = redirect_in(command);
 	if (command->output > 0)

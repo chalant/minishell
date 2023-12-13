@@ -101,7 +101,7 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	//todo: if the left command fails, close and return -1;
 	if (command->left && command->left->redirections)
 		ms_heredoc(command->left->redirections);
-	if (command->right->redirections)
+	if (command->right && command->right->redirections)
 		ms_heredoc(command->right->redirections);
 	if (execute_command(command, command->left, in_pipe, out_pipe) < 0)
 		return (-1);
@@ -112,11 +112,11 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 		close(out_pipe[1]);
 		out_pipe[1] = -1;
 	}
-	if (!command->right->output)
+	if (command->right && !command->right->output)
 		command->right->output = command->output;
 	//todo: if there is no left command, the right command should'nt redirect in.
-	if (!command->left)
-		command->right->command_flags &= ~(MS_REDIR);
+	// if (!command->left)
+	// 	command->right->command_flags &= ~(MS_REDIR);
 	return (execute_command(command, command->right, in_pipe, out_pipe));
 }
 
