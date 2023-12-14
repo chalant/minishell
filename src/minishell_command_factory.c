@@ -15,6 +15,7 @@
 int	init_command(t_command *command)
 {
 	command->command_flags = 0;
+	command->pid = -1;
 	command->input = 0;
 	command->output = 0;
 	command->left = NULL;

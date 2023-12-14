@@ -12,13 +12,13 @@
 
 #include "minishell.h"
 
+/*creates an operator and checks if there is a redirection on top of the stack*/
 int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 {
 	t_command	command;
 	t_command	*cmd;
 
 	cmd = ft_stack_peek(stack);
-	//todo:handle errors
 	if (flatten_tree(ft_darray_get(node->children, 2), stack) < 0)
 		return (-1);
 	init_command(&command);
@@ -29,6 +29,7 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 	if (cmd && cmd->command_flags & MS_REDIR)
 	{
 		cmd->command_flags &= ~(MS_REDIR);
+		command.command_flags |= MS_REDIR;
 		command.redirections = cmd->redirections;
 		cmd->redirections = NULL;
 	}

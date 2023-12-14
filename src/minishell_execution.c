@@ -21,22 +21,24 @@ void	copy_pipe(int *src_pipe, int *dest_pipe)
 
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
-int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
+int	
+execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
+	//todo: check if command exists
 	//todo: handle errors
 	if (command->redirections && command->redirections->size)
 	{
 		create_files(command, command->redirections);
 	}
-	if (!command->left->input)
+	if (command->left && !command->left->input)
 		command->left->input = command->input;
-	if (!command->left->output)
+	if (command->left && !command->left->output)
 		command->left->output = command->output;
-	if (!command->right->input)
+	if (command->right && !command->right->input)
 		command->right->input = command->input;
-	if (!command->right->output)
+	if (command->right && !command->right->output)
 		command->right->output = command->output;
 	if (!parent || !(command->command_flags & MS_AND))
 	{
@@ -114,10 +116,24 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	}
 	if (command->right && !command->right->output)
 		command->right->output = command->output;
+	
 	//todo: if there is no left command, the right command should'nt redirect in.
-	// if (!command->left)
-	// 	command->right->command_flags &= ~(MS_REDIR);
-	return (execute_command(command, command->right, in_pipe, out_pipe));
+	// if (!command->left || command->left->command_flags & MS_REDIR)
+	// 	command->right->redirections = NULL;
+	//todo: if the parent is not a pipe, the right command should pipe to .
+	if ((parent && !(parent->command_flags & MS_PIPE)) || (command->right && command->right->command_flags & MS_LAST))
+	{
+		if (out_pipe[1] != -1)
+				close(out_pipe[1]);
+			out_pipe[1] = -1;
+	}
+	execute_command(command, command->right, in_pipe, out_pipe);
+	if ((parent && !(parent->command_flags & MS_PIPE)) || (command->right && command->right->command_flags & MS_LAST))
+	{
+		fprintf(stderr, "WAIT!\n");
+		return (get_exit_status(command->pid));
+	}
+	return (0);
 }
 
 

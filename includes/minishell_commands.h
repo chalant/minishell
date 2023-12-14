@@ -60,6 +60,7 @@ typedef struct	s_command
 {
 	char				*command_name;
 	int					command_flags;
+	int					pid;
 	int					input;
 	int					output;
 	t_darray			*redirections;

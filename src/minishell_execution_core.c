@@ -158,17 +158,12 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 	//todo: handle errors
 	if (parent && parent->command_flags & MS_PIPE)
 	{
-		if (command->command_flags & MS_LAST)
-		{
-			if (out_pipe[1] != -1)
-				close(out_pipe[1]);
-			out_pipe[1] = -1;
-		}
 		pid = execute_process(parent, command, in_pipe, out_pipe);
 		if (pid < 0)
 			return (-1);
-		if (command->command_flags & MS_LAST)
-			return (get_exit_status(pid));
+		// if (command->command_flags & MS_LAST)
+		// 	return (get_exit_status(pid));
+		parent->pid = pid;
 		return (0);
 	}
 	if (command->redirections && command->redirections->size)
