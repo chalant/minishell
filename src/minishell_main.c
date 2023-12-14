@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/12 18:20:30 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/14 14:27:25 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ int	main(void)
 	data.line = readline(MS_PROMPT_MSG);
 	while (data.line)
 	{
-		if (ms_process_line(&data, data.line, &info))
+		if (ms_process_line(&data, data.line, &info) || data.status == ERR_NOMEM)
 			ms_flush_exit(&data, 1);
 		reset_parse_data(&data.parse_data, &data.tree);
 		data.line = readline(MS_PROMPT_MSG);

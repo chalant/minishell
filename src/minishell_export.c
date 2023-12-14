@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/12 20:38:51 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/14 15:22:23 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void	ms_sort_env(char **envp, int size)
 }
 
 // prints env but in order of ascending ascii value (except $_)
-// error: 1, prints msg
+// error: nomem, prints msg
 static int	ms_env_alpha(char **env)
 {
 	char		**temp_envp;
@@ -46,7 +46,7 @@ static int	ms_env_alpha(char **env)
 		i++;
 	temp_envp = malloc(sizeof(char *) * (i + 1));
 	if (!temp_envp)
-		return (ms_perror("export", NULL, NULL, errno));
+		return (ms_perror("export", NULL, NULL, errno) * ERR_NOMEM);
 	i = -1;
 	while (env[++i])
 		temp_envp[i] = env[i];
@@ -64,7 +64,7 @@ static int	ms_env_alpha(char **env)
 	return (0);
 }
 
-// returns ERR_MALLOC if malloc in ms_realloc failed
+// error: ERR_MALLOC
 static int	ms_add_var_env(t_ms_context *data, char *var)
 {
 	char		**envp;
@@ -75,7 +75,6 @@ static int	ms_add_var_env(t_ms_context *data, char *var)
 		data->env = ms_realloc(data->env, 5);
 		if (!data->env)
 			return (ERR_MALLOC);
-// exit here? it's pretty bad...
 		data->env_excess = 5;
 	}
 	envp = data->env;
@@ -89,7 +88,7 @@ static int	ms_add_var_env(t_ms_context *data, char *var)
 }
 
 // 'var' is an allocated string of valid format [name]=[value]
-// error: free(var), print msg
+// error: ERR_MALLOC, free(var)
 int	ms_export_var(t_ms_context *data, char *var)
 {
 	extern char	**environ;
@@ -111,31 +110,29 @@ int	ms_export_var(t_ms_context *data, char *var)
 }
 
 // no args: prints env in ascii order
-// error: 1, prints msg
+// error: 1 or nomem, prints msg
 int	ms_export(t_ms_context *data, char **arg)
 {
 	char		*var;
 	int			i;
 	int			ret;
 
-	if (arg)
-		arg++;
-	if (!arg || !*arg)
+	if (!arg || !arg[1])
 		return (ms_env_alpha(data->env));
 	ret = 0;
-	i = 0;
+	i = 1;
 	while (arg[i])
 	{
 		if (!ms_check_varname(arg[i]))
 		{
 			var = ft_strdup(arg[i]);
 			if (!var)
-				return (ms_perror("export", arg[i], NULL, errno));
+				return (ms_perror(arg[0], arg[i], NULL, errno) * ERR_NOMEM);
 			if (ms_export_var(data, var))
-				return (1);
+				return (ms_perror(arg[0], NULL, NULL, errno) * ERR_NOMEM);
 		}
 		else
-			ret = ms_perror("export", arg[i], "not a valid identifier", 0);
+			ret = ms_perror(arg[0], arg[i], "not a valid identifier", 0);
 		i++;
 	}
 	return (ret);

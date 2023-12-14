@@ -3,24 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_echo.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:10:33 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/06 16:40:44 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/14 15:25:52 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// no errors
 int	ms_echo(char **arg, int fd)
 {
 	int		flag_n;
 	int		i;
 
-	i = 0;
 	flag_n = 0;
-	if (arg)
-		arg++;
+	i = 1;
 	if (arg && arg[i] && !ft_strncmp(arg[i], "-n", 3))
 	{
 		i++;
