@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:17:05 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/13 15:31:32 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/14 17:07:03 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,11 @@ pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int
 
 	pid = fork();
 	if (pid < 0)
+	{
+		if (parent)
+			parent->error = errno;
 		return (ms_perror("fork", NULL, NULL, errno) - 2);
+	}
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
@@ -158,6 +162,12 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 	//todo: handle errors
 	if (parent && parent->command_flags & MS_PIPE)
 	{
+		if (command->command_flags & MS_LAST)
+        {
+            if (out_pipe[1] != -1)
+                close(out_pipe[1]);
+            out_pipe[1] = -1;
+        }
 		pid = execute_process(parent, command, in_pipe, out_pipe);
 		if (pid < 0)
 			return (-1);

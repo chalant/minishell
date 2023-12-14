@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/13 15:14:11 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/14 14:53:26 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ typedef struct	s_command
 	char				*command_name;
 	int					command_flags;
 	int					pid;
+	int					error;
 	int					input;
 	int					output;
 	t_darray			*redirections;
