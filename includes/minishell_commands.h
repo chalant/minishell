@@ -53,6 +53,7 @@ typedef struct	s_redirection
 	int			redirection_flags;
 	int			file_flags;
 	char		*file_path;
+	char		*tmp_file;
 	mode_t		mode;
 }				t_redirection;
 
@@ -71,7 +72,7 @@ typedef struct	s_command
 	t_ms_context		*context;
 }				t_command;
 
-int		ms_heredoc(t_darray *redirections);
+int		ms_heredoc(t_darray *redirections, int id);
 
 int		init_command(t_command *command);
 int		create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *));

@@ -19,6 +19,15 @@ void	copy_pipe(int *src_pipe, int *dest_pipe)
 	dest_pipe[1] = src_pipe[1];
 }
 
+int	launch_heredocs(t_command *command, int id)
+{
+	if (command->redirections)
+		return (ms_heredoc(command->redirections, id));
+	launch_heredocs(command->left, 2 * id + 1);
+	launch_heredocs(command->right, 2 * id);
+	return (1);
+}
+
 /* runs the command as a subprocess, if the command is builtin, we exit
 with the returned status, if is not, we exit with an error code. */
 int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
@@ -99,11 +108,12 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	if (command->left && !command->left->input)
 		command->left->input = command->input;
 	//todo: if the left command fails, close and return -1;
-	if (command->left && command->left->redirections)
-		ms_heredoc(command->left->redirections);
-	if (command->right && command->right->redirections)
-		ms_heredoc(command->right->redirections);
+	//todo: heredoc should recursively go down the tree and call the heredocs
+	// if (command->left && command->left->redirections)
+	// 	ms_heredoc(command->left->redirections);
 	execute_command(command, command->left, in_pipe, out_pipe);
+	// if (command->right && command->right->redirections)
+	// 	ms_heredoc(command->right->redirections);
 	//todo: crash if it is not EAGAIN (return -1)
 	if (command && command->error == EAGAIN && wait(NULL) != -1)
 		execute_command(command, command->left, in_pipe, out_pipe);
@@ -207,11 +217,12 @@ int	minishell_execute(t_command *command)
 	int	status;
 
 	// printf("Commands: \n");
-	//print_commands(command, 0);
+	print_commands(command, 0);
 	out_pipe[0] = -1;
 	out_pipe[1] = -1;
 	in_pipe[0] = -1;
 	in_pipe[1] = -1;
+	launch_heredocs(command, 0);
 	status = execute_command(NULL, command, in_pipe, out_pipe);
 	//todo: check if pipes are opened first.
 	close(in_pipe[0]);

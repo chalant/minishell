@@ -49,3 +49,5 @@ TODO:
 
 	potential issue with the global status, since when executing pipes we don't get the intermediate status, just the very last one.
 
+	watch out for heredocs with && or || operators, we need a separate file for each one.
+
