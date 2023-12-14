@@ -118,6 +118,7 @@ int	ms_heredoc_prompt(t_redirection *redirection, int id)
 	path = ft_strjoin(MS_HEREDOC_PATH, ft_itoa(id));
 	if (!path)
 		return (-1);
+	fprintf(stderr, "heredoc path: %s\n", path);
 	fd = open(path,
 			O_TRUNC | O_CREAT | O_RDWR, redirection->mode);
 	if (fd < 0)

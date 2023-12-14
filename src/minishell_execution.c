@@ -19,12 +19,15 @@ void	copy_pipe(int *src_pipe, int *dest_pipe)
 	dest_pipe[1] = src_pipe[1];
 }
 
-int	launch_heredocs(t_command *command, int id)
+int	launch_heredocs(t_command *command, int *id)
 {
 	if (command->redirections)
-		return (ms_heredoc(command->redirections, id));
-	launch_heredocs(command->left, 2 * id + 1);
-	launch_heredocs(command->right, 2 * id);
+	{
+		*id += 1;
+		return (ms_heredoc(command->redirections, *id));
+	}
+	launch_heredocs(command->left, id);
+	launch_heredocs(command->right, id);
 	return (1);
 }
 
@@ -215,14 +218,16 @@ int	minishell_execute(t_command *command)
 	int	in_pipe[2];
 	int	out_pipe[2];
 	int	status;
+	int	hd_id;
 
+	hd_id = 0;
 	// printf("Commands: \n");
 	print_commands(command, 0);
 	out_pipe[0] = -1;
 	out_pipe[1] = -1;
 	in_pipe[0] = -1;
 	in_pipe[1] = -1;
-	launch_heredocs(command, 0);
+	launch_heredocs(command, &hd_id);
 	status = execute_command(NULL, command, in_pipe, out_pipe);
 	//todo: check if pipes are opened first.
 	close(in_pipe[0]);
