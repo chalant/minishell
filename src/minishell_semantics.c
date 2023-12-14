@@ -12,22 +12,31 @@
 
 #include "minishell.h"
 
+/*creates an operator and checks if there is a redirection on top of the stack*/
 int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 {
 	t_command	command;
+	t_command	*cmd;
 
-	//todo:handle errors
-	if (flatten_tree((t_parse_tree *)ft_darray_get(node->children, 2), stack) < 0)
+	cmd = ft_stack_peek(stack);
+	if (flatten_tree(ft_darray_get(node->children, 2), stack) < 0)
 		return (-1);
 	init_command(&command);
 	command.command_name = ft_strdup(name);
 	if (!command.command_name)
 		return (-1);
 	command.command_flags = MS_OPERATOR | type;
+	if (cmd && cmd->command_flags & MS_REDIR)
+	{
+		cmd->command_flags &= ~(MS_REDIR);
+		command.command_flags |= MS_REDIR;
+		command.redirections = cmd->redirections;
+		cmd->redirections = NULL;
+	}
 	return (ft_stack_push(stack, &command));
 }
 
-//todo: this only retrieves stuff as arguments for the subshell
+//todo: don't need this function anymore.
 int	handle_parenthesis(t_parse_tree *node, t_command *command)
 {
 	if (!command || !command->command_name)
@@ -91,12 +100,13 @@ int	handle_redirection_list(t_parse_tree *node, t_stack *commands)
 	t_command	new;
 
 	command = ft_stack_peek(commands);
-	if (!command || !command->command_name)
+	if (!command)
 	{
 		init_command(&new);
 		if (create_redirections(&new, node) < 0)
 			return (-1);
 		new.command_flags |= MS_REDIR;
+		fprintf(stderr, "redirections pushed! %d\n", new.redirections->size);
 		ft_stack_push(commands, &new);
 		return (1);
 	}
@@ -105,7 +115,8 @@ int	handle_redirection_list(t_parse_tree *node, t_stack *commands)
 		command->redirections = malloc(sizeof(t_darray));
 		if (!command->redirections)
 			return (-1);
-		if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
+		if (ft_darray_init(command->redirections,
+				sizeof(t_redirection), 10) < 0)
 			return (-1);
 	}
 	return (set_redirections(command, node));

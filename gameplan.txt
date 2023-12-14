@@ -38,5 +38,16 @@ TODO:
 
 	make the operators create heredocs for left and right elements. (if there are redirections)
 
-	the operator should disable redirection for the right command if there is no left command. 
+	the operator should disable redirection for the right command if there is no left command.
+
+	create files for commands like "> a | > b | > c | > d" seems like it does not create a and b; -> FIXED!
+
+	this (> a > b) > c does not create files -> fix it! -> DONE !
+
+	issue with non-blocking execution, process creation -> pipes only wait for the very last process...
+	so we never get the good execution status...
+
+	potential issue with the global status, since when executing pipes we don't get the intermediate status, just the very last one.
+
+	watch out for heredocs with && or || operators, we need a separate file for each one.
 

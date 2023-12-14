@@ -52,6 +52,7 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	redirection->file_flags = 0;
 	redirection->file_path = NULL;
 	redirection->mode = 0664;
+	redirection->tmp_file = NULL;
 	redir = ft_darray_get(tree->children, 0);
 	set_redirection_flags(redirection, redir->rule_name);
 	leaf = get_leaf(ft_darray_get(tree->children, 1));
@@ -65,8 +66,6 @@ int	set_redirections(t_command *command, t_parse_tree *tree)
 {
 	t_parse_tree	*node;
 	t_redirection	redirection;
-
-	printf("set_redirections\n");
 
 	set_redirection(&redirection, ft_darray_get(tree->children, 0));
 	if (ft_darray_append(command->redirections, &redirection) < 0)
@@ -110,13 +109,20 @@ static void	ms_heredoc_write(int fd, char *line, int delim_quoted)
 	write(fd, "\n", 1);
 }
 
-int	ms_heredoc_prompt(t_redirection *redirection)
+int	ms_heredoc_prompt(t_redirection *redirection, int id)
 {
 	char	*line;
 	int		fd;
+	char	*path;
 
-	fd = open(MS_HEREDOC_PATH,
+	path = ft_strjoin(MS_HEREDOC_PATH, ft_itoa(id));
+	if (!path)
+		return (-1);
+	fd = open(path,
 			O_TRUNC | O_CREAT | O_RDWR, redirection->mode);
+	if (fd < 0)
+		return (ms_perror(path, NULL, NULL, errno) - 2);
+	redirection->tmp_file = path;
 // check fd
 	line = readline("> ");
 	while (line && strcmp(line, redirection->file_path) != 0)
@@ -134,7 +140,8 @@ int	ms_heredoc_prompt(t_redirection *redirection)
 	return (1);
 }
 
-int	ms_heredoc(t_darray *redirections)
+//todo: recursively go down the command tree.
+int	ms_heredoc(t_darray *redirections, int id)
 {
 	int				i;
 	t_redirection	*redirection;
@@ -144,7 +151,7 @@ int	ms_heredoc(t_darray *redirections)
 	{
 		redirection = ft_darray_get(redirections, i);
 		if (redirection->redirection_flags & MS_HEREDOC)
-			ms_heredoc_prompt(redirection);
+			ms_heredoc_prompt(redirection, id);
 	}
 	return (1);
 }
@@ -165,7 +172,10 @@ int	create_files(t_command *command, t_darray *redirections)
 		if (!(redirection->redirection_flags & MS_HEREDOC))
 			fd = open(redirection->file_path, redirection->file_flags, redirection->mode);
 		else
-			fd = open(MS_HEREDOC_PATH, redirection->file_flags, redirection->mode);
+		{
+			fd = open(redirection->tmp_file, redirection->file_flags, redirection->mode);
+			free(redirection->tmp_file);
+		}
 		if (redirection->redirection_flags & MS_READ)
 		{
 			if (command->input > 0)
