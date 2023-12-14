@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:32:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/12 15:54:40 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/14 14:47:34 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,31 +60,29 @@ int	ms_envcpy(t_ms_context *data)
 
 // for ENVIRON: call with data->env and assign environ after
 // mallocs size of 'ptr' + 'add', free's 'ptr'
-// error: returns NULL, clears 'ptr', prints msg
+// error: NULL, malloc fail, clears 'ptr'
 char	**ms_realloc(char **ptr, int add)
 {
 	size_t	i;
 	char	**new;
 
-	if (!ptr)
-		return (NULL);
 	i = 0;
-	while (ptr[i])
+	while (ptr && ptr[i])
 		i++;
 	new = malloc(sizeof(char *) * (i + add + 1));
 	if (!new)
 	{
-		ms_perror("malloc", NULL, NULL, errno);
 		ft_clear_ds(ptr);
 		return (NULL);
 	}
 	i = 0;
-	while (ptr[i])
+	while (ptr && ptr[i])
 	{
 		new[i] = ptr[i];
 		i++;
 	}
 	new[i] = NULL;
-	free(ptr);
+	if (ptr)
+		free(ptr);
 	return (new);
 }

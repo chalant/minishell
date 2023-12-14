@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/04 16:47:21 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/14 16:39:13 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,22 +33,6 @@ static int	ms_prep_new(struct dirent *entryp, t_token *new)
 	if (!new->mask_exp)
 		return (ERR_MALLOC);
 	return (0);
-}
-
-// returns 1
-static int	ms_finish_mask(char *name, char *mask, char fill)
-{
-	int	i;
-
-	if (!mask)
-		return (1);
-	i = 0;
-	while (name[i])
-	{
-		mask[i] = fill;
-		i++;
-	}
-	return (1);
 }
 
 // only looks for quotes
@@ -139,6 +123,30 @@ static int	ms_cmp_until_wc(char *name, char *card, int *qts, t_token *token)
 	return (-1);
 }
 
+static int	ms_check_and_fill(char *card, t_token *new, char *name, char *mask)
+{
+	while (*card == '*' || ((*card == '"' || *card == '\'') && card[0] == card[1]))
+	{
+		if (*card != '*')
+			card++;
+		card++;
+	}
+	if (*card)
+	{
+		ms_clear_token(new);
+		return (0);
+	}
+	if (!mask)
+		return (1);
+	while (*name)
+	{
+		*mask = '1';
+		name++;
+		mask++;
+	}
+	return (1);
+}
+
 // returns 1 if it's a match
 static int	ms_wildcard_cmp(struct dirent *entryp, t_token *token, t_token *new)
 {
@@ -179,18 +187,7 @@ static int	ms_wildcard_cmp(struct dirent *entryp, t_token *token, t_token *new)
 			return (1);
 		card += i + qts + 1;
 	}
-	while (*card == '*' || ((*card == '"' || *card == '\'') && card[0] == card[1]))
-	{
-		if (*card != '*')
-			card++;
-		card++;
-	}
-	if (*card)
-	{
-		ms_clear_token(new);
-		return (0);
-	}
-	return (ms_finish_mask(name, mask, '1'));
+	return (ms_check_and_fill(card, new, name, mask));
 }
 
 static int	ms_wildcard_empty(t_darray *tokens, t_token *token)

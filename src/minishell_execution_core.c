@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution_core.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:17:05 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/14 17:07:03 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/14 21:08:20 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	execute_builtin(t_command *command, int in_fd, int out_fd)
 	else if (strcmp(command->command_name, "cd") == 0)
 		status = ms_cd(command->context, arguments, out_fd);
 	else if (strcmp(command->command_name, "pwd") == 0)
-		status = ms_pwd(out_fd);
+		status = ms_pwd(arguments, out_fd);
 	else if (strcmp(command->command_name, "export") == 0)
 		status = ms_export(command->context, arguments);
 	else if (strcmp(command->command_name, "env") == 0)

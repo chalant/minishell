@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 16:06:11 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/14 14:32:40 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int		ms_exit(t_ms_context *data, char **arg);
 void	ms_flush_exit(t_ms_context *data, int exit_value);
 int		ms_echo(char **arg, int fd);
 int		ms_cd(t_ms_context *data, char **arg, int fd);
-int		ms_pwd(int);
+int		ms_pwd(char **arg, int fd);
 int		ms_env(void);
 int		ms_export(t_ms_context *data, char **arg);
 int		ms_export_var(t_ms_context *data, char *var);
