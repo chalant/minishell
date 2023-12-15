@@ -39,7 +39,7 @@ run_test_case() {
 
 	echo "----------------------------------------------------------"
     echo "\n\e[33mRunning test case:\e[0m \"$test_command\""
-	your_output=$(echo "$test_command" | ./minishell | tail -n +2 | head -n -1)
+	your_output=$(echo "$test_command" | ./minishell | awk 'NR > 1 { lines[NR-1] = $0 } END { for(i=1;i<NR-1;i++) print lines[i] }')
 	your_status=$(echo $?)
     bash_output=$(echo "$test_command" | bash)
 	bash_status=$(echo $?)
