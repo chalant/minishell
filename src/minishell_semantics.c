@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/12 17:21:35 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/15 14:53:37 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,6 @@ int	handle_redirection_list(t_parse_tree *node, t_stack *commands)
 		if (create_redirections(&new, node) < 0)
 			return (-1);
 		new.command_flags |= MS_REDIR;
-		fprintf(stderr, "redirections pushed! %d\n", new.redirections->size);
 		ft_stack_push(commands, &new);
 		return (1);
 	}
@@ -146,16 +145,6 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 	command = (t_command *)ft_stack_pop(&commands);
 	if (!command)
 		return (NULL);
-	if (!command->command_name)
-	{
-		//todo: file creation might fail, so we would need a status...
-		if (command->command_flags & MS_REDIR)
-		{
-			printf("creating files\n");
-			create_files(command, command->redirections);
-		}
-		return (NULL);
-	}
 	//todo: could push back the command on top...
 	command->command_flags |= MS_LAST;
 	command->command_flags |= MS_FIRST;
