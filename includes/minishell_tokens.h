@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 19:58:01 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/15 20:27:21 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,13 @@ typedef struct s_token_info
 
 typedef struct dirent	t_dirent;
 
+typedef struct s_wildcard_data
+{
+	char	*card;
+	char	*name;
+	char	*mask;
+}			t_wildcard_data;
+
 t_token_info	*ms_token_info(t_token_info *ti, const char *res_single,
 					const char *res_double, const char *res_skip);
 int			ms_tokeniser(char **input, t_darray *tokens,
@@ -67,6 +74,11 @@ int			ms_join_mask(t_token *token, int add_len, char fill);
 char		*ms_end_of_name(const char *str);
 char		**ms_malloc_getenv(char *str, int *qt, char *mask_f, t_token *new);
 int			ms_expand_wildcard(t_darray *tokens, t_token *token);
+int			ms_pre_check(t_token *token, t_dirent *entryp);
+int			ms_wildcard_cmp(t_dirent *entryp, t_token *token, t_token *new);
+int			ms_cmp_until_wc(t_wildcard_data *d, int *qts, t_token *token);
+int			ms_cpy_mask(int n, char **mask, char *card, t_token *token);
+int			ms_wildcard_add(t_darray *tokens, t_dirent *entryp, t_token *new);
 void		ms_token_expansion(t_darray *tokens, int start_index);
 void		ms_remove_quotes(char *str, char *mask_exp);
 void		ms_shift_strings(char *a, char *b, int i);

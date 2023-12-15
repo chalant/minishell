@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/14 14:27:25 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/15 20:33:14 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,27 @@
 
 int	g_global_status;
 
-// TOKEN PRINT IN PROGRESS
-// printf("tokens after tokenising:\ntokens: ");
-// int i = 0;
-// while (i < data->parse_data.tokens->size)
+// void	test_print_tokens(t_ms_context *data)
 // {
-// 	printf("%2i|", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->flags & IS_SPECIAL);
-// 	printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->string);
-// 	i++;
+// // TOKEN PRINT IN PROGRESS
+// 	printf("## tokens: ");
+// 	int i = 0;
+// 	while (i < data->parse_data.tokens->size)
+// 	{
+// 		// printf("%2i|", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->flags & IS_SPECIAL);
+// 		printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->string);
+// 		i++;
+// 	}
+// 	printf("\n## masks : ");
+// 	i = 0;
+// 	while (i < data->parse_data.tokens->size)
+// 	{
+// 		printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->mask_exp);
+// 		i++;
+// 	}
+// 	printf("\n");
+// // TOKEN PRINT IS OVER
 // }
-// printf("\nmasks : ");
-// i = 0;
-// while (i < data->parse_data.tokens->size)
-// {
-// 	printf("%9s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->mask_exp);
-// 	i++;
-// }
-// printf("\n\n");
-// TOKEN PRINT IS OVER
 
 
 // free's 'line'
