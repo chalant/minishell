@@ -337,7 +337,7 @@ int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 	if (build_parse_tree(tree, data) < 0)
 		return (-1);
 	//todo: remove this since it is for debugging.
-	print_parse_tree(tree, 0);
+	//print_parse_tree(tree, 0);
 	return (0);
 }
 

@@ -55,14 +55,13 @@ int	execute_builtin(t_command *command, int in_fd, int out_fd)
 //creates arguments in child process to avoid unnecessary copies.
 int	launch_execve(t_command *command)
 {
-	extern char	**environ;
 	char		**arguments;
 
 	arguments = make_arguments(command);
 	//todo: display error
 	if (!arguments)
 		exit(1);
-	execve(command->command_name, arguments, environ);
+	execve(command->command_name, arguments, command->context->env);
 	free(arguments);
 	ms_perror(command->command_name, NULL, NULL, errno);
 	exit(127);

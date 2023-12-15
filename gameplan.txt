@@ -49,3 +49,6 @@ TODO:
 
 	watch out for heredocs with && or || operators, we need a separate file for each one. -> FIXED
 
+use commands like these to compare with bash.
+
+diff echo "(cat -e | cat -e) < gameplan.txt" | ./minishell | tail -n +2 | head -n -1 echo "(cat -e | cat -e) < gameplan.txt" | bash

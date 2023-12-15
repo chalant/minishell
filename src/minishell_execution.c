@@ -21,18 +21,23 @@ void	copy_pipe(int *src_pipe, int *dest_pipe)
 
 int	launch_heredocs(t_command *command, int *id)
 {
-	if (command->redirections)
+	if (command->redirections && command->command_flags & MS_OPERAND)
 	{
 		*id += 1;
 		return (ms_heredoc(command->redirections, *id));
 	}
-	launch_heredocs(command->left, id);
-	launch_heredocs(command->right, id);
+	if (command->left)
+		launch_heredocs(command->left, id);
+	if (command->right)
+		launch_heredocs(command->right, id);
+	if (command->redirections && command->command_flags & MS_OPERATOR)
+	{
+		*id += 1;
+		ms_heredoc(command->redirections, *id);
+	}
 	return (1);
 }
 
-/* runs the command as a subprocess, if the command is builtin, we exit
-with the returned status, if is not, we exit with an error code. */
 int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
@@ -222,7 +227,7 @@ int	minishell_execute(t_command *command)
 
 	hd_id = 0;
 	// printf("Commands: \n");
-	print_commands(command, 0);
+	//print_commands(command, 0);
 	out_pipe[0] = -1;
 	out_pipe[1] = -1;
 	in_pipe[0] = -1;

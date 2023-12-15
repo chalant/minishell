@@ -35,9 +35,7 @@ static int	set_redirection_flags(t_redirection *redirection, char *rule_name)
 		redirection->file_flags = O_CREAT | O_APPEND | O_RDWR;
 		redirection->redirection_flags |= MS_WRITE;
 	}
-	else
-		return (-1);
-	return (0);
+	return (1);
 }
 
 int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
@@ -45,7 +43,6 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	t_parse_tree	*redir;
 	t_parse_tree	*leaf;
 
-	//todo: need to set the right file permissions.
 	if (!tree || !tree->rule_name)
 		return (0);
 	redirection->redirection_flags = 0;
@@ -118,7 +115,6 @@ int	ms_heredoc_prompt(t_redirection *redirection, int id)
 	path = ft_strjoin(MS_HEREDOC_PATH, ft_itoa(id));
 	if (!path)
 		return (-1);
-	fprintf(stderr, "heredoc path: %s\n", path);
 	fd = open(path,
 			O_TRUNC | O_CREAT | O_RDWR, redirection->mode);
 	if (fd < 0)
@@ -136,7 +132,11 @@ int	ms_heredoc_prompt(t_redirection *redirection, int id)
 	if (line)
 		free(line);
 	else
-		printf("shellshock: warning: here-document delimited by end-of-file (wanted '%s')\n", redirection->file_path);
+	{
+		ft_putstr_fd("shellshock: warning: here-document delimited by end-of-file (wanted '", STDERR_FILENO);
+		ft_putstr_fd(redirection->file_path, STDERR_FILENO);
+		write(STDERR_FILENO, "')\n", 3);
+	}
 	close(fd);
 	return (1);
 }
@@ -156,9 +156,7 @@ int	ms_heredoc(t_darray *redirections, int id)
 	}
 	return (1);
 }
-
-//todo: open same files only once.
-//todo: should 
+ 
 int	create_files(t_command *command, t_darray *redirections)
 {
 	int				i;
@@ -169,7 +167,6 @@ int	create_files(t_command *command, t_darray *redirections)
 	while (++i < redirections->size)
 	{
 		redirection = ft_darray_get(redirections, i);
-		//todo: handle errors
 		if (!(redirection->redirection_flags & MS_HEREDOC))
 			fd = open(redirection->file_path, redirection->file_flags, redirection->mode);
 		else
