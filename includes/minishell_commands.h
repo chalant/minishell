@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/14 14:53:26 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/15 19:03:47 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # define MS_FIRST 1 << 7
 # define MS_LAST 1 << 8
 # define MS_REDIR 1 << 9
+# define MS_IO_INJECTED 1 << 10
 
 // redirection flags:
 # define MS_HEREDOC 1 << 0
@@ -72,7 +73,7 @@ typedef struct	s_command
 	t_ms_context		*context;
 }				t_command;
 
-int		ms_heredoc(t_darray *redirections, int id);
+int		ms_heredoc(t_command *command, int id);
 
 int		init_command(t_command *command);
 int		create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *));

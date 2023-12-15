@@ -26,7 +26,7 @@ compare_status() {
         echo -e "\e[32mOK\e[0m"
         return 0  # Return 0 for success (OK)
     else
-        echo -e "\e[31mKO\e[0m"
+        echo -e "\e[31mKO\e[0m minishell: $your_status bash: $bash_status"
         return 1  # Return 1 for failure (KO)
     fi
 
@@ -43,7 +43,6 @@ run_test_case() {
 	your_status=$(echo $?)
     bash_output=$(echo "$test_command" | bash)
 	bash_status=$(echo $?)
-	echo
 	echo -n "\e[33mOutput: \e[0m"
     compare_output "$your_output" "$bash_output"
 	echo -n "\e[33mStatus: \e[0m"
@@ -51,28 +50,59 @@ run_test_case() {
 	echo
 }
 
-# Test case 1: Ensure that the expression on the left of && is displayed
+make
+
+# ensure that the expression on the left of && is displayed
 run_test_case "(cat -e | cat -e) < gameplan.txt && echo hello" 5
 
-# Test case 2: Execute heredocs in order and display errors properly
+# execute heredocs in order and display errors properly
 run_test_case "cat -e < a << how | cat -e < b << are | cat -e < c << you" 5
 
-# Test case 3: Check that each file output is distinct
+# ensure that each file output is distinct
 run_test_case "cat -e << how && cat -e << are && cat -e << you" 5
 
 # Test case 4: Display the value of the USER environment variable
 run_test_case "export USER=hello && echo \"'\$USER'\" && echo '\"\$USER\"'" 5
 
-# Test case 5: Ensure proper redirection with heredocs
+# ensure nsure proper redirection with heredocs
 run_test_case "((cat -e | cat -e) | (cat -e | cat -e )) << stop" "" 5
 
 # Test for valid output and redirectons with parenthesis.
-run_test_case "((cat -e | cat -e) | (cat -e | cat -e )) < tests.sh" "" 5
+run_test_case "((cat -e | cat -e) | (cat -e | cat -e )) < Makefile"  5
 
-# Test case 6: Execute heredocs in order with an intermediate heredoc
-run_test_case "((cat -e | cat -e) | (cat -e << yo | cat -e )) << stop" "" 5
+run_test_case "((cat -e && cat -e) | (cat -e && cat -e )) < Makefile" 5
+run_test_case "((cat -e && cat -e) && (cat -e && cat -e )) < Makefile" 5
+run_test_case "((cat -e && cat -e) || (cat -e || cat -e )) < Makefile" 5
 
-# Test case 7: Alternating redirections and arguments
+run_test_case "((cat -e && cat -e) < fail | (cat -e && cat -e )) < Makefile" 5
+run_test_case "((cat -e || cat -e) < fail | (cat -e && cat -e )) < Makefile" 5
+run_test_case "((cat -e && cat -e) < fail | (cat -e || cat -e )) < Makefile" 5
+run_test_case "((cat -e && cat -e < fail) | (cat -e || cat -e )) < fail"
+
+run_test_case "(cat -e && cat -e | cat -e || cat -e ) < fail" 5
+run_test_case "(cat -e && cat -e | cat -e && cat -e ) < Makefile" 5
+
+run_test_case "((cat -e && cat -e) | (cat -e || cat -e ) < fail) < Makefile" 5
+
+# execute heredocs in order with an intermediate heredoc
+run_test_case "((cat -e | cat -e) | (cat -e << yo | cat -e )) << stop" 5
+
+# test alternating redirections and arguments
 run_test_case "echo hello > a how > b are > c you" 5
 
-# Add more test cases as needed
+# make sure the right command is executed on fail.
+run_test_case "cat -e fail || echo hello" 5
+
+# failing tests: might need to fix this
+#------------------------------------------------
+run_test_case "< gameplan.txt | cat -e"
+run_test_case "< gameplan.txt | < fail && < fail"
+run_test_case "< fail"
+
+run_test_case "((cat -e && cat -e) < fail || (cat -e || cat -e )) < Makefile" 5
+run_test_case "((cat -e && cat -e) || (cat -e || cat -e ) < fail ) < Makefile" 5
+run_test_case "((cat -e && cat -e) < fail && (cat -e && cat -e )) < Makefile" 5
+run_test_case "(cat -e < fail || cat -e ) < Makefile" 5
+run_test_case "(cat -e || cat -e < fail ) < Makefile" 5
+run_test_case "(cat -e < fail && cat -e ) < Makefile" 5
+

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/13 13:47:09 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/15 19:20:03 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,53 +106,95 @@ static void	ms_heredoc_write(int fd, char *line, int delim_quoted)
 	write(fd, "\n", 1);
 }
 
-int	ms_heredoc_prompt(t_redirection *redirection, int id)
+int	ms_new_line(t_command *command, char *line)
 {
-	char	*line;
-	int		fd;
-	char	*path;
+	char	*tmp;
 
-	path = ft_strjoin(MS_HEREDOC_PATH, ft_itoa(id));
-	if (!path)
+	tmp = ft_strjoin(command->context->line, "\n");
+	if (!tmp)
+	{
+		free(line);
 		return (-1);
-	fd = open(path,
-			O_TRUNC | O_CREAT | O_RDWR, redirection->mode);
-	if (fd < 0)
-		return (ms_perror(path, NULL, NULL, errno) - 2);
-	redirection->tmp_file = path;
-// check fd
-	line = readline("> ");
-	while (line && strcmp(line, redirection->file_path) != 0)
-	{
-		// pass along whether the delimiter was quoted or not
-		ms_heredoc_write(fd, line, redirection->redirection_flags & MS_QUOTED);
-		free(line);
-		line = readline("> ");
 	}
-	if (line)
-		free(line);
-	else
-	{
-		ft_putstr_fd("shellshock: warning: here-document delimited by end-of-file (wanted '", STDERR_FILENO);
-		ft_putstr_fd(redirection->file_path, STDERR_FILENO);
-		write(STDERR_FILENO, "')\n", 3);
-	}
-	close(fd);
+	free(command->context->line);
+	command->context->line = tmp;
 	return (1);
 }
 
-//todo: recursively go down the command tree.
-int	ms_heredoc(t_darray *redirections, int id)
+int	ms_join_line(t_command *command, char *line)
 {
+	char	*tmp;
+
+	if (ms_new_line(command, line) < 0)
+		return (-1);
+	tmp = ft_strjoin(command->context->line, line);
+	if (!tmp)
+	{
+		free(line);
+		return (-1);
+	}
+	free(command->context->line);
+	command->context->line = tmp;
+	return (1);
+}
+
+int	eod_warning(void *subject)
+{
+	char	*limiter;
+
+	limiter = (char *)subject;
+	ft_putstr_fd("shellshock: warning: here-document delimited by end-of-file (wanted '", STDERR_FILENO);
+	ft_putstr_fd(limiter, STDERR_FILENO);
+	write(STDERR_FILENO, "')\n", 3);
+	return (1);
+}
+
+int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
+{
+	char	*line;
+
+	line = readline("> ");
+	if (ms_join_line(command, line) < 0)
+		return (-1);
+	while (line && strcmp(line, redirection->file_path) != 0)
+	{
+		ms_heredoc_write(fd, line, redirection->redirection_flags & MS_QUOTED);
+		free(line);
+		line = readline("> ");
+		if (ms_join_line(command, line) < 0)
+			return (-1);
+	}
+	if (ms_new_line(command, line) < 0)
+		return (-1);
+	if (!line)
+		ms_message_header(redirection->file_path, eod_warning, STDERR_FILENO);
+	free(line);
+	return (1);
+}
+
+int	ms_heredoc(t_command *command, int id)
+{
+	int				fd;
+	char			*path;
 	int				i;
-	t_redirection	*redirection;
+	t_redirection	*red;
 
 	i = -1;
-	while (++i < redirections->size)
+	while (++i < command->redirections->size)
 	{
-		redirection = ft_darray_get(redirections, i);
-		if (redirection->redirection_flags & MS_HEREDOC)
-			ms_heredoc_prompt(redirection, id);
+		red = ft_darray_get(command->redirections, i);
+		if (red->redirection_flags & MS_HEREDOC)
+		{
+			path = ft_strjoin(MS_HEREDOC_PATH, ft_itoa(id));
+			if (!path)
+				return (-1);
+			fd = open(path, O_TRUNC | O_CREAT | O_RDWR, red->mode);
+			if (fd < 0)
+				return (ms_perror(path, NULL, NULL, errno) - 2);
+			red->tmp_file = path;
+			ms_heredoc_prompt(command, red, fd);
+			close(fd);
+		}
 	}
 	return (1);
 }
@@ -170,19 +212,16 @@ int	create_files(t_command *command, t_darray *redirections)
 		if (!(redirection->redirection_flags & MS_HEREDOC))
 			fd = open(redirection->file_path, redirection->file_flags, redirection->mode);
 		else
-		{
 			fd = open(redirection->tmp_file, redirection->file_flags, redirection->mode);
-			free(redirection->tmp_file);
-		}
 		if (redirection->redirection_flags & MS_READ)
 		{
-			if (command->input > 0)
+			if (command->input && !(command->command_flags & MS_IO_INJECTED))
 				close(command->input);
 			command->input = fd;
 		}
 		else if (redirection->redirection_flags & MS_WRITE)
 		{
-			if (command->output > 0)
+			if (command->output && !(command->command_flags & MS_IO_INJECTED))
 				close(command->output);
 			command->output = fd;
 		}

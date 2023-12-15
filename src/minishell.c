@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/14 13:28:17 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/15 19:07:28 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,10 +272,19 @@ int	free_parse_data(t_parsing_data *data, t_parse_tree *tree)
 	return (0);
 }
 
+void	clear_redirection(void *address)
+{
+	t_redirection	*redirection;
+
+	redirection = (t_redirection *)address;
+	free(redirection->tmp_file);
+	redirection->tmp_file = NULL;	
+}
+
 int	clear_command(t_command *command)
 {
 	free(command->command_name);
-	ft_darray_delete(command->redirections, NULL);
+	ft_darray_delete(command->redirections, clear_redirection);
 	ft_darray_delete(command->arguments, NULL);
 	free(command->redirections);
 	free(command->arguments);
@@ -283,9 +292,9 @@ int	clear_command(t_command *command)
 	command->right = NULL;
 	command->command_name = NULL;
 	command->command_flags = 0;
-	if (command->input > 0)
+	if (command->input)
 		close(command->input);
-	if (command->output > 0)
+	if (command->output)
 		close(command->output);
 	command->input = 0;
 	command->output = 0;

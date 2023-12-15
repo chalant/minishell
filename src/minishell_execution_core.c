@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution_core.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:17:05 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/14 21:08:20 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/15 13:10:20 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 		parent->pid = pid;
 		return (0);
 	}
-	if (command->redirections && command->redirections->size)
-		create_files(command, command->redirections);
-	return (execute_simple_command(parent,command, in_pipe, out_pipe));
+	if (command->redirections && command->redirections->size && create_files(command, command->redirections) < 0)
+		return (1);
+	return (execute_simple_command(parent, command, in_pipe, out_pipe));
 }

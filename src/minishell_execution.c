@@ -6,25 +6,18 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/14 17:37:00 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/15 19:05:14 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//copies file descriptors
-void	copy_pipe(int *src_pipe, int *dest_pipe)
-{
-	dest_pipe[0] = src_pipe[0];
-	dest_pipe[1] = src_pipe[1];
-}
-
 int	launch_heredocs(t_command *command, int *id)
 {
-	if (command->redirections && command->command_flags & MS_OPERAND)
+	if (command->redirections)
 	{
 		*id += 1;
-		return (ms_heredoc(command->redirections, *id));
+		return (ms_heredoc(command, *id));
 	}
 	if (command->left)
 		launch_heredocs(command->left, id);
@@ -33,9 +26,25 @@ int	launch_heredocs(t_command *command, int *id)
 	if (command->redirections && command->command_flags & MS_OPERATOR)
 	{
 		*id += 1;
-		ms_heredoc(command->redirections, *id);
+		ms_heredoc(command, *id);
 	}
 	return (1);
+}
+
+int	distribute_fds(t_command *command)
+{
+	//todo mark commands as injected to avoid being closed when creating files.
+	if (command->redirections && command->redirections->size && create_files(command, command->redirections) < 0)
+		return (1);
+	if (command->left > 0 && !command->left->input)
+		command->left->input = command->input;
+	if (command->left > 0 && !command->left->output)
+		command->left->output = command->output;
+	if (command->right > 0 && !command->right->input)
+		command->right->input = command->input;
+	if (command->right > 0 && !command->right->output)
+		command->right->output = command->output;
+	return (0);
 }
 
 int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
@@ -43,25 +52,23 @@ int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_p
 	int	status;
 	//todo: check if command exists
 	//todo: handle errors
-	if (command->redirections && command->redirections->size)
-	{
-		create_files(command, command->redirections);
-	}
-	if (command->left && !command->left->input)
-		command->left->input = command->input;
-	if (command->left && !command->left->output)
-		command->left->output = command->output;
-	if (command->right && !command->right->input)
-		command->right->input = command->input;
-	if (command->right && !command->right->output)
-		command->right->output = command->output;
-	status = execute_command(command, command->left, in_pipe, out_pipe);
+	status = distribute_fds(command);
 	if (!parent || !(command->command_flags & MS_AND))
 	{
 		if (out_pipe[1] != -1)
 			close(out_pipe[1]);
 		out_pipe[1] = -1;
 	}
+	//close the pipe in case of failure.
+	if (status)
+	{
+		if (out_pipe[1] != -1)
+			close(out_pipe[1]);
+		out_pipe[1] = -1;
+		return (status);
+	}
+	// todo: recursively open 
+	status = execute_command(command, command->left, in_pipe, out_pipe);
 	if (status == 0)
 		return (execute_command(command, command->right, in_pipe, out_pipe));
 	return (status);
@@ -73,18 +80,14 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 	int	status;
 
 	//todo: handle errors
-	if (command->redirections && command->redirections->size)
+	status = distribute_fds(command);
+	if (status)
 	{
-		create_files(command, command->redirections);
+		if (out_pipe[1] != -1)
+			close(out_pipe[1]);
+		out_pipe[1] = -1;
+		return (status);
 	}
-	if (!command->left->input)
-		command->left->input = command->input;
-	if (!command->left->output)
-		command->left->output = command->output;
-	if (!command->right->input)
-		command->right->input = command->input;
-	if (!command->right->output)
-		command->right->output = command->output;
 	if (!parent || !(command->command_flags & MS_OR))
 	{
 		if (out_pipe[1] != -1)
@@ -96,73 +99,6 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 		return (execute_command(command, command->right, in_pipe, out_pipe));
 	return (status);
 }
-
-int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
-{
-	if (out_pipe[1] == -1)
-	{
-		if (out_pipe[0] != -1)
-			close(out_pipe[0]);
-		if (out_pipe[1] != -1)
-			close(out_pipe[1]);
-		if (pipe(out_pipe) < 0)
-			return ((ms_perror("pipe", NULL, NULL, errno) - 2));
-	}
-	// //todo: handle errors
-	if (command->redirections && command->redirections->size)
-	{
-		create_files(command, command->redirections);
-	}
-	if (command->left && !command->left->input)
-		command->left->input = command->input;
-	//todo: if the left command fails, close and return -1;
-	//todo: heredoc should recursively go down the tree and call the heredocs
-	// if (command->left && command->left->redirections)
-	// 	ms_heredoc(command->left->redirections);
-	execute_command(command, command->left, in_pipe, out_pipe);
-	// if (command->right && command->right->redirections)
-	// 	ms_heredoc(command->right->redirections);
-	//todo: crash if it is not EAGAIN (return -1)
-	if (command && command->error == EAGAIN && wait(NULL) != -1)
-		execute_command(command, command->left, in_pipe, out_pipe);
-	else if (command && command->error == -1)
-		return (-1);
-	copy_pipe(out_pipe, in_pipe);
-	pipe(out_pipe);
-	if (!parent || !(parent->command_flags & MS_PIPE))
-	{
-		close(out_pipe[1]);
-		out_pipe[1] = -1;
-	}
-	if (command->right && !command->right->output)
-		command->right->output = command->output;
-	
-	//todo: if there is no left command, the right command should'nt redirect in.
-	// if (!command->left || command->left->command_flags & MS_REDIR)
-	// 	command->right->redirections = NULL;
-	//todo: if the parent is not a pipe, the right command should pipe to .
-	if (command->command_flags & MS_LAST)
-	{
-		command->command_flags &= ~(MS_LAST);
-		command->right->command_flags |= MS_LAST;
-	}
-	if (parent && (!(parent->command_flags & MS_PIPE) || command->command_flags & MS_LAST))
-	{
-		command->command_flags &= ~(MS_LAST);
-		parent->command_flags &= ~(MS_LAST);
-		command->right->command_flags |= MS_LAST;
-	}
-	//todo: crash if it is not EAGAIN (return -1)
-	execute_command(command, command->right, in_pipe, out_pipe);
-	if (command && command->error == EAGAIN && wait(NULL) != -1)
-		execute_command(command, command->right, in_pipe, out_pipe);
-	else if (command && command->error == -1)
-		return (-1);
-	if ((parent && !(parent->command_flags & MS_PIPE)) || (command->right && command->right->command_flags & MS_LAST))
-		return (get_exit_status(command->pid));
-	return (0);
-}
-
 
 int	execute_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
@@ -232,7 +168,18 @@ int	minishell_execute(t_command *command)
 	out_pipe[1] = -1;
 	in_pipe[0] = -1;
 	in_pipe[1] = -1;
+	// if (!command->command_name)
+	// {
+	// 	//todo: file creation might fail, so we would need a status...
+	// 	if (command->command_flags & MS_REDIR)
+	// 	{
+	// 		create_files(command, command->redirections);
+	// 	}
+	// 	return (NULL);
+	// }
 	launch_heredocs(command, &hd_id);
+	if (!command->command_name)
+		return (0);
 	status = execute_command(NULL, command, in_pipe, out_pipe);
 	//todo: check if pipes are opened first.
 	close(in_pipe[0]);

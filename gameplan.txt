@@ -51,4 +51,9 @@ TODO:
 
 use commands like these to compare with bash.
 
-diff echo "(cat -e | cat -e) < gameplan.txt" | ./minishell | tail -n +2 | head -n -1 echo "(cat -e | cat -e) < gameplan.txt" | bash
+issue: we need to distribute operator fds before execution. if the child has there own redirection, it will overwrite the parents one. Problem: if we do it before open the childs, the child will close the fd...
+
+launch heredocs. (ex : <<stop)
+--> signals in heredocs
+error message for non existent command in path (ex: unset PATH; ls)
+open pipe added to history once merged (cat | .......... ls)

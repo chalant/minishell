@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/12 11:44:09 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/15 17:36:29 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 
 	"simple_command:word command_element\n"\
 	"simple_command:word\n"\
+	"simple_command:export\n"
 
 	"parenthesis:='(' command =')' redirection_list\n"\
 	"parenthesis:='(' command $'4' redirection_list\n"\

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:16:57 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/13 15:25:27 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/15 12:54:14 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,10 @@
 int	redirect_in(t_command *command)
 {
 	if (dup2(command->input, STDIN_FILENO) < 0)
+	{
+		fprintf(stderr, "INPUT %d\n", command->input);
 		return (ms_perror("dup in", NULL, NULL, errno) - 2);
+	}
 	return (0);
 }
 
@@ -41,9 +44,9 @@ int	pipe_out(t_command *command, int pipe_[2])
 
 int	pipe_in(t_command *command, int pipe_[2])
 {
-	if (command->input > 0)
+	if (command->input)
 		return (redirect_in(command));
-	else if (command->input < 0)
+	else if (command->input)
 		return (-1);
 	else if (pipe_[0] == -1)
 		return (0);
@@ -57,9 +60,9 @@ int redirect_io(t_command *command)
 	int	status;
 
 	status = 0;
-	if (command->input > 0)
+	if (command->input)
 		status = redirect_in(command);
-	if (command->output > 0)
+	if (command->output)
 		status = redirect_out(command);
 	return (status);
 }
