@@ -11,7 +11,7 @@ compare_output() {
         return 0  # Return 0 for success (OK)
     else
         echo -e "\e[31mKO\e[0m"
-        echo "Diff: bash minishell"
+        echo "\e[31mDiff: \e[0m: bash minishell"
         echo "$diff_output"
         return 1  # Return 1 for failure (KO)
     fi
@@ -23,10 +23,10 @@ compare_status() {
     bash_status="$2"
 
     if [ "$your_status" = "$bash_status" ]; then
-        echo -e "\e[32mOK\e[0m"
+        echo -e " \e[32mOK\e[0m"
         return 0  # Return 0 for success (OK)
     else
-        echo -e "\e[31mKO\e[0m minishell: $your_status bash: $bash_status"
+        echo -e " \e[31mKO\e[0m minishell: $your_status bash: $bash_status"
         return 1  # Return 1 for failure (KO)
     fi
 
@@ -38,14 +38,13 @@ run_test_case() {
     timeout_seconds="$2"
 
 	echo "----------------------------------------------------------"
-    echo "\n\e[33mRunning test case:\e[0m \"$test_command\""
 	your_output=$(echo "$test_command" | ./minishell | awk 'NR > 1 { lines[NR-1] = $0 } END { for(i=1;i<NR-1;i++) print lines[i] }')
 	your_status=$(echo $?)
     bash_output=$(echo "$test_command" | bash)
 	bash_status=$(echo $?)
-	echo -n "\e[33mOutput: \e[0m"
+	echo -n "\e[33mOutput: \e[0m $test_command "
     compare_output "$your_output" "$bash_output"
-	echo -n "\e[33mStatus: \e[0m"
+	echo -n "\e[33mStatus: \e[0m $test_command"
 	compare_status "$your_status" "$bash_status"
 	echo
 }
