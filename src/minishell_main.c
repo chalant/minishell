@@ -61,7 +61,7 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 		ft_darray_delete(data->parse_data.tokens, ms_clear_token);
 		return (1);
 	}
-	recogniser_status = recognize_input(&(data->parse_data));
+	recogniser_status = recognize_input(&(data->parse_data), data);
 	if (recogniser_status < 0)
 		return (-1);
 	if (recogniser_status != 2)

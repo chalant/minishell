@@ -65,7 +65,9 @@ SRC_FILES =	minishell_main.c \
 			minishell_redirections.c \
 			minishell_semantic_operators.c \
 			minishell_semantics_utils.c \
-			minishell_earley_set.c
+			minishell_earley_set.c \
+			minishell_history_utils.c \
+			minishell_heredoc.c
 
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(INCLUDES_FILES))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
@@ -75,7 +77,7 @@ NAME = minishell
 LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-C_FLAGS = -Wall -Wextra -Werror -g -O3 -Wno-unused-result -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
+C_FLAGS = -Wall -Wextra -Werror -g -O3 -Wno-unused-result -Wno-maybe-uninitialized -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 #C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 READLINE = -lreadline -lhistory -L/Users/$(USER)/homebrew/opt/readline/lib
 IREADLINE = -I/Users/$(USER)/homebrew/opt/readline/include

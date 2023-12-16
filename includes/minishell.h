@@ -23,6 +23,7 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <dirent.h>
+# include <fcntl.h>
 # include "minishell_parsing.h"
 # include "minishell_graph.h"
 # include "minishell_tokens.h"
@@ -33,6 +34,8 @@
 # include "libft.h"
 
 # define MS_PROMPT_MSG "shellshock$ "
+# define MS_SUBPROMPT_MSG "> "
+# define MS_SUBPROMPT_INT -2
 
 extern int	g_global_status;
 
@@ -56,5 +59,8 @@ int		execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
 int		ms_message_header(void *data, int (*printer)(void *), int fd);
+
+int		ms_add_separator(t_ms_context *context, char *line, const char *delim);
+int		ms_join_line(t_ms_context *context, char *line, const char *delim);
 
 #endif

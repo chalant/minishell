@@ -1,0 +1,48 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_history_utils.c                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/16 14:27:45 by yves              #+#    #+#             */
+/*   Updated: 2023/12/16 14:27:46 by yves             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int	ms_add_separator(t_ms_context *context, char *line, const char *delim)
+{
+	char	*tmp;
+
+	tmp = ft_strjoin(context->line, delim);
+	if (!tmp)
+	{
+		free(line);
+		return (-1);
+	}
+	free(context->line);
+	context->line = tmp;
+	return (1);
+}
+
+int	ms_join_line(t_ms_context *context, char *line, const char *delim)
+{
+	char	*tmp;
+
+	if (!line)
+		return (1);
+	if (ms_add_separator(context, line, delim) < 0)
+		return (-1);
+	tmp = ft_strjoin(context->line, line);
+	if (!tmp)
+	{
+		free(line);
+		return (-1);
+	}
+	free(context->line);
+	context->line = tmp;
+	return (1);
+}
+

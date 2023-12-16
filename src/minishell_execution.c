@@ -31,19 +31,19 @@ int	launch_heredocs(t_command *command, int *id)
 	return (1);
 }
 
-int	distribute_fds(t_command *command)
+int	distribute_fds(t_command *parent, t_command *command)
 {
 	//todo mark commands as injected to avoid being closed when creating files.
-	if (command->redirections && command->redirections->size && create_files(command, command->redirections) < 0)
-		return (1);
-	if (command->left > 0 && !command->left->input)
-		command->left->input = command->input;
-	if (command->left > 0 && !command->left->output)
-		command->left->output = command->output;
-	if (command->right > 0 && !command->right->input)
-		command->right->input = command->input;
-	if (command->right > 0 && !command->right->output)
-		command->right->output = command->output;
+	if (command && !command->input)
+	{
+		command->input = parent->input;
+		command->command_flags |= MS_I_INJECT;
+	}
+	if (command && !command->output)
+	{
+		command->output = parent->output;
+		command->command_flags |= MS_O_INJECT;
+	}
 	return (0);
 }
 
@@ -52,7 +52,8 @@ int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_p
 	int	status;
 	//todo: check if command exists
 	//todo: handle errors
-	status = distribute_fds(command);
+	status = command->redirections && command->redirections->size && create_files(command, command->redirections) < 0;
+	distribute_fds(command, command->left);
 	if (!parent || !(command->command_flags & MS_AND))
 	{
 		if (out_pipe[1] != -1)
@@ -70,7 +71,10 @@ int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_p
 	// todo: recursively open 
 	status = execute_command(command, command->left, in_pipe, out_pipe);
 	if (status == 0)
+	{
+		distribute_fds(command, command->right);
 		return (execute_command(command, command->right, in_pipe, out_pipe));
+	}
 	return (status);
 }
 
@@ -80,7 +84,8 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 	int	status;
 
 	//todo: handle errors
-	status = distribute_fds(command);
+	status = command->redirections && command->redirections->size && create_files(command, command->redirections) < 0;
+	distribute_fds(command, command->left);
 	if (status)
 	{
 		if (out_pipe[1] != -1)
@@ -96,7 +101,10 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 	}
 	status = execute_command(command, command->left, in_pipe, out_pipe);
 	if (status > 0)
+	{
+		distribute_fds(command, command->right);
 		return (execute_command(command, command->right, in_pipe, out_pipe));
+	}
 	return (status);
 }
 
@@ -168,15 +176,6 @@ int	minishell_execute(t_command *command)
 	out_pipe[1] = -1;
 	in_pipe[0] = -1;
 	in_pipe[1] = -1;
-	// if (!command->command_name)
-	// {
-	// 	//todo: file creation might fail, so we would need a status...
-	// 	if (command->command_flags & MS_REDIR)
-	// 	{
-	// 		create_files(command, command->redirections);
-	// 	}
-	// 	return (NULL);
-	// }
 	launch_heredocs(command, &hd_id);
 	if (!command->command_name)
 		return (0);

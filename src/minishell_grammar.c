@@ -12,15 +12,6 @@
 
 #include "minishell.h"
 
-static const char	*g_test_grammar = "sum:sum <'+-' product\n"\
-	"sum:product\n"\
-	"product:product <'*/' factor\n"\
-	"product:factor\n"\
-	"factor:='(' sum =')'\n"\
-	"factor:number\n"\
-	"number:<'0123456789' number\n"\
-	"number:<'0123456789'\n";
-
 static const char	*g_minishell_grammar = "word:$'3'\n"\
 
 	"redirection:='>' word\n"\
@@ -41,7 +32,6 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 
 	"simple_command:word command_element\n"\
 	"simple_command:word\n"\
-	"simple_command:export\n"
 
 	"parenthesis:='(' command =')' redirection_list\n"\
 	"parenthesis:='(' command $'4' redirection_list\n"\
@@ -91,11 +81,6 @@ char	**ft_reverse_strings(char **strings)
 	}
 	strings[max] = 0;
 	return (strings);
-}
-
-char	**get_test_definition(void)
-{
-	return (ft_split(g_test_grammar, '\n'));
 }
 
 int	set_minishell_grammar(t_ms_grammar *grammar)

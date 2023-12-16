@@ -36,29 +36,7 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 	return (ft_stack_push(stack, &command));
 }
 
-//todo: don't need this function anymore.
-int	handle_parenthesis(t_parse_tree *node, t_command *command)
-{
-	if (!command || !command->command_name)
-		return (0);
-	//todo: checking the children isn't safe
-	if (node->children->size >= 4 && ((t_parse_tree *)ft_darray_get(node->children, 3))->rule_name)
-	{
-		if (!command->redirections)
-		{
-			command->redirections = malloc(sizeof(t_darray));
-			if (!command->redirections)
-				return (-1);
-			if (ft_darray_init(command->redirections, sizeof(t_redirection), 10) < 0)
-				return (-1);
-		}
-		set_redirections(command, ft_darray_get(node->children, 3));
-		create_files(command, command->redirections);
-	}
-	return (1);
-}
-
-int	handle_semantic_rule(t_parse_tree *node, t_stack *commands)
+int	handle_operator(t_parse_tree *node, t_stack *commands)
 {
 	int				i;
 	t_parse_tree	*child;
@@ -129,7 +107,7 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 		return (create_command(node, commands, set_command_fields));
 	else if (strcmp(node->rule_name, "redirection_list") == 0)
 		return (handle_redirection_list(node, commands));
-	return (handle_semantic_rule(node, commands));
+	return (handle_operator(node, commands));
 }
 
 //builds a command tree to be executed.

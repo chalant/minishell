@@ -15,10 +15,7 @@
 int	redirect_in(t_command *command)
 {
 	if (dup2(command->input, STDIN_FILENO) < 0)
-	{
-		fprintf(stderr, "INPUT %d\n", command->input);
 		return (ms_perror("dup in", NULL, NULL, errno) - 2);
-	}
 	return (0);
 }
 
@@ -33,7 +30,7 @@ int	pipe_out(t_command *command, int pipe_[2])
 {
 	if (command->output > 0)
 		return (redirect_out(command));
-	else if (command->output < 0)
+	else if (command->output == -1)
 		return (-1);
 	else if (pipe_[1] == -1)
 		return (0);
@@ -44,9 +41,9 @@ int	pipe_out(t_command *command, int pipe_[2])
 
 int	pipe_in(t_command *command, int pipe_[2])
 {
-	if (command->input)
+	if (command->input > 0)
 		return (redirect_in(command));
-	else if (command->input)
+	else if (command->input == -1)
 		return (-1);
 	else if (pipe_[0] == -1)
 		return (0);
@@ -60,9 +57,9 @@ int redirect_io(t_command *command)
 	int	status;
 
 	status = 0;
-	if (command->input)
+	if (command->input > 0)
 		status = redirect_in(command);
-	if (command->output)
+	if (command->output > 0)
 		status = redirect_out(command);
 	return (status);
 }

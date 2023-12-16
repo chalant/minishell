@@ -70,7 +70,7 @@ int		alloc_parse_data(t_parsing_data *data, int size);
 int		reset_parse_data(t_parsing_data *data, t_parse_tree *tree);
 int		free_parse_data(t_parsing_data *data, t_parse_tree *tree);
 
-int		recognize_input(t_parsing_data *data);
+int		recognize_input(t_parsing_data *data, void *context);
 int		parse_input(t_parsing_data *data, t_parse_tree *tree);
 int		ms_prompt_command(t_ms_symbol *symbol, t_token *token);
 
@@ -78,7 +78,7 @@ int		ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state sta
 int		build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
 int		clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(void *)), int del);
 
-int		build_earley_items(t_parsing_data *data);
+int		build_earley_items(t_parsing_data *data, void *context);
 int		add_earley_set(t_darray *sets, int size);
 void	delete_earley_set(void *set);
 void	reset_earley_set(void *set);

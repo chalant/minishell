@@ -56,12 +56,11 @@ int	tail_rule(t_ms_symbol **symbols, char ***to_free, int size)
 
 int	init_symbol(t_ms_symbol *symbol)
 {
-	symbol->earley_sets = NULL;
 	symbol->match = NULL;
 	symbol->name = NULL;
 	symbol->rule = 0;
 	symbol->symbol_type = 0;
-	symbol->tokens = NULL;
+	symbol->context = NULL;
 	return (1);
 }
 

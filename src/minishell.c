@@ -400,12 +400,12 @@ returns 2 if there is a syntax error
 returns -1 if there is an internal error
 returns 0 otherwise
 */
-int	recognize_input(t_parsing_data *data)
+int	recognize_input(t_parsing_data *data, void *context)
 {
 	t_earley_set	*last_set;
 
 	update_parsing_data(data, data->tokens->size);
-	if (build_earley_items(data) < 0)
+	if (build_earley_items(data, context) < 0)
 		return (-1);
 	//print_dearley(data->earley_sets, data->grammar, data->earley_sets->size);
 	last_set = ft_darray_get(data->earley_sets, data->earley_sets->size - 1);
