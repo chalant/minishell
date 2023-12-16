@@ -60,35 +60,37 @@ int get_paths(char ***paths, char **env)
 {
 	env = get_path_env_var(env);
 	if (!env)
-		return (-1);
+		return (0);
 	*paths = ft_split(&env[0][5], ':');
 	if (!*paths)
         return (-1);
-	make_paths(*paths);
-    return (1);
+	return (make_paths(*paths));
 }
 
-char	*get_binary(char *command)
+char	*get_binary(char *command_name)
 {
 	int			failed;
 	char        **paths;
 	char	    *command_path;
     extern char **environ;
 
-	if (!command)
+	if (!command_name)
 		return (NULL);
-	if (ft_strchr(command, '/'))
-		return (ft_strdup(command));
-	if (get_paths(&paths, environ) < 0)
-        return (NULL);
+	if (ft_strchr(command_name, '/'))
+		return (ft_strdup(command_name));
+	failed = get_paths(&paths, environ);
+	if (failed < 0)
+		return (NULL);
+	if (!failed)
+		return (ft_strdup(command_name));
 	failed = 0;
-	command_path = find_command(paths, command, &failed);
+	command_path = find_command(paths, command_name, &failed);
 	if (!command_path)
 	{
 		ft_clear_ds(paths);
 		if (failed)
 			return (NULL);
-		return (ft_strdup(command));
+		return (ft_strdup(command_name));
 	}
 	ft_clear_ds(paths);
 	return (command_path);

@@ -50,7 +50,7 @@ static char *make_argi(t_command *command, int i)
 }
 
 // returns NULL on malloc fail
-char	**make_arguments(t_command *command)
+char	**make_arguments(t_command *command, char *command_name)
 {
 	int			nargs;
 	int			i;
@@ -62,14 +62,14 @@ char	**make_arguments(t_command *command)
 	arguments = malloc(sizeof(char *) * nargs);
 	if (!arguments)
 		return (NULL);
-	arguments[0] = command->command_name;
+	arguments[0] = command_name;
 	i = 0;
 	while (++i < nargs - 1)
 	{
 		arguments[i] = make_argi(command, i);
 		if (!arguments[i])
 		{
-			ft_clear_ds(arguments);
+			free(arguments);
 			return (NULL);
 		}
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_command_factory.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/15 12:53:49 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/16 16:50:48 by yves             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,22 +91,13 @@ int	is_builtin(char *command_name)
 
 int	set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack)
 {
-	char	*command_name;
-
 	(void)stack;
 	if (!node->rule_name)
 		return (0);
 	//todo: need an error when the command is not found.
-	command_name = *get_word(node);
-	if (is_builtin(command_name))
-	{
+	command->command_name = *get_word(node);
+	if (is_builtin(command->command_name))
 		command->command_flags |= MS_BUILTIN;
-		command->command_name = ft_strdup(command_name);
-	}
-	else
-		command->command_name = get_binary(command_name);
-	if (!command->command_name)
-		return (-1);
 	node = ft_darray_get(node->children, 1);
 	if (node->children && set_command_elements(command, node) < 0)
 		return (-1);

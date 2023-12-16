@@ -23,10 +23,10 @@ compare_status() {
     bash_status="$2"
 
     if [ "$your_status" = "$bash_status" ]; then
-        echo -e " \e[32mOK\e[0m"
+        echo -e "\e[32mOK\e[0m"
         return 0  # Return 0 for success (OK)
     else
-        echo -e " \e[31mKO\e[0m minishell: $your_status bash: $bash_status"
+        echo -e "\e[31mKO\e[0m minishell: $your_status bash: $bash_status"
         return 1  # Return 1 for failure (KO)
     fi
 
@@ -42,9 +42,9 @@ run_test_case() {
 	your_status=$(echo $?)
     bash_output=$(echo "$test_command" | bash)
 	bash_status=$(echo $?)
-	echo -n "\e[33mOutput: \e[0m $test_command "
+	echo -n "\e[33m\"$test_command\"\e[0m Output: "
     compare_output "$your_output" "$bash_output"
-	echo -n "\e[33mStatus: \e[0m $test_command"
+	echo -n "\e[33m\"$test_command\"\e[0m Status: "
 	compare_status "$your_status" "$bash_status"
 	echo
 }

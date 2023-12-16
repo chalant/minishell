@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution_core.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:17:05 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/15 13:10:20 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/16 17:33:46 by yves             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ int	execute_builtin(t_command *command, int in_fd, int out_fd)
 
 	(void)in_fd;
 	status = 0;
-	arguments = make_arguments(command);
+	arguments = make_arguments(command, command->command_name);
+	if (!arguments)
+		return (-1);
 	if (strcmp(command->command_name, "echo") == 0)
 		status = ms_echo(arguments, out_fd);
 	else if (strcmp(command->command_name, "cd") == 0)
@@ -56,12 +58,21 @@ int	execute_builtin(t_command *command, int in_fd, int out_fd)
 int	launch_execve(t_command *command)
 {
 	char		**arguments;
+	char		*binary;
 
-	arguments = make_arguments(command);
+	binary = get_binary(command->command_name);
+	if (!binary)
+		exit(1);
+	arguments = make_arguments(command, binary);
 	//todo: display error
 	if (!arguments)
+	{
+		free(binary);
+		ms_perror(command->command_name, NULL, NULL, ENOMEM);
 		exit(1);
-	execve(command->command_name, arguments, command->context->env);
+	}
+	execve(binary, arguments, command->context->env);
+	free(binary);
 	free(arguments);
 	ms_perror(command->command_name, NULL, NULL, errno);
 	exit(127);

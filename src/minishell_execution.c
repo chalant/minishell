@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/15 19:05:14 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/16 16:13:39 by yves             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_p
 		out_pipe[1] = -1;
 		return (status);
 	}
-	// todo: recursively open 
 	status = execute_command(command, command->left, in_pipe, out_pipe);
 	if (status == 0)
 	{

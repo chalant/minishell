@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/15 19:07:28 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/16 16:58:58 by yves             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,11 +283,11 @@ void	clear_redirection(void *address)
 
 int	clear_command(t_command *command)
 {
-	free(command->command_name);
 	ft_darray_delete(command->redirections, clear_redirection);
 	ft_darray_delete(command->arguments, NULL);
 	free(command->redirections);
 	free(command->arguments);
+	command->command_name = NULL;
 	command->left = NULL;
 	command->right = NULL;
 	command->command_name = NULL;
@@ -323,7 +323,6 @@ int	delete_commands(t_darray *commands)
 	while (++i < commands->actual_size)
 	{
 		command = ft_darray_get(commands, i);
-		free(command->command_name);
 		ft_darray_delete(command->redirections, NULL);
 		ft_darray_delete(command->arguments, NULL);
 		command->left = NULL;

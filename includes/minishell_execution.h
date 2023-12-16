@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:28:16 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/13 15:30:17 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/16 17:02:32 by yves             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "minishell_commands.h"
 
-char	**make_arguments(t_command *command);
+char	**make_arguments(t_command *command, char *binary);
 
 int		get_exit_status(pid_t pid);
 int		redirect_io(t_command *command);
