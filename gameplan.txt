@@ -60,12 +60,10 @@ launch heredocs. (ex : <<stop) with no other commands. -> DONE
 
 add_heredoc to history -> DONE
 
-bug where the cursor goes way to much to the right when navigating heredoc history
-
 --> signals in heredocs (ctlr -C ) -> solution would be to have 
 a global variable to know if there is an active prompt
 so that we know if we should close.
 
-error message for non existent command in path (ex: unset PATH; ls)
+error message for non existent command in path (ex: unset PATH; ls) -> DONE
 
 open pipe added to history once merged (cat | .......... ls) -> DONE

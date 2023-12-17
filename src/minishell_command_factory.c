@@ -6,48 +6,11 @@
 /*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/16 16:50:48 by yves             ###   ########.fr       */
+/*   Updated: 2023/12/17 11:50:30 by yves             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	init_command(t_command *command)
-{
-	command->command_flags = 0;
-	command->pid = -1;
-	command->input = 0;
-	command->output = 0;
-	command->left = NULL;
-	command->right = NULL;
-	command->command_name = NULL;
-	command->arguments = NULL;
-	command->redirections = NULL;
-	command->context = NULL;
-	command->error = 0;
-	return (1);
-}
-
-int	set_arguments(t_command *command, t_parse_tree *tree)
-{
-	t_parse_tree	*node;
-
-	command->arguments = malloc(sizeof(t_darray));
-	if (!command->arguments)
-		return (-1);
-	if (ft_darray_init(command->arguments, sizeof(t_token), 3) < 0)
-		return (-1);
-	if (ft_darray_append(command->arguments, get_leaf(tree)->token) < 0)
-		return (-1);
-	node = ft_darray_get(tree->children, 1);
-	while (!node->terminal)
-	{
-		if (ft_darray_append(command->arguments, get_leaf(node)->token) < 0)
-			return (-1);
-		node = ft_darray_get(node->children, 1);
-	}
-	return (1);
-}
 
 int	set_command_elements(t_command *command, t_parse_tree *tree)
 {
@@ -56,42 +19,23 @@ int	set_command_elements(t_command *command, t_parse_tree *tree)
 
 	while (!tree->terminal)
 	{
-		//todo: handle errors
 		node = ft_darray_get(tree->children, 0);
 		if (strcmp(node->rule_name, "redirection") == 0)
 		{
 			set_redirection(&redirection, node);
-			ft_darray_append(command->redirections, &redirection);
+			if (ft_darray_append(command->redirections, &redirection) < 0)
+				return (-1);
 		}
-		else if (strcmp(node->rule_name, "word") == 0)
-			ft_darray_append(command->arguments, get_leaf(node)->token);
+		else if (strcmp(node->rule_name, "word") == 0
+			&& ft_darray_append(command->arguments, get_leaf(node)->token) < 0)
+			return (-1);
 		tree = ft_darray_get(tree->children, 1);
 	}
 	return (1);
 }
 
-int	is_builtin(char *command_name)
+int	set_command_fields(t_parse_tree *node, t_command *command)
 {
-	if (strcmp(command_name, "cd") == 0)
-		return (1);
-	else if (strcmp(command_name, "echo") == 0)
-		return (1);
-	else if (strcmp(command_name, "pwd") == 0)
-		return (1);
-	else if (strcmp(command_name, "export") == 0)
-		return (1);
-	else if (strcmp(command_name, "env") == 0)
-		return (1);
-	else if (strcmp(command_name, "unset") == 0)
-		return (1);
-	else if (strcmp(command_name, "exit") == 0)
-		return (1);
-	return (0);
-}
-
-int	set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack)
-{
-	(void)stack;
 	if (!node->rule_name)
 		return (0);
 	//todo: need an error when the command is not found.
@@ -128,38 +72,45 @@ int	init_command_fields(t_command *command)
 	return (0);
 }
 
-int	create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *))
+int	overwite_command(t_parse_tree *node, t_command *command)
+{
+	init_command_fields(command);
+	if (set_command_fields(node, command) < 0)
+		return (-1);
+	//todo: check if it is not an operator
+	if (command->command_flags & MS_OPERATOR)
+	{
+		if (command->input > 0)
+			close(command->input);
+		if (command->output > 0)
+			close(command->output);
+		command->input = 0;
+		command->output = 0;
+	}
+	command->command_flags &= ~(MS_REDIR);
+	return (1);
+}
+
+int	create_command(t_parse_tree *node, t_stack *stack)
 {
 	t_command	*command;
 	t_command	new;
 
 	command = ft_stack_peek(stack);
 	if (command && command->command_flags & MS_REDIR)
-	{
-		init_command_fields(command);
-		if (factory(node, command, stack) < 0)
-			return (-1);
-		//todo: check if it not an operator
-		if (command->command_flags & MS_OPERATOR)
-		{
-			if (command->input)
-				close(command->input);
-			if (command->output)
-				close(command->output);
-			command->input = 0;
-			command->output = 0;
-		}
-		command->command_flags &= ~(MS_REDIR);
-		return (1);
-	}
+		return (overwite_command(node, command));
 	command = ft_darray_get(stack->elements, stack->elements->size);
 	if (!command || !command->command_name)
 	{
 		init_command(&new);
 		init_command_fields(&new);
-		if (factory(node, &new, stack) < 0)
+		if (set_command_fields(node, &new) < 0)
+		{
+			clear_command(&new);
 			return (-1);
-		return (ft_stack_push(stack, &new));
+		}
+		if (ft_stack_push(stack, &new) < 0)
+			return (-1); 
 	}
 	return (0);
 }

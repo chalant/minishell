@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_semantics.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/15 14:53:37 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/17 11:51:36 by yves             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 	if (flatten_tree(ft_darray_get(node->children, 2), stack) < 0)
 		return (-1);
 	init_command(&command);
-	command.command_name = ft_strdup(name);
+	command.command_name = name;
 	if (!command.command_name)
 		return (-1);
 	command.command_flags = MS_OPERATOR | type;
@@ -104,7 +104,7 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 	if (node->terminal)
 		return (1);
 	else if (strcmp(node->rule_name, "simple_command") == 0)
-		return (create_command(node, commands, set_command_fields));
+		return (create_command(node, commands));
 	else if (strcmp(node->rule_name, "redirection_list") == 0)
 		return (handle_redirection_list(node, commands));
 	return (handle_operator(node, commands));

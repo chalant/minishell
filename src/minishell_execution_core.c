@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution_core.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:17:05 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/16 17:33:46 by yves             ###   ########.fr       */
+/*   Updated: 2023/12/17 17:04:41 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ int	launch_execve(t_command *command)
 	if (!binary)
 		exit(1);
 	arguments = make_arguments(command, binary);
-	//todo: display error
 	if (!arguments)
 	{
 		free(binary);
@@ -78,17 +77,36 @@ int	launch_execve(t_command *command)
 	exit(127);
 }
 
-int	execute_simple_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
+int	ms_execve(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
-	int		status;
 
-	(void)parent;
+	if (!(command->command_flags & MS_FORKED))
+	{
+		pid = fork();
+		if (pid < 0)
+			return (ms_perror("fork", NULL, NULL, errno) - 2);
+		if (pid == 0)
+		{
+			if (pipe_io(command, in_pipe, out_pipe) < 0)
+				exit(1);
+			launch_execve(command);
+		}
+		close_fd(&out_pipe[1]);
+		//close(in_pipe[0]);
+		// in_pipe[0] = -1;
+		close_fd(&command->output);
+		return (get_exit_status(pid));
+	}
+	launch_execve(command);
+	return (1);
+}
 
-	//not in a processs
+int	execute_simple_command(t_command *command, int in_pipe[2], int out_pipe[2])
+{
 	if (command->command_flags & MS_BUILTIN && !(command->command_flags & MS_FORKED))
 	{
-		if (command->output)
+		if (command->output > 0)
 			return (execute_builtin(command, command->input, command->output));
 		else
 			return (execute_builtin(command, command->input, STDOUT_FILENO));
@@ -99,69 +117,31 @@ int	execute_simple_command(t_command *parent, t_command *command, int in_pipe[2]
 			exit(1);
 		return (execute_builtin(command, STDIN_FILENO, STDOUT_FILENO));
 	}
-	if (!(command->command_flags & MS_FORKED))
-	{
-		//todo: errors
-		if (command->command_flags & MS_LAST)
-		{
-			close(out_pipe[1]);
-			out_pipe[1] = -1;
-		}
-		pid = fork();
-		if (pid < 0)
-			return (ms_perror("fork", NULL, NULL, errno) - 2);
-		if (pid == 0)
-		{
-			//todo: handle errors
-			if (pipe_io(command, in_pipe, out_pipe) < 0)
-				exit(1);
-			launch_execve(command);
-		}
-		if (out_pipe[1] != -1)
-			close(out_pipe[1]);
-		//close(in_pipe[0]);
-		// in_pipe[0] = -1;
-		out_pipe[1] = -1;
-		status = get_exit_status(pid);
-		if (command->output > 0)
-			close(command->output);
-		return (status);
-	}
-	launch_execve(command);
-	return (1);
+	return (ms_execve(command, in_pipe, out_pipe));
 }
 
-pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
+pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 	int		status;
 
 	pid = fork();
 	if (pid < 0)
-	{
-		if (parent)
-			parent->error = errno;
 		return (ms_perror("fork", NULL, NULL, errno) - 2);
-	}
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		if (command->redirections && command->redirections->size)
-			create_files(command, command->redirections);
-		//todo: handle errors
+		if (handle_redirections(command) < 0)
+			exit(1);
 		if (pipe_io(command, in_pipe, out_pipe) < 0)
 			exit(1);
-		status = execute_simple_command(parent, command, in_pipe, out_pipe);
+		status = execute_simple_command(command, in_pipe, out_pipe);
 		if (command->command_flags & MS_BUILTIN)
 			exit(status);
 		exit(126);
 	}
-	close(out_pipe[1]);
-	close(in_pipe[0]);
-	in_pipe[0] = -1;
-	out_pipe[1] = -1;
-	// close(in_pipe[0]);
-	// close(in_pipe[1]);
+	close_fd(&out_pipe[1]);
+	close_fd(&in_pipe[0]);
 	return (pid);
 }
 
@@ -169,24 +149,20 @@ int	execute_command_core(t_command *parent, t_command *command, int in_pipe[2], 
 {
 	pid_t	pid;
 
-	//todo: handle errors
 	if (parent && parent->command_flags & MS_PIPE)
 	{
 		if (command->command_flags & MS_LAST)
-        {
-            if (out_pipe[1] != -1)
-                close(out_pipe[1]);
-            out_pipe[1] = -1;
-        }
-		pid = execute_process(parent, command, in_pipe, out_pipe);
+			close_fd(&out_pipe[1]);
+		pid = execute_process(command, in_pipe, out_pipe);
 		if (pid < 0)
+		{
+			parent->error = errno;
 			return (-1);
-		// if (command->command_flags & MS_LAST)
-		// 	return (get_exit_status(pid));
+		}
 		parent->pid = pid;
 		return (0);
 	}
-	if (command->redirections && command->redirections->size && create_files(command, command->redirections) < 0)
+	if (handle_redirections(command) < 0)
 		return (1);
-	return (execute_simple_command(parent, command, in_pipe, out_pipe));
+	return (execute_simple_command(command, in_pipe, out_pipe));
 }

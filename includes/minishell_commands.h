@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/15 19:03:47 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/17 16:40:13 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,14 @@ typedef struct	s_command
 	t_ms_context		*context;
 }				t_command;
 
+int		is_builtin(char *command_name);
 int		ms_heredoc(t_command *command, int id);
-
 int		init_command(t_command *command);
-int		create_command(t_parse_tree *node, t_stack *stack, int (*factory)(t_parse_tree *, t_command *, t_stack *));
+int		clear_command(t_command *command);
+int		reset_commands(t_darray *commands);
 int		delete_commands(t_darray *commands);
-int		set_command_fields(t_parse_tree *node, t_command *command, t_stack *stack);
+int		create_command(t_parse_tree *node, t_stack *stack);
+int		delete_commands(t_darray *commands);
+int		set_command_fields(t_parse_tree *node, t_command *command);
 
 #endif

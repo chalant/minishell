@@ -82,13 +82,13 @@ int	set_file_descriptor(t_command *command, t_redirection *redirection, int fd)
 {
 	if (redirection->redirection_flags & MS_READ)
 	{
-		if (command->input && !(command->command_flags & MS_I_INJECT))
+		if (command->input > 0 && !(command->command_flags & MS_I_INJECT))
 			close(command->input);
 		command->input = fd;
 	}
 	else if (redirection->redirection_flags & MS_WRITE)
 	{
-		if (command->output && !(command->command_flags & MS_O_INJECT))
+		if (command->output > 0 && !(command->command_flags & MS_O_INJECT))
 			close(command->output);
 		command->output = fd;
 	}
@@ -111,7 +111,7 @@ int	create_files(t_command *command, t_darray *redirections)
 			fd = open(redirection->tmp_file, redirection->file_flags, redirection->mode);
 		set_file_descriptor(command, redirection, fd);
 		if (fd < 0)
-			return (ms_perror(redirection->file_path, NULL, NULL, errno) - 2);
+			return (ms_perror(redirection->file_path, NULL, NULL, errno) * -1);
 	}
 	return (1);
 }

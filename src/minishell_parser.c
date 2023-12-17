@@ -1,197 +1,226 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell_parser.c                                 :+:      :+:    :+:   */
+/*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/23 13:49:26 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/07 18:16:42 by ychalant         ###   ########.fr       */
+/*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
+/*   Updated: 2023/12/17 12:01:34 by yves             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+# include "minishell.h"
 
-int	init_tree(t_parse_tree *tree)
-{
-	tree->rule_name = NULL;
-	tree->children = NULL;
-	tree->token = NULL;
-	tree->terminal = 1;
-	tree->start = 0;
-	tree->end = 0;
-	tree->start_rule = 0;
-	tree->rule = 0;
-	return (1);
-}
-
-t_parser_state	next_state(int depth, int node, t_ms_rule *rule)
-{
-	t_parser_state	state;
-
-	state.depth = depth;
-	state.node = node;
-	state.rule = rule;
-	return (state);
-}
-
-t_parse_tree	*get_subtree(t_parse_tree *tree, int index)
-{
-	t_parse_tree	subtree;
-	int				i;
-
-	if (index >= tree->children->actual_size)
-	{
-		i = -1;
-		while (++i < index + 1 - tree->children->max_size)
-		{
-			init_tree(&subtree);
-			if (ft_darray_append(tree->children, &subtree) < 0)
-				return (NULL);
-		}
-	}
-	return (ft_darray_get(tree->children, index));
-}
-
-void	set_subtree(t_parse_tree *subtree, char *rule_name, int start, int end)
-{
-	subtree->rule_name = rule_name;
-	subtree->start = start;
-	subtree->end = end;
-}
-
-int	process_terminal(t_parse_tree *tree, t_parsing_data *data,
-	t_parser_state state, t_ms_symbol *symbol)
-{
-	t_parse_tree	*subtree;
-	t_token			*token;
-
-	token = (t_token *)ft_darray_get(data->tokens, state.node);
-	if (state.node >= tree->end)
-		return (0);
-	else if (symbol->match(symbol, token))
-	{
-		subtree = get_subtree(tree, state.depth);
-		subtree->token = token;
-		set_subtree(subtree, token->string, state.node, state.node);
-		ft_darray_set(tree->children, subtree, state.depth);
-		if (state.node < data->input_length)
-			//todo: errors
-			ms_search_core(tree, data,
-				next_state(state.depth + 1, state.node + 1, state.rule));
-		return (1);
-	}
-	return (0);
-}
-
-int	process_non_terminal(t_parse_tree *tree, t_parsing_data *data,
-	t_parser_state state, t_ms_symbol *symbol)
+int	print_earley(t_earley_set **sets, t_ms_grammar *grammar, int size)
 {
 	int				i;
-	t_parser_state	nstate;
-	t_ms_edge		*item;
-	t_darray		*edges;
-	t_parse_tree	*subtree;
+	int				j;
+	int				k;
+	t_earley_item	*item;
+	t_earley_set	*set;
 
-	edges = get_edges(data->chart, state.node);
-	item = (t_ms_edge *)edges->contents;
 	i = -1;
-	while (++i < edges->size)
+	while (++i < size)
 	{
-		if (strcmp(data->grammar->rules[(item + i)->rule]->name, symbol->name) == 0)
+		j = -1;
+		set = sets[i];
+		printf("=================(%d)==================\n\n", i);
+		while (++j < set->items->size)
 		{
-			nstate = next_state(state.depth + 1, (item + i)->finish, state.rule);
-			if (ms_search_core(tree, data, nstate) > 0)
+			item = (t_earley_item *)set->items->contents + j;
+			printf("%s -> ", grammar->rules[item->rule]->name);
+			k = -1;
+			while (++k < grammar->rules[item->rule]->length)
 			{
-				subtree = get_subtree(tree, state.depth);
-				//todo: errors.
-				set_subtree(subtree, symbol->name, state.node, nstate.node);
-				subtree->terminal = 0;
-				//ft_darray_set(tree->children, subtree, state.depth);
+				if (k == item->next)
+					printf("• ");
+				if (k != grammar->rules[item->rule]->length - 1)
+					printf("%s ", grammar->rules[item->rule]->symbols[k]->name);
 			}
-			if (nstate.node == tree->end)
-				return (1);
+			printf("(%d)\n", item->start);
+		}
+		printf("\n");
+	}
+	return (0);
+}
+
+int	print_dearley(t_darray *sets, t_ms_grammar *grammar, int size)
+{
+	int				i;
+	int				j;
+	int				k;
+	t_earley_item	*item;
+	t_earley_set	*set;
+
+	i = -1;
+	while (++i < size)
+	{
+		j = -1;
+		set = ft_darray_get(sets, i);
+		printf("=================(%d)==================\n\n", i);
+		while (++j < set->items->size)
+		{
+			item = (t_earley_item *)set->items->contents + j;
+			printf("%s -> ", grammar->rules[item->rule]->name);
+			k = -1;
+			while (++k < grammar->rules[item->rule]->length)
+			{
+				if (k == item->next)
+					printf("• ");
+				if (k != grammar->rules[item->rule]->length - 1)
+					printf("%s ", grammar->rules[item->rule]->symbols[k]->name);
+			}
+			printf("(%d)\n", item->start);
+		}
+		printf("\n");
+	}
+	return (0);
+}
+
+int	reverse_earley(t_darray *sets, t_ms_grammar *grammar)
+{
+	int				i;
+	int				j;
+	int				k;
+	t_earley_item	*item;
+	t_earley_set	*set;
+	t_earley_set	**reversed;
+
+	i = -1;
+	reversed = malloc(sizeof(t_earley_set *) * (sets->size));
+	ft_bzero(reversed, sets->size);
+	while (++i < sets->size)
+	{
+		reversed[i] = malloc(sizeof(t_earley_set));
+		reversed[i]->items = malloc(sizeof(t_darray));
+		ft_darray_init(reversed[i]->items, sizeof(t_earley_item), sets->size);
+	}
+    item = malloc(sizeof(t_earley_item));
+	i = -1;
+	while (++i < sets->size)
+	{
+		j = -1;
+        set = ft_darray_get(sets, i);
+		while (++j < set->items->size)
+		{
+            ft_memcpy(item, ft_darray_get(set->items, j), sizeof(t_earley_item));
+			if (item->completed)
+			{
+				k = item->start;
+				item->start = i;
+				ft_darray_append(reversed[k]->items, item);
+			}
+		}
+		reversed[i]->size = j;
+	}
+	print_earley(reversed, grammar, sets->size);
+	return (0);
+}
+
+void print_parse_tree(t_parse_tree *node, int depth)
+{
+	int	i;
+	t_parse_tree *child;
+
+	if (!node)
+		return ;
+	if (!node->rule_name)
+		return ;
+	i = -1;
+	for (int i = 0; i < depth; i++)
+		printf("   |");
+	printf("%s\n", node->rule_name);
+	if (node->terminal)
+		return ;
+	if (!node->children)
+		return ;
+	while (++i < node->children->size)
+	{
+		child = (t_parse_tree *)node->children->contents + i;
+		print_parse_tree(child, depth + 1);
+	}
+}
+
+int	build_chart(t_darray *sets, t_graph *graph, int size)
+{
+	int				i;
+	int				j;
+	t_ms_edge		edge;
+	t_earley_item	*item;
+	t_earley_set	*set;
+
+	i = -1;
+	while (++i < size)
+	{
+		j = -1;
+		set = ft_darray_get(sets, i);
+		while (++j < set->items->size)
+		{
+			item = ft_darray_get(set->items, j);
+			if (item->completed)
+			{
+				edge.finish = i;
+				edge.start = item->start;
+				edge.rule = item->rule;
+				add_edge(graph, edge.start, &edge);
+			}
 		}
 	}
 	return (0);
 }
 
-int	ms_search_core(t_parse_tree *tree, t_parsing_data *data,
-	t_parser_state state)
+int update_parsing_data(t_parsing_data *data, int size)
 {
-	t_ms_symbol		*symbol;
-
-	if (state.depth >= state.rule->length - 1)
-		return (1);
-	symbol = state.rule->symbols[state.depth];
-	if (symbol->symbol_type == MS_TERMINAL_SYMBOL)
-		return (process_terminal(tree, data, state, symbol));
-	else if (symbol->symbol_type == MS_NON_TERMINAL_SYMBOL)
-		return (process_non_terminal(tree, data, state, symbol));
-	return (-1);
-}
-
-int	ms_search(t_parse_tree *parse_tree, t_parsing_data *data, int rule)
-{
-	t_parser_state	state;
-
-	state.depth = 0;
-	state.node = parse_tree->start;
-	state.rule = data->grammar->rules[rule];
-	parse_tree->rule = rule;
-	return (ms_search_core(parse_tree, data, state));
-}
-
-int	fill_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
-{
-	int				i;
-	t_ms_edge		*edge;
-	t_darray		*edges;
+	int	i;
 
 	i = -1;
-	edges = get_edges(data->chart, parse_tree->start);
-	while (++i < edges->size)
+	while (++i < size)
 	{
-		edge = (t_ms_edge *)edges->contents + i;
-		if (edge->finish == parse_tree->end && strcmp(parse_tree->rule_name,
-				data->grammar->rules[edge->rule]->name) == 0)
-			if (ms_search(parse_tree, data, edge->rule) < 0)
-				return (-1);
+		add_earley_set(data->earley_sets, 10);
+		add_adjacency_list(data->chart, sizeof(t_ms_edge), 10);
 	}
-	return (1);
+	return (0);
 }
 
-int	build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
+int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 {
-	int				i;
-	t_parse_tree	*child;
-	t_parse_tree	subtree;
-
-	if (parse_tree->terminal
-		|| parse_tree->start == parse_tree->end)
-		return (0);
-	i = -1;
-	if (!parse_tree->children)
-	{
-		parse_tree->children = malloc(sizeof(t_darray));
-		if (!parse_tree->children)
-			return (-1);
-		if (ft_darray_init(parse_tree->children,
-				sizeof(t_parse_tree), 3) < 0)
-			return (-1);
-		while (++i < 3)
-		{
-			init_tree(&subtree);
-			ft_darray_append(parse_tree->children, &subtree);
-		}
-	}
-	if (fill_parse_tree(parse_tree, data) < 0)
+	tree->start = 0;
+	tree->rule_name = data->grammar->start_rule;
+	tree->end = data->input_length - 1;
+	tree->terminal = 0;
+	ms_start_rule(tree, data);
+	if (build_parse_tree(tree, data) < 0)
 		return (-1);
-	i = -1;
-	while (++i < parse_tree->children->size)
+	//todo: remove this since it is for debugging.
+	//print_parse_tree(tree, 0);
+	return (0);
+}
+
+/*
+attempts to match the input with the grammar.
+returns 2 if there is a syntax error
+returns -1 if there is an internal error
+returns 0 otherwise
+*/
+int	recognize_input(t_parsing_data *data, void *context)
+{
+	t_earley_set	*last_set;
+
+	update_parsing_data(data, data->tokens->size);
+	if (build_earley_items(data, context) < 0)
+		return (-1);
+	//print_dearley(data->earley_sets, data->grammar, data->earley_sets->size);
+	last_set = ft_darray_get(data->earley_sets, data->earley_sets->size - 1);
+	if (!last_set->items->size)
 	{
-		child = (t_parse_tree *)parse_tree->children->contents + i;
-		build_parse_tree(child, data);
+		ms_message_header(data, ms_syntax_error, 2);
+		return (2);
 	}
-	return (1);
+	if (build_chart(data->earley_sets, data->chart, data->tokens->size) < 0)
+		return (-1);
+	//reverse_earley(data->earley_sets, data->grammar);
+	data->input_length = data->tokens->size;
+	data->chart_size = data->tokens->size;
+	return (0);
 }

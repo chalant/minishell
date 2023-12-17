@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/16 16:13:39 by yves             ###   ########.fr       */
+/*   Updated: 2023/12/17 16:50:58 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	launch_heredocs(t_command *command, int *id)
 {
-	if (command->redirections)
+	if (command->redirections && (command->command_flags & MS_OPERAND || command->command_flags & MS_REDIR))
 	{
 		*id += 1;
 		return (ms_heredoc(command, *id));
@@ -33,7 +33,6 @@ int	launch_heredocs(t_command *command, int *id)
 
 int	distribute_fds(t_command *parent, t_command *command)
 {
-	//todo mark commands as injected to avoid being closed when creating files.
 	if (command && !command->input)
 	{
 		command->input = parent->input;
@@ -52,22 +51,12 @@ int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_p
 	int	status;
 	//todo: check if command exists
 	//todo: handle errors
-	status = command->redirections && command->redirections->size && create_files(command, command->redirections) < 0;
+	status = handle_redirections(command) < 0;
+	if (status)
+		return (close_fd(&out_pipe[1]) * status);
 	distribute_fds(command, command->left);
 	if (!parent || !(command->command_flags & MS_AND))
-	{
-		if (out_pipe[1] != -1)
-			close(out_pipe[1]);
-		out_pipe[1] = -1;
-	}
-	//close the pipe in case of failure.
-	if (status)
-	{
-		if (out_pipe[1] != -1)
-			close(out_pipe[1]);
-		out_pipe[1] = -1;
-		return (status);
-	}
+		close_fd(&out_pipe[1]);
 	status = execute_command(command, command->left, in_pipe, out_pipe);
 	if (status == 0)
 	{
@@ -77,27 +66,16 @@ int	execute_and(t_command *parent, t_command *command, int in_pipe[2], int out_p
 	return (status);
 }
 
-//todo: if the left command fails, we shouldn't close the fds... how ?
 int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
-	//todo: handle errors
-	status = command->redirections && command->redirections->size && create_files(command, command->redirections) < 0;
-	distribute_fds(command, command->left);
+	status = handle_redirections(command) < 0;
 	if (status)
-	{
-		if (out_pipe[1] != -1)
-			close(out_pipe[1]);
-		out_pipe[1] = -1;
-		return (status);
-	}
+		return (close_fd(&out_pipe[1]) * status);
+	distribute_fds(command, command->left);
 	if (!parent || !(command->command_flags & MS_OR))
-	{
-		if (out_pipe[1] != -1)
-			close(out_pipe[1]);
-		out_pipe[1] = -1;
-	}
+		close_fd(&out_pipe[1]);
 	status = execute_command(command, command->left, in_pipe, out_pipe);
 	if (status > 0)
 	{
@@ -110,11 +88,7 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 int	execute_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	if (!command)
-	{
-		close(out_pipe[1]);
-		out_pipe[1] = -1;
-		return (0);
-	}
+		return (close_fd(&out_pipe[1]) * 0);
 	if (command->command_flags & MS_OPERAND)
 		command->context->status = execute_command_core(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_AND)
@@ -126,7 +100,7 @@ int	execute_command(t_command *parent, t_command *command, int in_pipe[2], int o
 	if (g_global_status)
 	{
 		command->context->status = g_global_status;
-		g_global_status = 0;
+		g_global_status = command->context->status;
 	}
 	return (command->context->status);
 }
@@ -176,14 +150,16 @@ int	minishell_execute(t_command *command)
 	in_pipe[0] = -1;
 	in_pipe[1] = -1;
 	launch_heredocs(command, &hd_id);
+	if (handle_redirections(command) < 0)
+		return (1);
 	if (!command->command_name)
 		return (0);
 	status = execute_command(NULL, command, in_pipe, out_pipe);
 	//todo: check if pipes are opened first.
-	close(in_pipe[0]);
-	close(in_pipe[1]);
-	close(out_pipe[0]);
-	close(out_pipe[1]);
+	close_fd(&in_pipe[0]);
+	close_fd(&in_pipe[1]);
+	close_fd(&out_pipe[0]);
+	close_fd(&out_pipe[1]);
 	while (wait(NULL) != -1)
 		continue ;
 	if (!access(MS_HEREDOC_PATH, F_OK))

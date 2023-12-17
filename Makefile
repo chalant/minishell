@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/15 20:38:12 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/12/17 16:58:20 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ INCLUDES_FILES = minishell.h \
 				 minishell_execution.h
 
 SRC_FILES =	minishell_main.c \
-			minishell.c \
+			minishell_signal_handlers.c \
 			minishell_exit.c \
 			minishell_cd.c \
 			minishell_pwd.c \
@@ -47,8 +47,11 @@ SRC_FILES =	minishell_main.c \
 			minishell_tokens_util.c \
 			minishell_token_expansion.c \
 			minishell_recogniser.c \
-			minishell_parser.c \
+			minishell_tree_builder.c \
 			minishell_parse_tree.c \
+			minishell_parse_data.c \
+			minishell_parser_utils.c \
+			minishell_parser.c \
 			minishell_graph.c \
 			minishell_grammar.c \
 			minishell_grammar_rules.c \
@@ -61,10 +64,12 @@ SRC_FILES =	minishell_main.c \
 			minishell_execution_core.c \
 			minishell_execution.c \
 			minishell_path.c \
+			minishell_command_utils.c \
 			minishell_command_factory.c \
-			minishell_redirections.c \
+			minishell_redirection_utils.c \
+			minishell_redirection_factory.c \
 			minishell_semantic_operators.c \
-			minishell_semantics_utils.c \
+			minishell_semantic_utils.c \
 			minishell_earley_set.c \
 			minishell_history_utils.c \
 			minishell_heredoc.c

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_parsing.h                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/17 16:41:39 by ychalant          #+#    #+#             */
+/*   Updated: 2023/12/17 16:41:40 by ychalant         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_PARSING_H
 # define MINISHELL_PARSING_H
 
@@ -73,15 +85,17 @@ int		free_parse_data(t_parsing_data *data, t_parse_tree *tree);
 int		recognize_input(t_parsing_data *data, void *context);
 int		parse_input(t_parsing_data *data, t_parse_tree *tree);
 int		ms_prompt_command(t_ms_symbol *symbol, t_token *token);
+int		ms_syntax_error(void *input);
 
+int		ms_start_rule(t_parse_tree *tree, t_parsing_data *data);
 int		ms_search_core(t_parse_tree *tree, t_parsing_data *data, t_parser_state state);
 int		build_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data);
 int		clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(void *)), int del);
 
 int		build_earley_items(t_parsing_data *data, void *context);
 int		add_earley_set(t_darray *sets, int size);
+int		clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void *)));
 void	delete_earley_set(void *set);
 void	reset_earley_set(void *set);
-int		clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void *)));
 
 #endif

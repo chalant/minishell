@@ -51,8 +51,21 @@ run_test_case() {
 
 make
 
+#check for proper status
+run_test_case "< a < b" 5
+
+run_test_case "<< test" 5
+
+run_test_case "< a < b (<c)" 5
+
+run_test_case "cat -e < fail" 5
+
 # ensure that the expression on the left of && is displayed
-run_test_case "(cat -e | cat -e) < gameplan.txt && echo hello" 5
+run_test_case "(cat -e | cat -e) < gameplan.txt && echo helllo" 5
+
+run_test_case "< gameplan.txt (cat -e | cat -e) " 5
+
+run_test_case "< gameplan.txt cat -e | (cat -e | cat -e) " 5
 
 # execute heredocs in order and display errors properly
 run_test_case "cat -e < a << how | cat -e < b << are | cat -e < c << you" 5
@@ -73,6 +86,7 @@ run_test_case "((cat -e && cat -e) | (cat -e && cat -e )) < Makefile" 5
 run_test_case "((cat -e && cat -e) && (cat -e && cat -e )) < Makefile" 5
 run_test_case "((cat -e && cat -e) || (cat -e || cat -e )) < Makefile" 5
 
+# some failed redirections
 run_test_case "((cat -e && cat -e) < fail | (cat -e && cat -e )) < Makefile" 5
 run_test_case "((cat -e || cat -e) < fail | (cat -e && cat -e )) < Makefile" 5
 run_test_case "((cat -e && cat -e) < fail | (cat -e || cat -e )) < Makefile" 5
@@ -92,6 +106,8 @@ run_test_case "echo hello > a how > b are > c you" 5
 # make sure the right command is executed on fail.
 run_test_case "cat -e fail || echo hello" 5
 
+run_test_case "< gameplan.txt cat -e | cat -e" 5
+
 # failing tests: might need to fix this
 #------------------------------------------------
 run_test_case "< gameplan.txt | cat -e"
@@ -105,3 +121,4 @@ run_test_case "(cat -e < fail || cat -e ) < Makefile" 5
 run_test_case "(cat -e || cat -e < fail ) < Makefile" 5
 run_test_case "(cat -e < fail && cat -e ) < Makefile" 5
 
+rm a b c

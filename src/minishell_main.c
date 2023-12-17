@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_main.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/15 20:39:24 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/17 16:39:34 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,80 +46,44 @@ static int	ms_add_herstory(char *line)
 	return (0);
 }
 
+int	execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array)
+{
+	int			i;
+	t_command	*command;
+
+	reset_commands(command_array);
+	command = build_command(command_array, tree);
+	if (!command)
+		return (-1);
+	i = -1;
+	while (++i < command_array->actual_size)
+		((t_command *)ft_darray_get(command_array, i))->context = data;
+	return (minishell_execute(command));
+}
+
 // should free 'line'
 static int	ms_process_line(t_ms_context *data, t_token_info *info)
 {
-	int	recogniser_status;
-
 	if (g_global_status)
 	{
 		data->status = g_global_status;
 		g_global_status = 0;
 	}
 	if (ms_tokeniser(&data->line, data->parse_data.tokens, info))
-	{
-		ft_darray_delete(data->parse_data.tokens, ms_clear_token);
-		return (1);
-	}
-	recogniser_status = recognize_input(&(data->parse_data), data);
-	if (recogniser_status < 0)
 		return (-1);
-	if (recogniser_status != 2)
+	data->status = recognize_input(&(data->parse_data), data);
+	if (data->status < 0)
+		return (-1);
+	if (data->status != 2)
 	{
-		parse_input(&(data->parse_data), &(data->tree));
+		if (parse_input(&(data->parse_data), &(data->tree)) < 0)
+			return (-1);
 		data->status = execute(data, &(data->tree), &(data->commands));
+		if (data->status == ERR_NOMEM)
+			return (data->status);
 		return (ms_add_herstory(data->line));
 	}
-	data->status = 2;
 	return (ms_add_herstory(data->line));
-}
-
-void	ms_new_prompt(int sig)
-{
-	pid_t	check;
-
-	check = wait3(NULL, WNOHANG, NULL);
-	if (sig != SIGINT)
-		return ;
-	if (check == -1)
-		write(STDOUT_FILENO, "^C", 2);
-	g_global_status = 130;
-	write(STDOUT_FILENO, "\n", 1);
-	if (check > -1)
-		return ;
-	rl_replace_line("", 1);
-	rl_on_new_line();
-	rl_redisplay();
-}
-
-void	ms_kill_pid(int sig)
-{
-	pid_t	check;
-
-	check = wait3(NULL, WNOHANG, NULL);
-	if (sig != SIGQUIT)
-		return ;
-	if (check > -1)
-	{
-		// kill(check, SIGQUIT);
-		printf("Quit: %i\n", SIGQUIT);
-		g_global_status = 131;
-	}
-}
-
-static int	ms_set_signals(t_ms_context *data)
-{
-	extern int	rl_catch_signals;
-
-	rl_catch_signals = 0;
-	ft_bzero(&(data->act_sigint), sizeof(struct sigaction));
-	ft_bzero(&(data->act_sigquit), sizeof(struct sigaction));
-	data->act_sigint.sa_handler = ms_new_prompt;
-	data->act_sigquit.sa_handler = ms_kill_pid;
-	if (sigaction(SIGINT, &(data->act_sigint), NULL)
-		|| sigaction(SIGQUIT, &(data->act_sigquit), NULL))
-		return (1);
-	return (0);
 }
 
 static int	ms_init_parse(t_ms_context *data)

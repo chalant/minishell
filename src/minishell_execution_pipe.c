@@ -14,12 +14,10 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
     status = 0;
 	if (out_pipe[1] == -1)
 	{
-		if (out_pipe[0] != -1)
-			close(out_pipe[0]);
-		if (out_pipe[1] != -1)
-			close(out_pipe[1]);
+		close_fd(&out_pipe[0]);
+		close_fd(&out_pipe[1]);
 		if (pipe(out_pipe) < 0)
-			return ((ms_perror("pipe", NULL, NULL, errno) - 2));
+			return ((ms_perror("pipe", NULL, NULL, errno) * -1));
 	}
 	// //todo: handle errors
 	if (command->redirections && command->redirections->size && create_files(command, command->redirections) < 0)
@@ -34,12 +32,10 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	else if (command && command->error == -1)
 		return (-1);
 	copy_pipe(out_pipe, in_pipe);
-	pipe(out_pipe);
+	if (pipe(out_pipe) < 0)
+		return ((ms_perror("pipe", NULL, NULL, errno) * -1));
 	if (!parent || !(parent->command_flags & MS_PIPE))
-	{
-		close(out_pipe[1]);
-		out_pipe[1] = -1;
-	}
+		close_fd(&out_pipe[1]);
 	if (command->right && !command->right->output)
 		command->right->output = command->output;
 	
@@ -67,10 +63,6 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	if ((parent && !(parent->command_flags & MS_PIPE)) || (command->right && command->right->command_flags & MS_LAST))
 		status = get_exit_status(command->pid);
     if (status)
-        {
-		close(out_pipe[1]);
-		out_pipe[1] = -1;
-        return (1);
-	}
+		return (close_fd(&out_pipe[1]));
 	return (0);
 }
