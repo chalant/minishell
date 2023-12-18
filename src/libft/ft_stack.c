@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_stack.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/18 12:09:47 by ychalant          #+#    #+#             */
+/*   Updated: 2023/12/18 12:09:54 by ychalant         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
 int	ft_stack_init(t_stack *stack, t_darray *elements)
@@ -12,7 +24,8 @@ void	*ft_stack_pop(t_stack *stack)
 {
 	stack->size -= 1;
 	if (stack->mode == FT_FIFO)
-		return (ft_darray_get(stack->elements, stack->elements->size - 1 - stack->size));
+		return (ft_darray_get(stack->elements,
+				stack->elements->size - 1 - stack->size));
 	return (ft_darray_get(stack->elements, stack->size));
 }
 

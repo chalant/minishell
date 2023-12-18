@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_grammar_matching.c                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/18 12:02:14 by ychalant          #+#    #+#             */
+/*   Updated: 2023/12/18 12:03:01 by ychalant         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int add_eof_token(t_ms_context *context)
@@ -31,7 +43,6 @@ int ms_prompt_command(t_ms_symbol *symbol, t_token *token)
 	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
 	g_global_status = MS_SUBPROMPT_INT;
 	line = readline("> ");
-	//todo: add the command to history
 	if (ms_join_line(context, line, " ") < 0)
 		return (-1);
 	if (!line)
@@ -49,7 +60,7 @@ int ms_prompt_command(t_ms_symbol *symbol, t_token *token)
 	return (1);
 }
 
-// only works for reserved symbols (IS_RESERVED flag is the expansion check)
+// only works for reserved symbols
 int ms_match_equal(t_ms_symbol *symbol, t_token *token)
 {
 	size_t	len;

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell_parse_tree.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/18 12:05:11 by ychalant          #+#    #+#             */
+/*   Updated: 2023/12/18 12:05:12 by ychalant         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void reset_tree_node(void *node)
@@ -34,4 +46,3 @@ int	clear_parse_tree(t_parse_tree *tree, int(*del_method)(t_darray *, void(*)(vo
 	}
 	return (0);
 }
-

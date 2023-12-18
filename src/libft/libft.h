@@ -5,10 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2023/12/06 14:32:29 by ychalant         ###   ########.fr       */
+/*   Created: 2023/12/18 12:08:36 by ychalant          #+#    #+#             */
+/*   Updated: 2023/12/18 12:08:37 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
 
 
 #ifndef LIBFT_H
