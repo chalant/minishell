@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 19:48:08 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/18 20:24:26 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	build_and_execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_
 // should free 'line'
 static int	ms_process_line(t_ms_context *data, t_token_info *info)
 {
-	int	check;
+	int	recognizer_status;
 
 	if (g_global_status)
 	{
@@ -50,10 +50,10 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 	}
 	if (ms_tokeniser(&data->line, data->parse_data.tokens, info))
 		return (-1);
-	check = recognize_input(&(data->parse_data), data);
-	if (check < 0)
+	recognizer_status = recognize_input(&(data->parse_data), data);
+	if (recognizer_status < 0)
 		return (-1);
-	if (check != 2)
+	if (recognizer_status != 2)
 	{
 		if (parse_input(&(data->parse_data), &(data->tree)) < 0)
 			return (-1);
@@ -62,6 +62,7 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 			return (ms_perror(NULL, NULL, "FATAL MEMORY ERROR", 0));
 		return (ms_add_herstory(data->line));
 	}
+	data->status = recognizer_status;
 	return (ms_add_herstory(data->line));
 }
 

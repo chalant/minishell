@@ -38,11 +38,12 @@ run_test_case() {
     timeout_seconds="$2"
 
 	echo "----------------------------------------------------------"
-	your_output=$(echo "$test_command" | ./minishell | awk 'NR > 1 { lines[NR-1] = $0 } END { for(i=1;i<NR-1;i++) print lines[i] }')
-	your_status=$(echo $?)
-    bash_output=$(echo "$test_command" | bash)
+    your_output=$(echo $test_command | ./minishell)
+    your_status=$(echo $?)
+    bash_output=$(echo $test_command | bash)
 	bash_status=$(echo $?)
 	echo -n "\e[33m\"$test_command\"\e[0m Output: "
+    your_output=$(echo $your_output | awk 'NR > 1 { lines[NR-1] = $0 } END { for(i=1;i<NR-1;i++) print lines[i] }')
     compare_output "$your_output" "$bash_output"
 	echo -n "\e[33m\"$test_command\"\e[0m Status: "
 	compare_status "$your_status" "$bash_status"

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/18 14:24:38 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 19:01:08 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 		if (ms_join_line(command->context, line, "\n") < 0)
 			return (-1);
 	}
-	if (ms_add_separator(command->context, line, "\n") < 0)
+	if (line && ms_add_separator(command->context, line, "\n") < 0)
 		return (-1);
 	if (!line)
 		ms_message_header(redirection->file_path, eof_warning, STDERR_FILENO);
