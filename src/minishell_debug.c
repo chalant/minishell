@@ -180,3 +180,23 @@ void	print_commands(t_command *command, int depth)
 	print_commands(command->left, depth + 1);
 	print_commands(command->right, depth + 1);
 }
+
+void	test_print_tokens(t_ms_context *data)
+{
+	printf("## tokens: ");
+	int i = 0;
+	while (i < data->parse_data.tokens->size)
+	{
+		// printf("%2i|", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->flags & IS_SPECIAL);
+		printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->string);
+		i++;
+	}
+	printf("\n## masks : ");
+	i = 0;
+	while (i < data->parse_data.tokens->size)
+	{
+		printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->mask_exp);
+		i++;
+	}
+	printf("\n");
+}

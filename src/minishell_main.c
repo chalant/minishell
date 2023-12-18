@@ -3,39 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_main.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 13:06:46 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 17:47:03 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 int	g_global_status;
-
-// void	test_print_tokens(t_ms_context *data)
-// {
-// // TOKEN PRINT IN PROGRESS
-// 	printf("## tokens: ");
-// 	int i = 0;
-// 	while (i < data->parse_data.tokens->size)
-// 	{
-// 		// printf("%2i|", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->flags & IS_SPECIAL);
-// 		printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->string);
-// 		i++;
-// 	}
-// 	printf("\n## masks : ");
-// 	i = 0;
-// 	while (i < data->parse_data.tokens->size)
-// 	{
-// 		printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->mask_exp);
-// 		i++;
-// 	}
-// 	printf("\n");
-// // TOKEN PRINT IS OVER
-// }
-
 
 // free's 'line'
 static int	ms_add_herstory(char *line)

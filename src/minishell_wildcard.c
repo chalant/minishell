@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/15 20:27:03 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/18 17:31:19 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static int	ms_wildcard_empty(t_darray *tokens, t_token *token)
 
 static int	ms_open_dir(DIR **dirp, t_dirent **entryp, t_token *token)
 {
+	*entryp = NULL;
 	*dirp = opendir(".");
 	if (!*dirp)
 	{
