@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 18:16:14 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 18:25:36 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/18 18:48:48 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,10 +78,10 @@ static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 	}
 	if (check != ERR_EOF_QUOTED)
 		return (check);
+	g_global_status = 2;
 	write(2, "shellshock: unexpected EOF while looking for matching `", 55);
 	write(STDERR_FILENO, &quote, 1);
-	write(STDERR_FILENO, "'\n", 2);
-	return (check);
+	return (write(STDERR_FILENO, "'\n", 2));
 }
 
 // error: 1, prints msg
