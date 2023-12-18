@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 13:32:14 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 18:17:05 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int	execute_command(t_command *parent, t_command *command,
 	if (g_global_status)
 	{
 		command->context->status = g_global_status;
-		g_global_status = command->context->status;
+		g_global_status = 0;
 	}
 	return (command->context->status);
 }

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 17:47:03 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/18 18:25:38 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ int	build_and_execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_
 // should free 'line'
 static int	ms_process_line(t_ms_context *data, t_token_info *info)
 {
+	int	check;
+
 	if (g_global_status)
 	{
 		data->status = g_global_status;
@@ -48,16 +50,16 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 	}
 	if (ms_tokeniser(&data->line, data->parse_data.tokens, info))
 		return (-1);
-	data->status = recognize_input(&(data->parse_data), data);
-	if (data->status < 0)
+	check = recognize_input(&(data->parse_data), data);
+	if (check < 0)
 		return (-1);
-	if (data->status != 2)
+	if (check != 2)
 	{
 		if (parse_input(&(data->parse_data), &(data->tree)) < 0)
 			return (-1);
 		data->status = build_and_execute(data, &(data->tree), &(data->commands));
 		if (data->status == ERR_NOMEM)
-			return (data->status);
+			return (ms_perror(NULL, NULL, "FATAL MEMORY ERROR", 0));
 		return (ms_add_herstory(data->line));
 	}
 	return (ms_add_herstory(data->line));
@@ -95,10 +97,10 @@ int	main(void)
 	data.line = readline(MS_PROMPT_MSG);
 	while (data.line)
 	{
-		if (ms_process_line(&data, &info) || data.status == ERR_NOMEM)
+		if (ms_process_line(&data, &info))
 			ms_flush_exit(&data, 1);
 		reset_parse_data(&data.parse_data, &data.tree);
 		data.line = readline(MS_PROMPT_MSG);
 	}
-	ms_flush_exit(&data, 0);
+	ms_flush_exit(&data, data.status);
 }
