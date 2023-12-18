@@ -84,5 +84,7 @@ int		delete_commands(t_darray *commands);
 int		create_command(t_parse_tree *node, t_stack *stack);
 int		delete_commands(t_darray *commands);
 int		set_command_fields(t_parse_tree *node, t_command *command);
+int		init_pipe(int	pipe_[2]);
+int		swap_pipe(int *src_pipe, int *dest_pipe);
 
 #endif
