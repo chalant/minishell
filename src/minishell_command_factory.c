@@ -47,7 +47,6 @@ int	set_command_fields(t_parse_tree *node, t_command *command)
 		return (-1);
 	if (!command->redirections)
 		return (-1);
-	//create_files(command, command->redirections);
 	command->command_flags |= MS_OPERAND;
 	return (0);
 }
@@ -74,7 +73,8 @@ int	init_command_fields(t_command *command)
 
 int	overwite_command(t_parse_tree *node, t_command *command)
 {
-	init_command_fields(command);
+	if (init_command_fields(command) < 0)
+		return (-1);
 	if (set_command_fields(node, command) < 0)
 		return (-1);
 	//todo: check if it is not an operator

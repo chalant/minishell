@@ -16,9 +16,9 @@
 int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 {
 	t_command	command;
-	t_command	*cmd;
+	// t_command	*cmd;
 
-	cmd = ft_stack_peek(stack);
+	// cmd = ft_stack_peek(stack);
 	if (flatten_tree(ft_darray_get(node->children, 2), stack) < 0)
 		return (-1);
 	init_command(&command);
@@ -26,13 +26,13 @@ int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
 	if (!command.command_name)
 		return (-1);
 	command.command_flags = MS_OPERATOR | type;
-	if (cmd && cmd->command_flags & MS_REDIR)
-	{
-		cmd->command_flags &= ~(MS_REDIR);
-		command.command_flags |= MS_REDIR;
-		command.redirections = cmd->redirections;
-		cmd->redirections = NULL;
-	}
+	// if (cmd && cmd->command_flags & MS_REDIR)
+	// {
+	// 	cmd->command_flags &= ~(MS_REDIR);
+	// 	command.command_flags |= MS_REDIR;
+	// 	command.redirections = cmd->redirections;
+	// 	cmd->redirections = NULL;
+	// }
 	return (ft_stack_push(stack, &command));
 }
 

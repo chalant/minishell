@@ -110,8 +110,11 @@ run_test_case "< gameplan.txt cat -e | cat -e" 5
 
 # failing tests: might need to fix this
 #------------------------------------------------
-run_test_case "< gameplan.txt | cat -e"
-run_test_case "< gameplan.txt | < fail && < fail"
+run_test_case "< gameplan.txt | cat -e" 5
+run_test_case "< gameplan.txt && cat -e" 5
+run_test_case "< gameplan.txt || cat -e" 5
+run_test_case "< gameplan.txt | cat -e | cat -e" 5
+run_test_case "< gameplan.txt | < fail && < fail" 5
 run_test_case "< fail"
 
 run_test_case "((cat -e && cat -e) < fail || (cat -e || cat -e )) < Makefile" 5

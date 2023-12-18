@@ -36,12 +36,12 @@ int	distribute_fds(t_command *parent, t_command *command)
 	if (command && !command->input)
 	{
 		command->input = parent->input;
-		command->command_flags |= MS_I_INJECT;
+		command->command_flags |= MS_INJECTI;
 	}
 	if (command && !command->output)
 	{
 		command->output = parent->output;
-		command->command_flags |= MS_O_INJECT;
+		command->command_flags |= MS_INJECTO;
 	}
 	return (0);
 }
@@ -85,10 +85,19 @@ int	execute_or(t_command *parent, t_command *command, int in_pipe[2], int out_pi
 	return (status);
 }
 
+int	check_redirection(t_command *command)
+{
+	if (!command->left || command->left->command_flags & MS_REDIR)
+		command->right->command_flags |= MS_NOREDIR;
+	return (0);
+}
+
 int	execute_command(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
 {
 	if (!command)
 		return (close_fd(&out_pipe[1]) * 0);
+	if (command->command_flags & MS_OPERATOR)
+		check_redirection(command);
 	if (command->command_flags & MS_OPERAND)
 		command->context->status = execute_command_core(parent, command, in_pipe, out_pipe);
 	else if (command->command_flags & MS_AND)

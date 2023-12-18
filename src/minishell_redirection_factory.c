@@ -82,13 +82,13 @@ int	set_file_descriptor(t_command *command, t_redirection *redirection, int fd)
 {
 	if (redirection->redirection_flags & MS_READ)
 	{
-		if (command->input > 0 && !(command->command_flags & MS_I_INJECT))
+		if (command->input > 0 && !(command->command_flags & MS_INJECTI))
 			close(command->input);
 		command->input = fd;
 	}
 	else if (redirection->redirection_flags & MS_WRITE)
 	{
-		if (command->output > 0 && !(command->command_flags & MS_O_INJECT))
+		if (command->output > 0 && !(command->command_flags & MS_INJECTO))
 			close(command->output);
 		command->output = fd;
 	}

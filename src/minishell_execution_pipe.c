@@ -40,8 +40,9 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 		command->right->output = command->output;
 	
 	//todo: if there is no left command, the right command should'nt redirect in.
+	//todo: mark the right so the it does not redirect in or out
 	// if (!command->left || command->left->command_flags & MS_REDIR)
-	// 	command->right->redirections = NULL;
+	// 	command->right->command_flags |= MS_NOREDIR;
 	//todo: if the parent is not a pipe, the right command should pipe to .
 	if (command->command_flags & MS_LAST)
 	{

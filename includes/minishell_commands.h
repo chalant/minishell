@@ -25,8 +25,9 @@
 # define MS_FIRST 1 << 7
 # define MS_LAST 1 << 8
 # define MS_REDIR 1 << 9
-# define MS_I_INJECT 1 << 10
-# define MS_O_INJECT 1 << 11
+# define MS_INJECTI 1 << 10
+# define MS_INJECTO 1 << 11
+# define MS_NOREDIR 1 << 12
 
 // redirection flags:
 # define MS_HEREDOC 1 << 0

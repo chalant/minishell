@@ -24,8 +24,6 @@ int	pipe_out(t_command *command, int pipe_[2])
 {
 	if (command->output > 0)
 		return (redirect_out(command));
-	else if (command->output == -1)
-		return (-1);
 	else if (pipe_[1] == -1)
 		return (0);
 	else if (dup2(pipe_[1], STDOUT_FILENO) < 0)
@@ -37,8 +35,6 @@ int	pipe_in(t_command *command, int pipe_[2])
 {
 	if (command->input > 0)
 		return (redirect_in(command));
-	else if (command->input == -1)
-		return (-1);
 	else if (pipe_[0] == -1)
 		return (0);
 	else if (dup2(pipe_[0], STDIN_FILENO) < 0)

@@ -25,7 +25,7 @@ int	redirect_in(t_command *command)
 {
 	if (dup2(command->input, STDIN_FILENO) < 0)
 		return (ms_perror("dup in", NULL, NULL, errno) - 2);
-	return (0);
+	return (1);
 }
 
 int	redirect_out(t_command *command)
@@ -53,6 +53,12 @@ int	handle_redirections(t_command *command)
 	{
 		if (create_files(command, command->redirections) < 0)
 			return (-1);
+	}
+	if (command->command_flags & MS_NOREDIR)
+	{
+		close_fd(&command->input);
+		close_fd(&command->output);
+		return (1);
 	}
 	return (1);
 }

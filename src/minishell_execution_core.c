@@ -85,7 +85,7 @@ int	ms_execve(t_command *command, int in_pipe[2], int out_pipe[2])
 	{
 		pid = fork();
 		if (pid < 0)
-			return (ms_perror("fork", NULL, NULL, errno) - 2);
+			return (ms_perror("fork", NULL, NULL, errno) * -1);
 		if (pid == 0)
 		{
 			if (pipe_io(command, in_pipe, out_pipe) < 0)

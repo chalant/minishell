@@ -47,6 +47,7 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"command_operand:command_operand ='|' command_factor\n"\
 
 	"red_command:simple_command\n"\
+	"red_command:red_command ='|' $'4'\n"\
 	"red_command:red_command ='|' command_factor\n"\
 
 	"redirection_command:redirection_list\n"\
