@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 18:25:38 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/18 19:48:08 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,11 @@ int	main(void)
 
 	g_global_status = 0;
 	data.env_excess = 0;
+	data.status = 0;
 	if (ms_envcpy(&data))
 		return (ms_perror("malloc", NULL, NULL, errno));
 	if (ms_set_signals(&data))
 		return (ms_perror("sigaction", NULL, NULL, errno));
-	data.status = 0;
 // todo: error management
 	ms_init_parse(&data);
 	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
@@ -102,5 +102,7 @@ int	main(void)
 		reset_parse_data(&data.parse_data, &data.tree);
 		data.line = readline(MS_PROMPT_MSG);
 	}
+	if (g_global_status)
+		data.status = g_global_status;
 	ms_flush_exit(&data, data.status);
 }
