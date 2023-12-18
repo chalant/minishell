@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:08:36 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:16:54 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 17:38:22 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ char				**ft_clear_ds(char **s);
 size_t				ft_strlcat(char *dst, const char *src, size_t size);
 size_t				ft_strlcpy(char *dst, const char *src, size_t size);
 size_t				ft_strlen(const char *s);
-size_t				ft_count(void *elements, size_t type_size);
 size_t				ft_count_strings(char **strings);
 
 int					ft_lstsize(t_list *lst);
