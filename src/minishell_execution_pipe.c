@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:01:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:01:54 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:43:11 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ static int	transfer_fds(t_command *command)
 
 static int	is_last_command(t_command *parent, t_command *command)
 {
-	//todo: if the parent is not a pipe, the right command should pipe to .
 	if (command->command_flags & MS_LAST)
 	{
 		command->command_flags &= ~(MS_LAST);
 		command->right->command_flags |= MS_LAST;
 	}
-	if (parent && (!(parent->command_flags & MS_PIPE) || command->command_flags & MS_LAST))
+	if (parent && (!(parent->command_flags & MS_PIPE)
+			|| command->command_flags & MS_LAST))
 	{
 		command->right->output = command->output;
 		command->command_flags &= ~(MS_LAST);
@@ -39,7 +39,8 @@ static int	is_last_command(t_command *parent, t_command *command)
 	return (0);
 }
 
-static int	execute_maybe_wait(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
+static int	execute_maybe_wait(t_command *parent, t_command *command,
+	int in_pipe[2], int out_pipe[2])
 {
 	int	status;
 
@@ -51,11 +52,12 @@ static int	execute_maybe_wait(t_command *parent, t_command *command, int in_pipe
 	return (status);
 }
 
-int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2])
+//todo: handle errors
+int	execute_pipe(t_command *parent, t_command *command,
+	int in_pipe[2], int out_pipe[2])
 {
 	if (init_pipe(out_pipe) < 0)
 		return (-1);
-	//todo: handle errors
 	if (handle_redirections(command) < 0)
 		return (1);
 	transfer_fds(command);
@@ -68,7 +70,8 @@ int	execute_pipe(t_command *parent, t_command *command, int in_pipe[2], int out_
 	is_last_command(parent, command);
 	if (execute_maybe_wait(command, command->right, in_pipe, out_pipe) < 0)
 		return (-1);
-	if ((parent && !(parent->command_flags & MS_PIPE)) || (command->right && command->right->command_flags & MS_LAST))
+	if ((parent && !(parent->command_flags & MS_PIPE))
+		|| (command->right && command->right->command_flags & MS_LAST))
 		return (get_exit_status(command->pid));
 	return (0);
 }

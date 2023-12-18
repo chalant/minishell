@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 16:41:45 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/17 16:41:46 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 14:09:10 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int				flatten_tree(t_parse_tree *root, t_stack *stack);
 int				build_operator(t_command *command, t_stack *commands);
 int         	set_redirection(t_redirection *redirection, t_parse_tree *tree);
 int				set_redirections(t_command *command, t_parse_tree *tree);
-int				create_files(t_command *command, t_darray *redirections);
+int             create_operator(t_parse_tree *node, t_stack *stack, int type, char *name);
 
 char			**get_word(t_parse_tree *node);
 

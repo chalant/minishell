@@ -6,7 +6,7 @@
 #    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/18 12:11:00 by ychalant         ###   ########.fr        #
+#    Updated: 2023/12/18 15:34:34 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,6 +46,7 @@ SRC_FILES =	minishell_main.c \
 			minishell_tokeniser_parser.c \
 			minishell_tokens_util.c \
 			minishell_token_expansion.c \
+			minishell_recogniser_utils.c \
 			minishell_recogniser.c \
 			minishell_tree_builder.c \
 			minishell_parse_tree.c \
@@ -59,10 +60,12 @@ SRC_FILES =	minishell_main.c \
 			minishell_grammar_matching.c \
 			minishell_semantics.c \
 			minishell_pipe_utils.c \
+			minishell_execution_operators.c \
 			minishell_execution_pipe.c \
 			minishell_execution_io.c \
 			minishell_execution_args.c \
-			minishell_execution_core.c \
+			minishell_execution_builtin.c \
+			minishell_execution_operands.c \
 			minishell_execution.c \
 			minishell_path.c \
 			minishell_command_utils.c \

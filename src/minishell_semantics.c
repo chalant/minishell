@@ -3,38 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_semantics.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/17 11:51:36 by yves             ###   ########.fr       */
+/*   Updated: 2023/12/18 14:08:12 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/*creates an operator and checks if there is a redirection on top of the stack*/
-int	create_operator(t_parse_tree *node, t_stack *stack, int type, char *name)
-{
-	t_command	command;
-	// t_command	*cmd;
-
-	// cmd = ft_stack_peek(stack);
-	if (flatten_tree(ft_darray_get(node->children, 2), stack) < 0)
-		return (-1);
-	init_command(&command);
-	command.command_name = name;
-	if (!command.command_name)
-		return (-1);
-	command.command_flags = MS_OPERATOR | type;
-	// if (cmd && cmd->command_flags & MS_REDIR)
-	// {
-	// 	cmd->command_flags &= ~(MS_REDIR);
-	// 	command.command_flags |= MS_REDIR;
-	// 	command.redirections = cmd->redirections;
-	// 	cmd->redirections = NULL;
-	// }
-	return (ft_stack_push(stack, &command));
-}
 
 int	handle_operator(t_parse_tree *node, t_stack *commands)
 {
@@ -64,11 +40,14 @@ int	create_redirections(t_command *new, t_parse_tree *node)
 {
 	init_command(new);
 	new->redirections = malloc(sizeof(t_darray));
-	//todo: need to free the redirections in case of failure
 	if (!new->redirections)
 		return (-1);
 	if (ft_darray_init(new->redirections, sizeof(t_redirection), 3) < 0)
+	{
+		free(new->redirections);
+		new->redirections = NULL;
 		return (-1);
+	}
 	return (set_redirections(new, node));
 }
 
@@ -111,7 +90,6 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 }
 
 //builds a command tree to be executed.
-//todo: need a status?
 t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 {
 	t_stack		commands;
@@ -123,7 +101,6 @@ t_command	*build_command(t_darray	*command_array, t_parse_tree *tree)
 	command = (t_command *)ft_stack_pop(&commands);
 	if (!command)
 		return (NULL);
-	//todo: could push back the command on top...
 	command->command_flags |= MS_LAST;
 	command->command_flags |= MS_FIRST;
 	if (command->command_flags & MS_OPERATOR)

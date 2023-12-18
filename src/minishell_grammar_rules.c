@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:03:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:03:48 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 14:16:25 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ int	init_rule(char ***result, t_ms_grammar *grammar, char **rules, int i)
 	if (!symbols)
 		return (-1);
 	result[1] = symbols;
-	grammar->rules[i]->symbols = malloc((ft_count_strings(symbols) + 1) * sizeof(t_ms_symbol *));
+	grammar->rules[i]->symbols = malloc((ft_count_strings(symbols) + 1)
+			* sizeof(t_ms_symbol *));
 	if (!grammar->rules[i]->symbols)
 		return (-1);
 	return (1);

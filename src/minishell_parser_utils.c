@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:05:37 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:05:38 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 16:08:39 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ int	ms_syntax_error(void *input)
 
 	data = (t_parsing_data *)(input);
 	i = data->earley_sets->size - 1;
-	while (i > -1 &&
-		!((t_earley_set *)ft_darray_get(data->earley_sets, i))->items->size)
+	while (i > -1 && !((t_earley_set *)ft_darray_get(
+				data->earley_sets, i))->items->size)
 		i--;
 	token = ft_darray_get(data->tokens, i);
 	if (!(token->flags & IS_EOF))

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 16:35:27 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/05 14:28:11 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 12:18:54 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,14 @@ int	ft_darray_append(t_darray *darray, void *element)
 
 	if (darray->size + 1 > darray->max_size)
 	{
-		new_elements = malloc((darray->max_size + darray->block_size) * darray->type_size);
+		new_elements = malloc((darray->max_size + darray->block_size)
+				* darray->type_size);
 		if (!new_elements)
 			return (-1);
-		ft_bzero(new_elements, (darray->max_size + darray->block_size) * darray->type_size);
-		ft_memcpy(new_elements, darray->contents, darray->max_size * darray->type_size);
+		ft_bzero(new_elements, (darray->max_size + darray->block_size)
+			* darray->type_size);
+		ft_memcpy(new_elements, darray->contents, darray->max_size
+			* darray->type_size);
 		free(darray->contents);
 		darray->contents = new_elements;
 		darray->max_size += darray->block_size;
@@ -90,7 +93,8 @@ int	ft_darray_append(t_darray *darray, void *element)
 	darray->size += 1;
 	if (darray->size > darray->actual_size)
 		darray->actual_size += 1;
-	address = (unsigned char*)darray->contents + (darray->size - 1) * darray->type_size;
+	address = (unsigned char *)darray->contents + (darray->size - 1)
+		* darray->type_size;
 	ft_memcpy(address, element, darray->type_size);
 	return (0);
 }

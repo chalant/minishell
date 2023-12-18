@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:44 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/15 17:36:29 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:44:16 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,25 +149,5 @@ int	set_grammar(t_ms_grammar *grammar, char **definition)
 	}
 	grammar->start_rule = grammar->rules[0]->name;
 	grammar->length = i;
-	return (1);
-}
-
-int	print_grammar(t_ms_grammar *grammar)
-{
-	int			i;
-	int			j;
-	t_ms_rule	*rule;
-
-	i = 0;
-	while (i < grammar->length)
-	{
-		rule = grammar->rules[i];
-		printf("%s ->", rule->name);
-		j = -1;
-		while (++j < rule->length)
-			printf(" %s", rule->symbols[j]->name);
-		printf("\n");
-		i++;
-	}
 	return (1);
 }

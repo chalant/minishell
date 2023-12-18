@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/17 16:39:47 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:06:46 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int		ms_unset(t_ms_context *data, char **arg);
 int		ms_envcpy(t_ms_context *data);
 int		ms_check_varname(char *var);
 
-int		execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array);
+int		build_and_execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
 int		ms_message_header(void *data, int (*printer)(void *), int fd);

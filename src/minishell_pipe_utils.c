@@ -6,13 +6,13 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:01:41 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:01:42 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 12:21:08 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	init_pipe(int	pipe_[2])
+int	init_pipe(int pipe_[2])
 {
 	if (pipe_[1] == -1)
 	{

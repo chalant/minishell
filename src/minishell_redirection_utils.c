@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell_execution_redirections.c                 :+:      :+:    :+:   */
+/*   minishell_redirection_utils.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 16:28:54 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/17 17:03:12 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 14:28:00 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	clear_redirection(void *address)
 
 	redirection = (t_redirection *)address;
 	free(redirection->tmp_file);
-	redirection->tmp_file = NULL;	
+	redirection->tmp_file = NULL;
 }
 
 int	redirect_in(t_command *command)
@@ -35,7 +35,7 @@ int	redirect_out(t_command *command)
 	return (1);
 }
 
-int redirect_io(t_command *command)
+int	redirect_io(t_command *command)
 {
 	int	status;
 

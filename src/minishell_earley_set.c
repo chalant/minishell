@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 16:59:20 by ychalant          #+#    #+#             */
-/*   Updated: 2023/11/29 14:09:55 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:19:03 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ void	reset_earley_set(void *set)
 	return ;
 }
 
-int	clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void *)))
+int	clear_earley_sets(t_darray *sets,
+	int (*del_method)(t_darray *, void(*)(void *)))
 {
 	int				i;
 	t_earley_set	*set;
@@ -44,13 +45,12 @@ int	clear_earley_sets(t_darray *sets, int (*del_method)(t_darray *, void(*)(void
 	{
 		set = ft_darray_get(sets, i);
 		del_method(set->items, NULL);
-		//free(set->items);
 	}
 	del_method(sets, NULL);
 	return (0);
 }
 
-int add_earley_set(t_darray *sets, int size)
+int	add_earley_set(t_darray *sets, int size)
 {
 	t_earley_set	new;
 

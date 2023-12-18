@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/17 16:39:34 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:06:46 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	ms_add_herstory(char *line)
 	return (0);
 }
 
-int	execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array)
+int	build_and_execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array)
 {
 	int			i;
 	t_command	*command;
@@ -58,7 +58,7 @@ int	execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array)
 	i = -1;
 	while (++i < command_array->actual_size)
 		((t_command *)ft_darray_get(command_array, i))->context = data;
-	return (minishell_execute(command));
+	return (start_execution(command));
 }
 
 // should free 'line'
@@ -78,7 +78,7 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 	{
 		if (parse_input(&(data->parse_data), &(data->tree)) < 0)
 			return (-1);
-		data->status = execute(data, &(data->tree), &(data->commands));
+		data->status = build_and_execute(data, &(data->tree), &(data->commands));
 		if (data->status == ERR_NOMEM)
 			return (data->status);
 		return (ms_add_herstory(data->line));

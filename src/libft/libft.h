@@ -6,12 +6,9 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:08:36 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:08:37 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 12:16:54 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
-
 
 #ifndef LIBFT_H
 # define LIBFT_H
@@ -28,9 +25,9 @@ typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
-}					t_list;
+}				t_list;
 
-typedef	struct	s_darray
+typedef struct s_darray
 {
 	void		*contents;
 	int			max_size;
@@ -40,7 +37,7 @@ typedef	struct	s_darray
 	int			type_size;
 }				t_darray;
 
-typedef struct	s_stack
+typedef struct s_stack
 {
 	int			top;
 	int			size;
@@ -112,7 +109,8 @@ int					ft_darray_init(t_darray *darray, int type_size, int size);
 int					ft_darray_set(t_darray *darray, void *element, int index);
 int					ft_darray_append(t_darray *darray, void *element);
 int					ft_darray_reset(t_darray *darray, void del_content(void *));
-int					ft_darray_delete(t_darray *darray, void del_content(void *));
+int					ft_darray_delete(t_darray *darray,
+						void del_content(void *));
 
 void				*ft_stack_peek(t_stack *stack);
 void				*ft_stack_pop(t_stack *stack);

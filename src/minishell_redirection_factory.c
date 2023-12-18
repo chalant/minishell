@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell_redirections.c                           :+:      :+:    :+:   */
+/*   minishell_redirection_factory.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/16 15:20:45 by yves             ###   ########.fr       */
+/*   Updated: 2023/12/18 14:29:04 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,9 +106,11 @@ int	create_files(t_command *command, t_darray *redirections)
 	{
 		redirection = ft_darray_get(redirections, i);
 		if (!(redirection->redirection_flags & MS_HEREDOC))
-			fd = open(redirection->file_path, redirection->file_flags, redirection->mode);
+			fd = open(redirection->file_path,
+					redirection->file_flags, redirection->mode);
 		else
-			fd = open(redirection->tmp_file, redirection->file_flags, redirection->mode);
+			fd = open(redirection->tmp_file,
+					redirection->file_flags, redirection->mode);
 		set_file_descriptor(command, redirection, fd);
 		if (fd < 0)
 			return (ms_perror(redirection->file_path, NULL, NULL, errno) * -1);

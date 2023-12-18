@@ -6,13 +6,13 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:02:14 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:03:01 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:58:56 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int add_eof_token(t_ms_context *context)
+static int	add_eof_token(t_ms_context *context)
 {
 	t_token			tok;
 	t_parsing_data	data;
@@ -29,39 +29,49 @@ int add_eof_token(t_ms_context *context)
 	return (0);
 }
 
-// launches a prompt in case of an open reserved symbol.
-int ms_prompt_command(t_ms_symbol *symbol, t_token *token)
+static int	add_parsing_data(t_parsing_data *parse_data, char *line)
 {
 	int				init_size;
-	char			*line;
 	t_token_info	info;
+
+	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
+	init_size = parse_data->tokens->size - 1;
+	ms_tokeniser(&line, parse_data->tokens, &info);
+	while (++init_size < parse_data->tokens->size)
+	{
+		if (add_earley_set(parse_data->earley_sets, 5) < 0)
+			return (-1);
+		if (add_adjacency_list(parse_data->chart, sizeof(t_ms_edge), 5) < 0)
+			return (-1);
+	}
+	return (0);
+}
+
+// launches a prompt in case of an open reserved symbol.
+int	ms_prompt_command(t_ms_symbol *symbol, t_token *token)
+{
+	char			*line;
 	t_ms_context	*context;
 
 	if (token->string)
 		return (0);
 	context = (t_ms_context *)symbol->context;
-	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
-	g_global_status = MS_SUBPROMPT_INT;
 	line = readline("> ");
 	if (ms_join_line(context, line, " ") < 0)
 		return (-1);
 	if (!line)
 		return (add_eof_token(context));
-	init_size = context->parse_data.tokens->size - 1;
-	ms_tokeniser(&line, context->parse_data.tokens, &info);
-	while (++init_size < context->parse_data.tokens->size)
+	if (add_parsing_data(&context->parse_data, line) < 0)
 	{
-		if (add_earley_set(context->parse_data.earley_sets, 5) < 0)
-			return (-1);
-		if (add_adjacency_list(context->parse_data.chart, sizeof(t_ms_edge), 5) < 0)
-			return (-1);
+		free(line);
+		return (-1);
 	}
 	free(line);
 	return (1);
 }
 
 // only works for reserved symbols
-int ms_match_equal(t_ms_symbol *symbol, t_token *token)
+int	ms_match_equal(t_ms_symbol *symbol, t_token *token)
 {
 	size_t	len;
 
@@ -80,8 +90,8 @@ int ms_match_equal(t_ms_symbol *symbol, t_token *token)
 int	ms_match_string(t_ms_symbol *symbol, t_token *token)
 {
 	int	i;
-	(void)symbol;
 
+	(void)symbol;
 	if (!token->string)
 		return (0);
 	i = 0;

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:05:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:05:54 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 14:18:34 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static char	**get_path_env_var(char **env)
 	return (NULL);
 }
 
-int make_paths(char **paths)
+int	make_paths(char **paths)
 {
 	char	*tmp;
 	char	*res;
@@ -68,23 +68,23 @@ char	*find_command(char **paths, char *command, int *mfailed)
 	return (NULL);
 }
 
-int get_paths(char ***paths, char **env)
+int	get_paths(char ***paths, char **env)
 {
 	env = get_path_env_var(env);
 	if (!env)
 		return (0);
 	*paths = ft_split(&env[0][5], ':');
 	if (!*paths)
-        return (-1);
+		return (-1);
 	return (make_paths(*paths));
 }
 
 char	*get_binary(char *command_name)
 {
 	int			failed;
-	char        **paths;
-	char	    *command_path;
-    extern char **environ;
+	char		**paths;
+	char		*command_path;
+	extern char	**environ;
 
 	if (!command_name)
 		return (NULL);

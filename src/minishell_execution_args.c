@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:01:03 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:01:04 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:40:51 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void	fill_in_status(char *status, t_token *token, int *j)
 		ms_shift_strings(token->string, token->mask_exp, *j);
 }
 
-static char *make_argi(t_command *command, int i)
+static char	*make_argi(t_command *command, int i)
 {
 	t_token	*token;
 	int		j;

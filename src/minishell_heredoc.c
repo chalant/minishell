@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_heredoc.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/16 14:27:43 by yves             ###   ########.fr       */
+/*   Updated: 2023/12/18 14:24:38 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ int	eof_warning(void *subject)
 	char	*limiter;
 
 	limiter = (char *)subject;
-	ft_putstr_fd("shellshock: warning: here-document delimited by end-of-file (wanted '", STDERR_FILENO);
+	ft_putstr_fd("shellshock: warning: here-document\
+		delimited by end-of-file (wanted '", STDERR_FILENO);
 	ft_putstr_fd(limiter, STDERR_FILENO);
 	write(STDERR_FILENO, "')\n", 3);
 	return (1);

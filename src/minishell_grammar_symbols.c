@@ -6,13 +6,14 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:04:09 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:04:10 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 14:13:41 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	set_symbol(t_ms_symbol *symbol, const char *name, int (*match)(t_ms_symbol *, t_token *))
+static int	set_symbol(t_ms_symbol *symbol, const char *name,
+	int (*match)(t_ms_symbol *, t_token *))
 {
 	free(symbol->name);
 	symbol->name = ft_strdup(name);
