@@ -6,11 +6,45 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:05:11 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 14:23:16 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/18 16:29:48 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	init_tree(t_parse_tree *tree)
+{
+	tree->rule_name = NULL;
+	tree->children = NULL;
+	tree->token = NULL;
+	tree->terminal = 1;
+	tree->start = 0;
+	tree->end = 0;
+	tree->start_rule = 0;
+	tree->rule = 0;
+	return (1);
+}
+
+int	init_children(t_parse_tree *parse_tree)
+{
+	int				i;
+	t_parse_tree	subtree;
+
+	parse_tree->children = malloc(sizeof(t_darray));
+	if (!parse_tree->children)
+		return (-1);
+	if (ft_darray_init(parse_tree->children,
+			sizeof(t_parse_tree), 3) < 0)
+		return (-1);
+	i = -1;
+	while (++i < 3)
+	{
+		init_tree(&subtree);
+		if (ft_darray_append(parse_tree->children, &subtree) < 0)
+			return (-1);
+	}
+	return (1);
+}
 
 void	reset_tree_node(void *node)
 {

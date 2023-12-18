@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_history_utils.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yves <yves@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:45 by yves              #+#    #+#             */
-/*   Updated: 2023/12/16 14:27:46 by yves             ###   ########.fr       */
+/*   Updated: 2023/12/18 16:10:57 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,3 @@ int	ms_join_line(t_ms_context *context, char *line, const char *delim)
 	context->line = tmp;
 	return (1);
 }
-
