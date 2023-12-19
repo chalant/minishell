@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:28:16 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 14:09:45 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/19 17:43:04 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 # include "minishell_commands.h"
 
 char	**make_arguments(t_command *command, char *binary);
-char	*get_binary(char *command_name);
 
+int		get_binary(char *command_name, char **path);
 int		get_exit_status(pid_t pid);
 int		close_fd(int *fd);
 int		create_files(t_command *command, t_darray *redirections);

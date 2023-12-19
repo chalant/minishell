@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:05:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 14:18:34 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/19 17:53:47 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int	make_paths(char **paths)
 	return (1);
 }
 
-char	*find_command(char **paths, char *command, int *mfailed)
+int	find_command(char **paths, char *command, char **result)
 {
 	int		i;
 	char	*path;
@@ -56,16 +56,16 @@ char	*find_command(char **paths, char *command, int *mfailed)
 	{
 		path = ft_strjoin(paths[i], command);
 		if (!path)
+			return (-1);
+		if (access(path, F_OK) == 0)
 		{
-			*mfailed = 1;
-			return (NULL);
+			*result = path;
+			return (1);
 		}
-		if (access(path, X_OK) == 0)
-			return (path);
 		free(path);
 		i++;
 	}
-	return (NULL);
+	return (0);
 }
 
 int	get_paths(char ***paths, char **env)
@@ -79,31 +79,20 @@ int	get_paths(char ***paths, char **env)
 	return (make_paths(*paths));
 }
 
-char	*get_binary(char *command_name)
+int	get_binary(char *command_name, char **result)
 {
-	int			failed;
 	char		**paths;
-	char		*command_path;
 	extern char	**environ;
 
 	if (!command_name)
-		return (NULL);
-	if (ft_strchr(command_name, '/'))
-		return (ft_strdup(command_name));
-	failed = get_paths(&paths, environ);
-	if (failed < 0)
-		return (NULL);
-	if (!failed)
-		return (ft_strdup(command_name));
-	failed = 0;
-	command_path = find_command(paths, command_name, &failed);
-	if (!command_path)
+		return (0);
+	if (get_paths(&paths, environ) < 0)
+		return (-1);
+	if (find_command(paths, command_name, result) < 0)
 	{
 		ft_clear_ds(paths);
-		if (failed)
-			return (NULL);
-		return (ft_strdup(command_name));
+		return (-1);
 	}
 	ft_clear_ds(paths);
-	return (command_path);
+	return (0);
 }

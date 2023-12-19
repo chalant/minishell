@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/19 19:19:32 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/19 19:33:56 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,11 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 		return (ms_add_herstory(data->line));
 	if (recognizer_status)
 		return (-1);
+	if (data->parse_data.tokens->size == 1)
+	{
+		data->status = 0;
+		return (0);
+	}
 	recognizer_status = recognize_input(&(data->parse_data), data);
 	if (recognizer_status < 0)
 		return (-1);
