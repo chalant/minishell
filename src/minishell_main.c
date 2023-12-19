@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_main.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 20:24:26 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/19 12:33:18 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,11 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 	}
 	if (ms_tokeniser(&data->line, data->parse_data.tokens, info))
 		return (-1);
+	if (data->parse_data.tokens->size == 1)
+	{
+		data->status = 0;
+		return (0);
+	}
 	recognizer_status = recognize_input(&(data->parse_data), data);
 	if (recognizer_status < 0)
 		return (-1);

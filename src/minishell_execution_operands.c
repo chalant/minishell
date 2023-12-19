@@ -6,11 +6,12 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:17:05 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 13:37:48 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/19 18:34:54 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "sys/stat.h"
 
 // WIFSIGNALED isn't true even for 'ctrl-c' and 'ctrl-\'
 int	get_exit_status(pid_t pid)
@@ -26,15 +27,48 @@ int	get_exit_status(pid_t pid)
 	return (1);
 }
 
+int	get_executable(t_command *command, char **binary, struct stat *statbuf)
+{
+	if (ft_strchr(command->command_name, '/'))
+	{
+		stat(command->command_name, statbuf);
+		if (access(command->command_name, F_OK) != 0)
+		{
+			ms_perror(command->command_name, NULL, NULL, errno);
+			exit(127);
+		}
+		else if (access(command->command_name, X_OK) != 0)
+		{
+			ms_perror(command->command_name, NULL, NULL, errno);
+			exit(126);
+		}
+		else if (S_ISDIR(statbuf->st_mode))
+		{
+			ms_perror(command->command_name, NULL, "Is a directory", 0);
+			exit(126);
+		}
+		*binary = ft_strdup(command->command_name);
+		if (!*binary)
+			exit(1);
+	}
+	return (get_binary(command->command_name, binary));
+}
+
 //creates arguments in child process to avoid unnecessary copies.
 int	launch_execve(t_command *command)
 {
 	char		**arguments;
 	char		*binary;
+	struct stat	statbuf;
 
-	binary = get_binary(command->command_name);
-	if (!binary)
+	binary = NULL;
+	if (get_executable(command, &binary, &statbuf) < 0)
 		exit(1);
+	else if (!binary)
+	{
+		ms_perror(binary, NULL, "command not found", 0);
+		exit(127);
+	}
 	arguments = make_arguments(command, binary);
 	if (!arguments)
 	{
