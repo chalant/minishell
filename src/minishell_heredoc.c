@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/19 14:49:52 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/19 15:14:46 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,9 @@ static void	ms_heredoc_write(int fd, char *line, int delim_quoted)
 
 int	eof_warning(void *subject)
 {
-	char	*limiter;
-
-	limiter = (char *)subject;
-	ft_putstr_fd("shellshock: warning: here-document\
-		delimited by end-of-file (wanted '", STDERR_FILENO);
-	ft_putstr_fd(limiter, STDERR_FILENO);
+	write(STDERR_FILENO, "warning: here-document delimited by end-of-file", 47);
+	write(STDERR_FILENO, " (wanted '", 10);
+	write(STDERR_FILENO, (char *) subject, ft_strlen((char *) subject));
 	write(STDERR_FILENO, "')\n", 3);
 	return (1);
 }
