@@ -22,19 +22,19 @@ int	dispatch_builtin(t_command *command, int in_fd, int out_fd)
 	arguments = make_arguments(command, command->command_name);
 	if (!arguments)
 		return (-1);
-	if (strcmp(command->command_name, "echo") == 0)
+	if (ft_strcmp(command->command_name, "echo") == 0)
 		status = ms_echo(arguments, out_fd);
-	else if (strcmp(command->command_name, "cd") == 0)
+	else if (ft_strcmp(command->command_name, "cd") == 0)
 		status = ms_cd(command->context, arguments, out_fd);
-	else if (strcmp(command->command_name, "pwd") == 0)
+	else if (ft_strcmp(command->command_name, "pwd") == 0)
 		status = ms_pwd(arguments, out_fd);
-	else if (strcmp(command->command_name, "export") == 0)
+	else if (ft_strcmp(command->command_name, "export") == 0)
 		status = ms_export(command->context, arguments);
-	else if (strcmp(command->command_name, "env") == 0)
+	else if (ft_strcmp(command->command_name, "env") == 0)
 		status = ms_env();
-	else if (strcmp(command->command_name, "unset") == 0)
+	else if (ft_strcmp(command->command_name, "unset") == 0)
 		status = ms_unset(command->context, arguments);
-	else if (strcmp(command->command_name, "exit") == 0)
+	else if (ft_strcmp(command->command_name, "exit") == 0)
 		status = ms_exit(command->context, arguments);
 	free(arguments);
 	return (status);

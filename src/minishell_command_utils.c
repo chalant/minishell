@@ -84,19 +84,19 @@ int	delete_commands(t_darray *commands)
 
 int	is_builtin(char *command_name)
 {
-	if (strcmp(command_name, "cd") == 0)
+	if (ft_strcmp(command_name, "cd") == 0)
 		return (1);
-	else if (strcmp(command_name, "echo") == 0)
+	else if (ft_strcmp(command_name, "echo") == 0)
 		return (1);
-	else if (strcmp(command_name, "pwd") == 0)
+	else if (ft_strcmp(command_name, "pwd") == 0)
 		return (1);
-	else if (strcmp(command_name, "export") == 0)
+	else if (ft_strcmp(command_name, "export") == 0)
 		return (1);
-	else if (strcmp(command_name, "env") == 0)
+	else if (ft_strcmp(command_name, "env") == 0)
 		return (1);
-	else if (strcmp(command_name, "unset") == 0)
+	else if (ft_strcmp(command_name, "unset") == 0)
 		return (1);
-	else if (strcmp(command_name, "exit") == 0)
+	else if (ft_strcmp(command_name, "exit") == 0)
 		return (1);
 	return (0);
 }

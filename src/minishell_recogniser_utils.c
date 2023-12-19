@@ -84,7 +84,7 @@ int	init_earley_items(t_parsing_data *data, void *context)
 	set_parsing_info(data, context);
 	while (++i < data->grammar->length)
 	{
-		if (strcmp(data->grammar->start_rule,
+		if (ft_strcmp(data->grammar->start_rule,
 				data->grammar->rules[i]->name) == 0)
 		{
 			earley_item.rule = i;

@@ -14,23 +14,23 @@
 
 static int	set_redirection_flags(t_redirection *redirection, char *rule_name)
 {
-	if (strcmp(rule_name, ">") == 0)
+	if (ft_strcmp(rule_name, ">") == 0)
 	{
 		redirection->file_flags = O_TRUNC | O_CREAT | O_APPEND | O_RDWR;
 		redirection->redirection_flags |= MS_WRITE;
 	}
-	else if (strcmp(rule_name, "<") == 0)
+	else if (ft_strcmp(rule_name, "<") == 0)
 	{
 		redirection->file_flags |= O_RDONLY;
 		redirection->redirection_flags |= MS_READ;
 	}
-	else if (strcmp(rule_name, "<<") == 0)
+	else if (ft_strcmp(rule_name, "<<") == 0)
 	{
 		redirection->redirection_flags |= MS_HEREDOC;
 		redirection->redirection_flags |= MS_READ;
 		redirection->file_flags = O_RDONLY;
 	}
-	else if (strcmp(rule_name, ">>") == 0)
+	else if (ft_strcmp(rule_name, ">>") == 0)
 	{
 		redirection->file_flags = O_CREAT | O_APPEND | O_RDWR;
 		redirection->redirection_flags |= MS_WRITE;

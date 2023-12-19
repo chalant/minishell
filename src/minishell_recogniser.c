@@ -17,7 +17,7 @@ int	add_earley_item(t_parsing_data *data, t_earley_item *current_item,
 {
 	t_earley_item	new_item;
 
-	if (strcmp(next_symbol(data->grammar, old_item)->name,
+	if (ft_strcmp(next_symbol(data->grammar, old_item)->name,
 			data->grammar->rules[current_item->rule]->name) == 0)
 	{
 		new_item.start = old_item->start;
@@ -63,7 +63,7 @@ int	earley_predict(t_parsing_data *data, t_ms_symbol *symbol, int state_id)
 	i = -1;
 	while (++i < data->grammar->length)
 	{
-		if (strcmp(symbol->name, data->grammar->rules[i]->name) == 0)
+		if (ft_strcmp(symbol->name, data->grammar->rules[i]->name) == 0)
 		{
 			item.rule = i;
 			item.next = 0;

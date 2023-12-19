@@ -82,7 +82,7 @@ int	add_rule(t_ms_grammar *grammar, char **rules, int i)
 	symbols = to_free[1];
 	while (symbols[j])
 	{
-		if (add_symbol(grammar->rules[i]->symbols, symbols[j], j) < 0) 
+		if (add_symbol(grammar->rules[i]->symbols, symbols[j], j) < 0)
 			return (free_all(to_free, 2) - 1);
 		j++;
 		grammar->rules[i]->length = j;

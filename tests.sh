@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Function to compare the output of your program and the bash command
 compare_output() {
     your_output="$1"
     bash_output="$2"
@@ -8,12 +7,12 @@ compare_output() {
     diff_output=$(diff <(echo "$bash_output") <(echo "$your_output"))
     if [ -z "$diff_output" ]; then
         echo -e "\e[32mOK\e[0m"
-        return 0  # Return 0 for success (OK)
+        return 0
     else
         echo -e "\e[31mKO\e[0m"
         echo "\e[31mDiff: \e[0m: bash minishell"
         echo "$diff_output"
-        return 1  # Return 1 for failure (KO)
+        return 1
     fi
 
 }
@@ -24,15 +23,14 @@ compare_status() {
 
     if [ "$your_status" = "$bash_status" ]; then
         echo -e "\e[32mOK\e[0m"
-        return 0  # Return 0 for success (OK)
+        return 0
     else
         echo -e "\e[31mKO\e[0m minishell: $your_status bash: $bash_status"
-        return 1  # Return 1 for failure (KO)
+        return 1
     fi
 
 }
 
-# Function to run a test case with a timeout
 run_test_case() {
     test_command="$1"
     timeout_seconds="$2"
@@ -74,7 +72,7 @@ run_test_case "cat -e < a << how | cat -e < b << are | cat -e < c << you" 5
 # ensure that each file output is distinct
 run_test_case "cat -e << how && cat -e << are && cat -e << you" 5
 
-# Test case 4: Display the value of the USER environment variable
+# display the value of the USER environment variable
 run_test_case "export USER=hello && echo \"'\$USER'\" && echo '\"\$USER\"'" 5
 
 # ensure nsure proper redirection with heredocs
@@ -108,6 +106,14 @@ run_test_case "echo hello > a how > b are > c you" 5
 run_test_case "cat -e fail || echo hello" 5
 
 run_test_case "< gameplan.txt cat -e | cat -e" 5
+
+run_test_case "(echo hello && echo hi) && echo hey" 5
+run_test_case "(echo hello && echo hi) || echo hey" 5
+run_test_case "echo hello && (echo hi && echo hey)" 5
+run_test_case "echo hello && (echo hi || echo hey)" 5
+
+run_test_case "cat fail || (echo hi && echo hey)" 5
+run_test_case "(cat fail || echo hi) && echo hey" 5
 
 # failing tests: might need to fix this
 #------------------------------------------------

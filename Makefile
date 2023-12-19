@@ -117,6 +117,8 @@ fclean: clean
 
 bonus: all
 
+libft: $(LIBFT)
+
 re: fclean all
 
 .PHONY: all clean fclean bonus re

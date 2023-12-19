@@ -59,7 +59,7 @@ int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 	line = readline("> ");
 	if (ms_join_line(command->context, line, "\n") < 0)
 		return (-1);
-	while (line && strcmp(line, redirection->file_path) != 0)
+	while (line && ft_strcmp(line, redirection->file_path) != 0)
 	{
 		ms_heredoc_write(fd, line, redirection->redirection_flags & MS_QUOTED);
 		free(line);

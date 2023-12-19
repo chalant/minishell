@@ -61,7 +61,7 @@ int	process_non_terminal(t_parse_tree *tree, t_parsing_data *data,
 	i = -1;
 	while (++i < edges->size)
 	{
-		if (strcmp(data->grammar->rules[(item + i)->rule]->name, 
+		if (ft_strcmp(data->grammar->rules[(item + i)->rule]->name,
 				symbol->name) != 0)
 			continue ;
 		nstate = next_state(state.depth + 1,

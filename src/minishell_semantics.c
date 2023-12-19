@@ -23,11 +23,11 @@ int	handle_operator(t_parse_tree *node, t_stack *commands)
 		child = (t_parse_tree *)ft_darray_get(node->children, i);
 		if (!child->rule_name)
 			return (1);
-		if (strcmp(child->rule_name, "|") == 0)
+		if (ft_strcmp(child->rule_name, "|") == 0)
 			return (create_operator(node, commands, MS_PIPE, "PIPE"));
-		else if (strcmp(child->rule_name, "&&") == 0)
+		else if (ft_strcmp(child->rule_name, "&&") == 0)
 			return (create_operator(node, commands, MS_AND, "AND"));
-		else if (strcmp(child->rule_name, "||") == 0)
+		else if (ft_strcmp(child->rule_name, "||") == 0)
 			return (create_operator(node, commands, MS_OR, "OR"));
 		if (flatten_tree(child, commands) < 0)
 			return (-1);
@@ -82,9 +82,9 @@ int	flatten_tree(t_parse_tree *node, t_stack *commands)
 {
 	if (node->terminal)
 		return (1);
-	else if (strcmp(node->rule_name, "simple_command") == 0)
+	else if (ft_strcmp(node->rule_name, "simple_command") == 0)
 		return (create_command(node, commands));
-	else if (strcmp(node->rule_name, "redirection_list") == 0)
+	else if (ft_strcmp(node->rule_name, "redirection_list") == 0)
 		return (handle_redirection_list(node, commands));
 	return (handle_operator(node, commands));
 }

@@ -69,7 +69,7 @@ int	fill_parse_tree(t_parse_tree *parse_tree, t_parsing_data *data)
 	while (++i < edges->size)
 	{
 		edge = (t_ms_edge *)edges->contents + i;
-		if (edge->finish == parse_tree->end && strcmp(parse_tree->rule_name,
+		if (edge->finish == parse_tree->end && ft_strcmp(parse_tree->rule_name,
 				data->grammar->rules[edge->rule]->name) == 0)
 			if (ms_start_search(parse_tree, data, edge->rule) < 0)
 				return (-1);

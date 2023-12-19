@@ -20,13 +20,13 @@ int	set_command_elements(t_command *command, t_parse_tree *tree)
 	while (!tree->terminal)
 	{
 		node = ft_darray_get(tree->children, 0);
-		if (strcmp(node->rule_name, "redirection") == 0)
+		if (ft_strcmp(node->rule_name, "redirection") == 0)
 		{
 			set_redirection(&redirection, node);
 			if (ft_darray_append(command->redirections, &redirection) < 0)
 				return (-1);
 		}
-		else if (strcmp(node->rule_name, "word") == 0
+		else if (ft_strcmp(node->rule_name, "word") == 0
 			&& ft_darray_append(command->arguments, get_leaf(node)->token) < 0)
 			return (-1);
 		tree = ft_darray_get(tree->children, 1);
@@ -38,8 +38,7 @@ int	set_command_fields(t_parse_tree *node, t_command *command)
 {
 	if (!node->rule_name)
 		return (0);
-	//todo: need an error when the command is not found.
-	command->command_name = *get_word(node);
+	command->command_name = get_leaf(node)->token->string;
 	if (is_builtin(command->command_name))
 		command->command_flags |= MS_BUILTIN;
 	node = ft_darray_get(node->children, 1);
@@ -77,7 +76,6 @@ int	overwite_command(t_parse_tree *node, t_command *command)
 		return (-1);
 	if (set_command_fields(node, command) < 0)
 		return (-1);
-	//todo: check if it is not an operator
 	if (command->command_flags & MS_OPERATOR)
 	{
 		if (command->input > 0)
@@ -110,7 +108,7 @@ int	create_command(t_parse_tree *node, t_stack *stack)
 			return (-1);
 		}
 		if (ft_stack_push(stack, &new) < 0)
-			return (-1); 
+			return (-1);
 	}
 	return (0);
 }
