@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 18:16:14 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 18:48:48 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/19 19:17:39 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ static int	ms_prompt_quote(char **end, char **start, char **line)
 	*line = NULL;
 	if (!temp)
 		return (ms_perror("tokenising", NULL, NULL, errno));
+	// g_global_state.prompt = 1;
 	add_line = readline("> ");
+	// g_global_state.prompt = 0;
 	if (!add_line)
 	{
 		free(temp);
@@ -78,23 +80,31 @@ static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 	}
 	if (check != ERR_EOF_QUOTED)
 		return (check);
-	g_global_status = 2;
+	g_global_state.status = 2;
 	write(2, "shellshock: unexpected EOF while looking for matching `", 55);
 	write(STDERR_FILENO, &quote, 1);
-	return (write(STDERR_FILENO, "'\n", 2));
+	write(STDERR_FILENO, "'\n", 2);
+	return (ERR_EOF_QUOTED);
 }
 
-// error: 1, prints msg
+// error: 1 or ERR_EOF_QUOTED, prints msg
 // tokeniser: moves *end until a reserved sequence
 int	ms_until_reserved(
 	char **input, char **start_end, t_token *token, t_token_info *info)
 {
+	int	check;
+
 	start_end[0] = start_end[1];
 	while (*(start_end[1]) && !ms_is_reserved(start_end[1], info))
 	{
 		if (*(start_end[1]) == '"' || *(start_end[1]) == '\'')
-			if (ms_skip_quoted(token, start_end + 1, start_end, input))
+		{
+			check = ms_skip_quoted(token, start_end + 1, start_end, input);
+			if (check == ERR_SIGINT)
+				return (ERR_SIGINT);
+			if (check)
 				return (1);
+		}
 		ms_add_flags_char(token, *(start_end[1]));
 		start_end[1]++;
 	}

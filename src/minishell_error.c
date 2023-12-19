@@ -6,13 +6,13 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:45:06 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 18:42:22 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/19 15:29:56 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	ms_errprintstrcol(const char *str)
+static void	ms_errprint_str_colon(const char *str)
 {
 	if (!str)
 		return ;
@@ -28,8 +28,8 @@ int	ms_perror(const char *cmd, const char *item, const char *msg, int err)
 	char	*strerr;
 
 	write(STDERR_FILENO, "shellshock: ", 12);
-	ms_errprintstrcol(cmd);
-	ms_errprintstrcol(item);
+	ms_errprint_str_colon(cmd);
+	ms_errprint_str_colon(item);
 	if (msg)
 	{
 		write(STDERR_FILENO, msg, ft_strlen(msg));

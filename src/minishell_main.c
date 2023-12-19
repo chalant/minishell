@@ -6,13 +6,13 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 20:24:26 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/19 19:19:32 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	g_global_status;
+t_global_states	g_global_state;
 
 // free's 'line'
 static int	ms_add_herstory(char *line)
@@ -43,12 +43,15 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 {
 	int	recognizer_status;
 
-	if (g_global_status)
+	if (g_global_state.status)
 	{
-		data->status = g_global_status;
-		g_global_status = 0;
+		data->status = g_global_state.status;
+		g_global_state.status = 0;
 	}
-	if (ms_tokeniser(&data->line, data->parse_data.tokens, info))
+	recognizer_status = ms_tokeniser(&data->line, data->parse_data.tokens, info);
+	if (recognizer_status == ERR_SIGINT)
+		return (ms_add_herstory(data->line));
+	if (recognizer_status)
 		return (-1);
 	recognizer_status = recognize_input(&(data->parse_data), data);
 	if (recognizer_status < 0)
@@ -85,7 +88,8 @@ int	main(void)
 	t_ms_context	data;
 	t_token_info	info;
 
-	g_global_status = 0;
+	g_global_state.status = 0;
+	g_global_state.prompt = 0;
 	data.env_excess = 0;
 	data.status = 0;
 	if (ms_envcpy(&data))
@@ -103,7 +107,7 @@ int	main(void)
 		reset_parse_data(&data.parse_data, &data.tree);
 		data.line = readline(MS_PROMPT_MSG);
 	}
-	if (g_global_status)
-		data.status = g_global_status;
+	if (g_global_state.status)
+		data.status = g_global_state.status;
 	ms_flush_exit(&data, data.status);
 }

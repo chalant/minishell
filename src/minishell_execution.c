@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 18:17:05 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/19 14:27:42 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,10 @@ int	execute_command(t_command *parent, t_command *command,
 	else if (command->command_flags & MS_PIPE)
 		command->context->status = execute_pipe(parent,
 				command, in_pipe, out_pipe);
-	if (g_global_status)
+	if (g_global_state.status)
 	{
-		command->context->status = g_global_status;
-		g_global_status = 0;
+		command->context->status = g_global_state.status;
+		g_global_state.status = 0;
 	}
 	return (command->context->status);
 }

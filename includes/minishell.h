@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 13:06:46 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/19 19:08:20 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,13 @@
 # define MS_SUBPROMPT_MSG "> "
 # define MS_SUBPROMPT_INT -2
 
-extern int	g_global_status;
+typedef struct s_global_states
+{
+	int	status;
+	int	prompt;
+}		t_global_states;
+
+extern t_global_states g_global_state;
 
 char	*ms_get_var_env(t_ms_context *data, char *var);
 char	**ms_realloc(char **ptr, int add);
