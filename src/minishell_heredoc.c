@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_heredoc.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/18 19:01:08 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/19 14:49:52 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,19 @@ int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 	return (1);
 }
 
+static char	*ms_get_heredoc_path(int id)
+{
+	char	*idstr;
+	char	*path;
+
+	idstr = ft_itoa(id);
+	if (!idstr)
+		return (NULL);
+	path = ft_strjoin(MS_HEREDOC_PATH, idstr);
+	free(idstr);
+	return (path);
+}
+
 int	ms_heredoc(t_command *command, int id)
 {
 	int				fd;
@@ -88,7 +101,7 @@ int	ms_heredoc(t_command *command, int id)
 		red = ft_darray_get(command->redirections, i);
 		if (red->redirection_flags & MS_HEREDOC)
 		{
-			path = ft_strjoin(MS_HEREDOC_PATH, ft_itoa(id));
+			path = ms_get_heredoc_path(id);
 			if (!path)
 				return (-1);
 			fd = open(path, O_TRUNC | O_CREAT | O_RDWR, red->mode);
