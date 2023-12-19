@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 14:30:31 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/19 12:18:16 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,21 @@ int	update_parsing_data(t_parsing_data *data, int size)
 	return (0);
 }
 
+int	is_completed(t_darray *items)
+{
+	t_earley_item	*item;
+	int				i;
+
+	i = -1;
+	while (++i < items->size)
+	{
+		item = ft_darray_get(items, i);
+		if (item->completed)
+			return (1);
+	}
+	return (0);
+}
+
 int	parse_input(t_parsing_data *data, t_parse_tree *tree)
 {
 	tree->start = 0;
@@ -79,7 +94,7 @@ int	recognize_input(t_parsing_data *data, void *context)
 	if (build_earley_items(data, context) < 0)
 		return (-1);
 	last_set = ft_darray_get(data->earley_sets, data->earley_sets->size - 1);
-	if (!last_set->items->size)
+	if (!last_set->items->size || !is_completed(last_set->items))
 	{
 		ms_message_header(data, ms_syntax_error, 2);
 		return (2);

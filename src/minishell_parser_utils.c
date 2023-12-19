@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:05:37 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 16:08:39 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/19 12:15:34 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,10 @@ int	ms_syntax_error(void *input)
 	if (!(token->flags & IS_EOF))
 	{
 		ft_putstr_fd("syntax error near unexpected token '", STDERR_FILENO);
-		ft_putstr_fd(token->string, STDERR_FILENO);
+		if (!token->string)
+			ft_putstr_fd("newline", STDERR_FILENO);
+		else
+			ft_putstr_fd(token->string, STDERR_FILENO);
 		ft_putstr_fd("'\n", STDERR_FILENO);
 	}
 	else
