@@ -78,7 +78,7 @@ int	execute_operand(t_command *parent, t_command *command,
 	int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
-	
+
 	if (parent && parent->command_flags & MS_PIPE)
 	{
 		if (command->command_flags & MS_LAST)
