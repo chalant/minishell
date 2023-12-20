@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 18:16:14 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/19 19:17:39 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 16:40:16 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	ms_is_reserved(const char *symbol, t_token_info *info)
 	return (0);
 }
 
-// on error, *line = NULL
+// error: ERR_SIGINT/ERR_EOF_QUOTED/ERR_NOMEM, *line = NULL
 static int	ms_prompt_quote(char **end, char **start, char **line)
 {
 	char	*temp;
@@ -31,18 +31,20 @@ static int	ms_prompt_quote(char **end, char **start, char **line)
 
 	index[0] = *start - *line;
 	index[1] = *end - *line;
+	g_global_state.prompt = 1;
+	add_line = readline("> ");
+	if (!g_global_state.prompt)
+		return (ERR_SIGINT);
+	g_global_state.prompt = 0;
+	if (!add_line)
+		return (ERR_EOF_QUOTED);
 	temp = ft_strjoin(*line, "\n");
 	free(*line);
 	*line = NULL;
 	if (!temp)
-		return (ms_perror("tokenising", NULL, NULL, errno));
-	// g_global_state.prompt = 1;
-	add_line = readline("> ");
-	// g_global_state.prompt = 0;
-	if (!add_line)
 	{
-		free(temp);
-		return (ERR_EOF_QUOTED);
+		free(add_line);
+		return (ms_perror("tokenising", NULL, NULL, errno));
 	}
 	*line = ft_strjoin(temp, add_line);
 	free(temp);
@@ -54,9 +56,9 @@ static int	ms_prompt_quote(char **end, char **start, char **line)
 	return (0);
 }
 
-// returns 1 on error, and *line = NULL
 // returns the next instance of *end
 // adds the IS_VAR flag if applicable
+// error: ERR_SIGINT/ERR_EOF_QUOTED/ERR_NOMEM, *line = NULL
 static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 {
 	char	quote;
@@ -87,8 +89,8 @@ static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 	return (ERR_EOF_QUOTED);
 }
 
-// error: 1 or ERR_EOF_QUOTED, prints msg
 // tokeniser: moves *end until a reserved sequence
+// error: ERR_SIGINT/ERR_EOF_QUOTED/ERR_NOMEM, *line = NULL, prints msg
 int	ms_until_reserved(
 	char **input, char **start_end, t_token *token, t_token_info *info)
 {
@@ -100,10 +102,8 @@ int	ms_until_reserved(
 		if (*(start_end[1]) == '"' || *(start_end[1]) == '\'')
 		{
 			check = ms_skip_quoted(token, start_end + 1, start_end, input);
-			if (check == ERR_SIGINT)
-				return (ERR_SIGINT);
 			if (check)
-				return (1);
+				return (check);
 		}
 		ms_add_flags_char(token, *(start_end[1]));
 		start_end[1]++;
