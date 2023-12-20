@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "sys/ioctl.h"
+#include <sys/ioctl.h>
 
 static void	ms_new_prompt(int sig)
 {
