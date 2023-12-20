@@ -95,6 +95,7 @@ int	main(void)
 
 	g_global_state.status = 0;
 	g_global_state.prompt = 0;
+	g_global_state.interrupt = 0;
 	data.env_excess = 0;
 	data.status = 0;
 	if (ms_envcpy(&data))
@@ -105,12 +106,26 @@ int	main(void)
 	ms_init_parse(&data);
 	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
 	data.line = readline(MS_PROMPT_MSG);
+	if (!data.line && g_global_state.prompt)
+	{
+		fprintf(stderr, "RETRY 1\n");
+		data.line = readline(MS_PROMPT_MSG);
+		g_global_state.prompt = 0;
+		g_global_state.interrupt = 0;
+	}
 	while (data.line)
 	{
 		if (ms_process_line(&data, &info))
 			ms_flush_exit(&data, 1);
 		reset_parse_data(&data.parse_data, &data.tree);
 		data.line = readline(MS_PROMPT_MSG);
+		if (!data.line && g_global_state.prompt)
+		{
+			fprintf(stderr, "RETRY 2\n");
+			data.line = readline(MS_PROMPT_MSG);
+			g_global_state.prompt = 0;
+			g_global_state.interrupt = 0;
+		}
 	}
 	if (g_global_state.status)
 		data.status = g_global_state.status;

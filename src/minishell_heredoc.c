@@ -53,7 +53,13 @@ int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 {
 	char	*line;
 
+	g_global_state.prompt = 1;
 	line = readline("> ");
+	if (g_global_state.interrupt)
+	{
+		g_global_state.interrupt = 0;
+		return (1);
+	}
 	if (ms_join_line(command->context, line, "\n") < 0)
 		return (-1);
 	while (line && ft_strcmp(line, redirection->file_path) != 0)

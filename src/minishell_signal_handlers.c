@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "sys/ioctl.h"
 
 static void	ms_new_prompt(int sig)
 {
@@ -19,21 +20,20 @@ static void	ms_new_prompt(int sig)
 	if (sig != SIGINT)
 		return ;
 	g_global_state.status = 130;
-	// if (g_global_state.prompt)
-	// {
-	// 	g_global_state.prompt = 0;
-	// 	// rl_done = 1;
-	// 	// rl_free_line_state();
-	// 	// rl_stuff_char(-1);
-	// 	// rl_pending_input = -1;
-	// 	// rl_read_key();
-	// 	// rl_close();
-	// 	return ;
-	// }
 	check = wait3(NULL, WNOHANG, NULL);
 	if (check == -1)
 		write(STDOUT_FILENO, "^C", 2);
 	write(STDOUT_FILENO, "\n", 1);
+	if (g_global_state.prompt)
+	{
+		fprintf(stderr, "%d\n", g_global_state.prompt);
+		ioctl(0, TIOCSTI, "\x04");
+		g_global_state.interrupt = 1;
+		rl_on_new_line();
+		rl_redisplay();
+		return ;
+	}
+	
 	if (check > -1)
 		return ;
 	rl_replace_line("", 1);

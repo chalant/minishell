@@ -41,6 +41,7 @@ typedef struct s_global_states
 {
 	int	status;
 	int	prompt;
+	int	interrupt;
 }		t_global_states;
 
 extern t_global_states g_global_state;
