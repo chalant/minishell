@@ -96,7 +96,7 @@ int	recognize_input(t_parsing_data *data, void *context)
 	last_set = ft_darray_get(data->earley_sets, data->earley_sets->size - 1);
 	if (!last_set->items->size || !is_completed(last_set->items))
 	{
-		if (g_global_state.prompt)
+		if (g_global_state.status != 130)
 			ms_message_header(data, ms_syntax_error, 2);
 		return (2);
 	}

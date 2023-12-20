@@ -52,7 +52,7 @@ int	clear_command(t_command *command)
 
 int	reset_commands(t_darray *commands)
 {
-	int			i;
+	int	i;
 
 	i = -1;
 	while (++i < commands->actual_size)
@@ -63,21 +63,11 @@ int	reset_commands(t_darray *commands)
 
 int	delete_commands(t_darray *commands)
 {
-	int			i;
-	t_command	*command;
+	int	i;
 
 	i = -1;
 	while (++i < commands->actual_size)
-	{
-		command = ft_darray_get(commands, i);
-		ft_darray_delete(command->redirections, NULL);
-		ft_darray_delete(command->arguments, NULL);
-		command->left = NULL;
-		command->right = NULL;
-		command->command_name = NULL;
-		free(command->redirections);
-		free(command->arguments);
-	}
+		clear_command(ft_darray_get(commands, i));
 	ft_darray_delete(commands, NULL);
 	return (0);
 }
