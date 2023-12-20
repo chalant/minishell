@@ -6,13 +6,13 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 19:43:52 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 17:15:23 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:47:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ms_append_tokens_var(t_darray *tokens, t_token *new, char **value, int i)
+int	ms_add_tkn_var(t_darray *tokens, t_token *new, char **value, int i)
 {
 	int	err;
 
@@ -55,7 +55,7 @@ static int	ms_append_value_tokens(t_darray *tokens, t_token *new, char **value)
 	i = 1;
 	while (value[i])
 	{
-		if (ms_append_tokens_var(tokens, new, value, i))
+		if (ms_add_tkn_var(tokens, new, value, i))
 			return (ERR_MALLOC);
 		ms_init_token(new);
 		new->string = value[i];

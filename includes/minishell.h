@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 18:12:02 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:41:31 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ typedef struct s_global_states
 	int	prompt;
 }		t_global_states;
 
-extern t_global_states g_global_state;
+extern t_global_states	g_global_state;
 
 int		ms_startup(t_ms_context *data);
 

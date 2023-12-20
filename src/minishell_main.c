@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 18:25:37 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:48:20 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static int	ms_recognize_execute(t_ms_context *data)
 }
 
 // free's 'line'
-static int	ms_process_line(t_ms_context *data, t_token_info *info)
+static int	ms_process_line(t_ms_context *data, t_tkn_info *info)
 {
 	int	token_check;
 
@@ -85,7 +85,7 @@ static int	ms_process_line(t_ms_context *data, t_token_info *info)
 int	main(void)
 {
 	t_ms_context	data;
-	t_token_info	info;
+	t_tkn_info		info;
 
 	if (ms_startup(&data))
 		return (1);

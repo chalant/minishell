@@ -6,13 +6,13 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:30:35 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 16:34:01 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:44:48 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_token_info	*ms_token_info(t_token_info *ti, const char *res_single,
+t_tkn_info	*ms_token_info(t_tkn_info *ti, const char *res_single,
 	const char *res_double, const char *res_skip)
 {
 	ti->reserved_single = res_single;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_tokens.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/17 16:41:51 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:47:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ typedef struct s_token_info
 	const char	*reserved_single;
 	const char	*reserved_double;
 	const char	*reserved_skip;
-}				t_token_info;
+}				t_tkn_info;
 
 typedef struct dirent	t_dirent;
 
@@ -55,12 +55,12 @@ typedef struct s_wildcard_data
 	char	*mask;
 }			t_wildcard_data;
 
-t_token_info	*ms_token_info(t_token_info *ti, const char *res_single,
-					const char *res_double, const char *res_skip);
+t_tkn_info	*ms_token_info(t_tkn_info *ti, const char *res_single,
+				const char *res_double, const char *res_skip);
 int			ms_tokeniser(char **input, t_darray *tokens,
-				t_token_info *info);
+				t_tkn_info *info);
 int			ms_until_reserved(char **input, char **start_end,
-				t_token *token, t_token_info *info);
+				t_token *token, t_tkn_info *info);
 t_token		*ms_init_token(t_token *token);
 void		ms_clear_token(void *token);
 
@@ -68,7 +68,7 @@ void		ms_add_flags_char(t_token *token, char c);
 void		ms_add_flags_str(t_token *new);
 int			ms_expand_var(t_darray *tokens, t_token *token);
 int			ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt);
-int			ms_append_tokens_var(t_darray *tokens, t_token *new, char **value, int i);
+int			ms_add_tkn_var(t_darray *tokens, t_token *new, char **value, int i);
 int			ms_join_str(t_token *token, char *str, char mask);
 int			ms_join_mask(t_token *token, int add_len, char fill);
 char		*ms_end_of_name(const char *str);

@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_grammar.h                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 16:40:32 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/17 16:40:33 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:56:29 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_GRAMMAR_H
 # define MINISHELL_GRAMMAR_H
 
-#include "minishell_tokens.h"
+# include "minishell_tokens.h"
 
 # define MS_NEW_LINE '0'
 # define MS_EQUAL '1'
@@ -23,17 +23,17 @@
 
 //stop suggesting please
 
-typedef struct	s_ms_symbol
+typedef struct s_ms_symbol
 {
-	char		*name;
-	int			symbol_type;
-	int			rule;
-	int			skip;
-	void*		context;
-	int			(*match)(struct s_ms_symbol*, t_token *);
-}				t_ms_symbol;
+	char	*name;
+	int		symbol_type;
+	int		rule;
+	int		skip;
+	void	*context;
+	int		(*match)(struct s_ms_symbol*, t_token *);
+}			t_ms_symbol;
 
-typedef struct	s_ms_rule
+typedef struct s_ms_rule
 {
 	int			rule_id;
 	int			length;
@@ -42,14 +42,14 @@ typedef struct	s_ms_rule
 	t_ms_symbol	**symbols;
 }				t_ms_rule;
 
-typedef struct	s_ms_grammar
+typedef struct s_ms_grammar
 {
-	char			*start_rule;
-	t_ms_rule		**rules;
-	int				length;
+	char		*start_rule;
+	t_ms_rule	**rules;
+	int			length;
 }				t_ms_grammar;
 
-int 	ms_match_equal(t_ms_symbol *symbol, t_token *token);
+int		ms_match_equal(t_ms_symbol *symbol, t_token *token);
 int		ms_match_string(t_ms_symbol *symbol, t_token *token);
 
 int		add_rule(t_ms_grammar *grammar, char **rules, int i);

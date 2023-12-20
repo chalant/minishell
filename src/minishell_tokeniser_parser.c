@@ -6,14 +6,14 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 18:16:14 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 17:05:23 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:44:48 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // returns 1 if *symbol is a reserved sequence
-static int	ms_is_reserved(const char *symbol, t_token_info *info)
+static int	ms_is_reserved(const char *symbol, t_tkn_info *info)
 {
 	if (ft_strchr(info->reserved_single, *symbol))
 		return (1);
@@ -100,7 +100,7 @@ static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 // tokeniser: moves *end until a reserved sequence
 // error: ERR_SIGINT/ERR_EOF_QUOTED/ERR_NOMEM, *line = NULL, prints msg
 int	ms_until_reserved(
-	char **input, char **start_end, t_token *token, t_token_info *info)
+	char **input, char **start_end, t_token *token, t_tkn_info *info)
 {
 	int	check;
 

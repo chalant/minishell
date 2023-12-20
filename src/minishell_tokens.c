@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 16:01:37 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:44:48 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static int	ms_add_token(char *start, char *end, t_darray *tkns, t_token *token)
 }
 
 static char	*ms_handle_symbol(char *end,
-	t_darray *tokens, t_token *token, t_token_info *info)
+	t_darray *tokens, t_token *token, t_tkn_info *info)
 {
 	char	*start;
 
@@ -75,7 +75,7 @@ static char	*ms_handle_symbol(char *end,
 
 // NULL terminates tokens with a fresh initialised token.
 // error: free '*input', print error msg
-int	ms_tokeniser(char **input, t_darray *tokens, t_token_info *info)
+int	ms_tokeniser(char **input, t_darray *tokens, t_tkn_info *info)
 {
 	char	*start_end[2];
 	t_token	token;

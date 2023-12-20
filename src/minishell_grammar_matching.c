@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_grammar_matching.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:02:14 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/20 17:00:02 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:48:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ static int	add_eof_token(t_ms_context *context)
 
 static int	add_parsing_data(t_parsing_data *parse_data, char *line)
 {
-	int				init_size;
-	t_token_info	info;
+	int			init_size;
+	t_tkn_info	info;
 
 	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
 	init_size = parse_data->tokens->size - 1;

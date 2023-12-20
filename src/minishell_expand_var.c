@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 17:19:24 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:47:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int	ms_expand_var(t_darray *tokens, t_token *token)
 		if (ms_add_str(&new, &str, &qt) || ms_add_var(tokens, &new, &str, &qt))
 			ret = ERR_MALLOC;
 	ms_clear_token(token);
-	if (!ret && ms_append_tokens_var(tokens, &new, NULL, 0))
+	if (!ret && ms_add_tkn_var(tokens, &new, NULL, 0))
 		ret = ERR_MALLOC;
 	if (ret)
 		ms_clear_token(&new);

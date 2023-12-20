@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_commands.h                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/17 16:40:13 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:52:26 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ typedef struct s_ms_context
 	t_darray			commands;
 }			t_ms_context;
 
-typedef struct	s_redirection
+typedef struct s_redirection
 {
 	int			redirection_flags;
 	int			file_flags;
@@ -60,7 +60,7 @@ typedef struct	s_redirection
 	mode_t		mode;
 }				t_redirection;
 
-typedef struct	s_command
+typedef struct s_command
 {
 	char				*command_name;
 	int					command_flags;
@@ -70,8 +70,8 @@ typedef struct	s_command
 	int					output;
 	t_darray			*redirections;
 	t_darray			*arguments;
-	struct	s_command	*left;
-	struct	s_command	*right;
+	struct s_command	*left;
+	struct s_command	*right;
 	t_ms_context		*context;
 }				t_command;
 
@@ -84,7 +84,7 @@ int		delete_commands(t_darray *commands);
 int		create_command(t_parse_tree *node, t_stack *stack);
 int		delete_commands(t_darray *commands);
 int		set_command_fields(t_parse_tree *node, t_command *command);
-int		init_pipe(int	pipe_[2]);
+int		init_pipe(int pipe_[2]);
 int		swap_pipe(int *src_pipe, int *dest_pipe);
 
 #endif
