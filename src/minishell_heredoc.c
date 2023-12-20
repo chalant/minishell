@@ -104,7 +104,7 @@ int	ms_heredoc(t_command *command, int id)
 				return (-1);
 			fd = open(path, O_TRUNC | O_CREAT | O_RDWR, red->mode);
 			if (fd < 0)
-				return (ms_perror(path, NULL, NULL, errno) - 2);
+				return (ms_perror(path, NULL, NULL, errno) * -1);
 			red->tmp_file = path;
 			ms_heredoc_prompt(command, red, fd);
 			close(fd);
