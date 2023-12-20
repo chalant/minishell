@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 15:02:50 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 15:02:50 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 15:24:37 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ static void	ms_new_prompt(int sig)
 	if (g_global_state.prompt)
 	{
 		ioctl(0, TIOCSTI, "\x04");
+		rl_replace_line("", 1);
+		rl_on_new_line();
 		g_global_state.prompt = 0;
 		return ;
 	}
