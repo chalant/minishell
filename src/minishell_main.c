@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_main.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 14:00:30 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/19 19:33:56 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 13:21:01 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,26 +106,12 @@ int	main(void)
 	ms_init_parse(&data);
 	ms_token_info(&info, RESERVED_SINGLE, RESERVED_DOUBLE, RESERVED_SKIP);
 	data.line = readline(MS_PROMPT_MSG);
-	if (!data.line && g_global_state.prompt)
-	{
-		fprintf(stderr, "RETRY 1\n");
-		data.line = readline(MS_PROMPT_MSG);
-		g_global_state.prompt = 0;
-		g_global_state.interrupt = 0;
-	}
 	while (data.line)
 	{
 		if (ms_process_line(&data, &info))
 			ms_flush_exit(&data, 1);
 		reset_parse_data(&data.parse_data, &data.tree);
 		data.line = readline(MS_PROMPT_MSG);
-		if (!data.line && g_global_state.prompt)
-		{
-			fprintf(stderr, "RETRY 2\n");
-			data.line = readline(MS_PROMPT_MSG);
-			g_global_state.prompt = 0;
-			g_global_state.interrupt = 0;
-		}
 	}
 	if (g_global_state.status)
 		data.status = g_global_state.status;
