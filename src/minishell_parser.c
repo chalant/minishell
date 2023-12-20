@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 13:49:53 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/19 12:31:53 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 15:00:51 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,8 @@ int	recognize_input(t_parsing_data *data, void *context)
 	last_set = ft_darray_get(data->earley_sets, data->earley_sets->size - 1);
 	if (!last_set->items->size || !is_completed(last_set->items))
 	{
-		ms_message_header(data, ms_syntax_error, 2);
+		if (g_global_state.prompt)
+			ms_message_header(data, ms_syntax_error, 2);
 		return (2);
 	}
 	if (build_chart(data->earley_sets, data->chart, data->tokens->size) < 0)

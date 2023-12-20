@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:02:14 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/19 11:57:33 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 14:49:26 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,10 @@ int	ms_prompt_command(t_ms_symbol *symbol, t_token *token)
 	if (token->string)
 		return (0);
 	context = (t_ms_context *)symbol->context;
+	g_global_state.prompt = 1;
 	line = readline("> ");
+	if (!g_global_state.prompt)
+		return (0);
 	if (line && ms_join_line(context, line, " ") < 0)
 		return (-1);
 	if (!line)

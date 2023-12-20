@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_heredoc.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/19 15:14:46 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 14:48:05 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,17 +49,13 @@ int	eof_warning(void *subject)
 	return (1);
 }
 
+//todo: make a custom readline function.
 int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 {
 	char	*line;
 
 	g_global_state.prompt = 1;
 	line = readline("> ");
-	if (g_global_state.interrupt)
-	{
-		g_global_state.interrupt = 0;
-		return (1);
-	}
 	if (ms_join_line(command->context, line, "\n") < 0)
 		return (-1);
 	while (line && ft_strcmp(line, redirection->file_path) != 0)
@@ -72,7 +68,7 @@ int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 	}
 	if (line && ms_add_separator(command->context, line, "\n") < 0)
 		return (-1);
-	if (!line)
+	if (!line && g_global_state.prompt)
 		ms_message_header(redirection->file_path, eof_warning, STDERR_FILENO);
 	free(line);
 	return (1);
