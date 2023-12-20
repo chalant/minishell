@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:02:14 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/20 18:48:45 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 20:26:41 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,13 @@ int	ms_prompt_command(t_ms_symbol *symbol, t_token *token)
 	context = (t_ms_context *)symbol->context;
 	g_global_state.prompt = 1;
 	line = readline("> ");
-	if (!line && !g_global_state.prompt)
+	if (!g_global_state.prompt)
 		return (0);
-	if (line && ms_join_line(context, line, " ") < 0)
-		return (-1);
+	g_global_state.prompt = 0;
 	if (!line)
 		return (add_eof_token(context));
+	if (ms_join_line(context, line, " ") < 0)
+		return (-1);
 	if (add_parsing_data(&context->parse_data, line) < 0)
 	{
 		free(line);

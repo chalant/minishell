@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 18:44:48 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 19:30:07 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	ms_tokeniser_error(char *input, char perror)
 	free(input);
 	if (perror)
 		ms_perror("tokeniser", NULL, NULL, errno);
-	return (ERR_MALLOC);
+	return (ERR_NOMEM);
 }
 
 // mallocs and adds token including start but not end
@@ -74,7 +74,7 @@ static char	*ms_handle_symbol(char *end,
 }
 
 // NULL terminates tokens with a fresh initialised token.
-// error: free '*input', print error msg
+// error: ERR_NOMEM/ERR_EOF_QUOTED/ERR_SIGINT, free '*input', print error msg
 int	ms_tokeniser(char **input, t_darray *tokens, t_tkn_info *info)
 {
 	char	*start_end[2];
