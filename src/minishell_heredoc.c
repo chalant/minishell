@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/20 15:27:46 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 16:33:27 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ int	eof_warning(void *subject)
 	return (1);
 }
 
-//todo: make a custom readline function.
 int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 {
 	char	*line;
@@ -92,8 +91,8 @@ static char	*ms_get_heredoc_path(int id)
 int	ms_heredoc(t_command *command, int id)
 {
 	int				fd;
-	char			*path;
 	int				i;
+	char			*path;
 	t_redirection	*red;
 
 	i = -1;
