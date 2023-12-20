@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 15:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/14 15:12:58 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 17:04:49 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,11 @@ static void	ms_exit_exit(t_ms_context *data, char **arg, int e)
 	if (arg)
 		free(arg);
 	free(data->line);
-	ms_flush_exit(data, e);
+	delete_commands(&(data->commands));
+	free_parse_data(&(data->parse_data), &(data->tree));
+	rl_clear_history();
+	ft_clear_ds(data->env);
+	exit(e);
 }
 
 // exits innit
@@ -37,7 +41,7 @@ int	ms_exit(t_ms_context *data, char **arg)
 {
 	int	i;
 
-// immediately print exit???
+	write(STDERR_FILENO, "exit\n", 5);
 	if (!arg || !arg[1])
 		ms_exit_exit(data, arg, data->status);
 	i = 0;

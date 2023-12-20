@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 19:43:52 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 19:56:54 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 17:15:23 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 	char	mask_fill;
 
 	end = ms_end_of_name(*str);
-	if (*str == end)
+	if (end == *str || end == *str + 1)
 		return (0);
 	mask_fill = '1';
 	temp = *end;

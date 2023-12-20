@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 19:56:38 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 17:19:24 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,6 @@ static int	ms_add_str(t_token *new, char **str, int *qt)
 	end = ms_next_var(*str, qt);
 	if (*end == '$' && ms_end_of_name(end) == end + 1)
 		end = ms_next_var(end + 1, qt);
-// does that skip enough? maybe while loop?
 	if (*str == end)
 		return (0);
 	temp = *end;

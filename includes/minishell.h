@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/19 19:08:20 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:12:02 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,11 @@ typedef struct s_global_states
 {
 	int	status;
 	int	prompt;
-	int	interrupt;
 }		t_global_states;
 
 extern t_global_states g_global_state;
+
+int		ms_startup(t_ms_context *data);
 
 char	*ms_get_var_env(t_ms_context *data, char *var);
 char	**ms_realloc(char **ptr, int add);
@@ -64,8 +65,6 @@ int		ms_export_var(t_ms_context *data, char *var);
 int		ms_unset(t_ms_context *data, char **arg);
 int		ms_envcpy(t_ms_context *data);
 int		ms_check_varname(char *var);
-
-int		build_and_execute(t_ms_context *data, t_parse_tree *tree, t_darray *command_array);
 
 int		ms_perror(const char *cmd, const char *item, const char *msg, int err);
 int		ms_message_header(void *data, int (*printer)(void *), int fd);

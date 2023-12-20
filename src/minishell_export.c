@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/14 15:22:23 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:01:48 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ static int	ms_env_alpha(char **env)
 	{
 		if (ft_strncmp(temp_envp[i], "_=", 2))
 			printf("%s\n", temp_envp[i]);
-// this printf is leaking 'still reachable' mem?
 		i++;
 	}
 	free(temp_envp);

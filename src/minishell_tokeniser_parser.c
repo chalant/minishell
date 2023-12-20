@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 18:16:14 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 16:40:16 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 17:05:23 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,22 +22,11 @@ static int	ms_is_reserved(const char *symbol, t_token_info *info)
 	return (0);
 }
 
-// error: ERR_SIGINT/ERR_EOF_QUOTED/ERR_NOMEM, *line = NULL
-static int	ms_prompt_quote(char **end, char **start, char **line)
+// error: ERR_NOMEM, free(add_line), free(*line) and *line = NULL
+static int	ms_join_quote_prompt(char **line, char *add_line)
 {
 	char	*temp;
-	char	*add_line;
-	size_t	index[2];
 
-	index[0] = *start - *line;
-	index[1] = *end - *line;
-	g_global_state.prompt = 1;
-	add_line = readline("> ");
-	if (!g_global_state.prompt)
-		return (ERR_SIGINT);
-	g_global_state.prompt = 0;
-	if (!add_line)
-		return (ERR_EOF_QUOTED);
 	temp = ft_strjoin(*line, "\n");
 	free(*line);
 	*line = NULL;
@@ -51,6 +40,26 @@ static int	ms_prompt_quote(char **end, char **start, char **line)
 	free(add_line);
 	if (!*line)
 		return (ms_perror("tokenising", NULL, NULL, errno));
+	return (0);
+}
+
+// error: ERR_SIGINT/ERR_EOF_QUOTED/ERR_NOMEM, *line = NULL
+static int	ms_prompt_quote(char **end, char **start, char **line)
+{
+	char	*add_line;
+	size_t	index[2];
+
+	index[0] = *start - *line;
+	index[1] = *end - *line;
+	g_global_state.prompt = 1;
+	add_line = readline("> ");
+	if (!g_global_state.prompt)
+		return (ERR_SIGINT);
+	g_global_state.prompt = 0;
+	if (!add_line)
+		return (ERR_EOF_QUOTED);
+	if (ms_join_quote_prompt(line, add_line))
+		return (ERR_NOMEM);
 	*start = (*line) + index[0];
 	*end = (*line) + index[1];
 	return (0);
@@ -82,7 +91,6 @@ static int	ms_skip_quoted(t_token *tkn, char **end, char **start, char **line)
 	}
 	if (check != ERR_EOF_QUOTED)
 		return (check);
-	g_global_state.status = 2;
 	write(2, "shellshock: unexpected EOF while looking for matching `", 55);
 	write(STDERR_FILENO, &quote, 1);
 	write(STDERR_FILENO, "'\n", 2);

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 15:32:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/14 14:47:34 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 17:58:09 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	ms_envcpy(t_ms_context *data)
 	char		**new;
 	int			i;
 
+	data->env_excess = 0;
 	i = 0;
 	while (environ[i])
 		i++;
@@ -46,10 +47,7 @@ int	ms_envcpy(t_ms_context *data)
 	{
 		new[i] = ft_strdup(environ[i]);
 		if (!new[i])
-		{
-			ft_clear_ds(new);
 			return (1);
-		}
 		i++;
 	}
 	new[i] = NULL;

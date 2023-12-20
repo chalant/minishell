@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 15:02:50 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 16:24:28 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 18:03:31 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ static void	ms_kill_pid(int sig)
 	check = wait3(NULL, WNOHANG, NULL);
 	if (check > -1)
 	{
-		// kill(check, SIGQUIT);
 		printf("Quit: %i\n", SIGQUIT);
 		g_global_state.status = 131;
 	}

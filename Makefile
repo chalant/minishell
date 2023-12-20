@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
+#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/18 16:37:04 by ychalant         ###   ########.fr        #
+#    Updated: 2023/12/20 18:07:14 by bvercaem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ INCLUDES_FILES = minishell.h \
 				 minishell_execution.h
 
 SRC_FILES =	minishell_main.c \
+			minishell_startup.c \
 			minishell_signal_handlers.c \
 			minishell_exit.c \
 			minishell_cd.c \
