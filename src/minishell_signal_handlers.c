@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/19 15:02:50 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 16:42:31 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/20 16:48:24 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,15 @@ static void	ms_new_prompt(int sig)
 	check = wait3(NULL, WNOHANG, NULL);
 	if (check == -1)
 		write(STDOUT_FILENO, "^C", 2);
+	if (check > -1)
+		return ;
 	if (g_global_state.prompt)
 	{
-		ioctl(0, TIOCSTI, "\x04");
-		rl_on_new_line();
+		rl_replace_line("", 1);
+		ioctl(STDIN_FILENO, TIOCSTI, "\x04");
 		g_global_state.prompt = 0;
 		return ;
 	}
-	if (check > -1)
-		return ;
 	write(STDOUT_FILENO, "\n", 1);
 	rl_replace_line("", 1);
 	rl_on_new_line();

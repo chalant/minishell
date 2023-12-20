@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 18:19:25 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/20 16:01:37 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ int	ms_tokeniser(char **input, t_darray *tokens, t_token_info *info)
 	char	*start_end[2];
 	t_token	token;
 	int		start_size;
+	int		check;
 
 	if (tokens->size)
 		tokens->size--;
@@ -88,8 +89,9 @@ int	ms_tokeniser(char **input, t_darray *tokens, t_token_info *info)
 	while (start_end[1] && *(start_end[1]))
 	{
 		ms_init_token(&token);
-		if (ms_until_reserved(input, start_end, &token, info))
-			return (1);
+		check = ms_until_reserved(input, start_end, &token, info);
+		if (check)
+			return (check);
 		if (ms_add_token(start_end[0], start_end[1], tokens, &token))
 			return (ms_tokeniser_error(*input, 0));
 		start_end[1] = ms_handle_symbol(start_end[1], tokens, &token, info);
