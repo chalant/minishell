@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/21 13:39:02 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/21 14:52:19 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 
 	g_global_state.prompt = 1;
 	line = readline("> ");
+	g_global_state.prompt = 0;
 	if (ms_join_line(command->context, line, "\n") < 0)
 		return (-1);
 	while (line && ft_strcmp(line, redirection->file_path) != 0)
@@ -62,12 +63,13 @@ int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 		ms_heredoc_write(fd, line, redirection->redirection_flags & MS_QUOTED);
 		free(line);
 		line = readline("> ");
+		g_global_state.prompt = 0;
 		if (ms_join_line(command->context, line, "\n") < 0)
 			return (-1);
 	}
 	if (line && ms_add_separator(command->context, line, "\n") < 0)
 		return (-1);
-	if (!line && g_global_state.prompt)
+	if (!line && g_global_state.status != 130)
 		ms_message_header(redirection->file_path, eof_warning, STDERR_FILENO);
 	free(line);
 	return (1);
