@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_heredoc.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/21 14:52:19 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/21 15:19:06 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ int	ms_heredoc_prompt(t_command *command, t_redirection *redirection, int fd)
 	{
 		ms_heredoc_write(fd, line, redirection->redirection_flags & MS_QUOTED);
 		free(line);
+		g_global_state.prompt = 1;
 		line = readline("> ");
 		g_global_state.prompt = 0;
 		if (ms_join_line(command->context, line, "\n") < 0)
@@ -108,7 +109,8 @@ int	ms_heredoc(t_command *command, int id)
 			if (fd < 0)
 				return (ms_perror(path, NULL, NULL, errno) * -1);
 			red->tmp_file = path;
-			ms_heredoc_prompt(command, red, fd);
+			if (ms_heredoc_prompt(command, red, fd) < 0)
+				return (-1);
 			close(fd);
 		}
 	}
