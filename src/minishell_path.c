@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "sys/stat.h"
 
 static char	**get_path_env_var(char **env)
 {
@@ -48,8 +49,9 @@ int	make_paths(char **paths)
 
 int	find_command(char **paths, char *command, char **result)
 {
-	int		i;
-	char	*path;
+	int			i;
+	char		*path;
+	struct stat	statbuf;
 
 	i = 0;
 	while (paths[i])
@@ -57,7 +59,8 @@ int	find_command(char **paths, char *command, char **result)
 		path = ft_strjoin(paths[i], command);
 		if (!path)
 			return (-1);
-		if (access(path, F_OK) == 0)
+		stat(path, &statbuf);
+		if (S_ISREG(statbuf.st_mode) && access(path, X_OK) == 0)
 		{
 			*result = path;
 			return (1);
@@ -72,7 +75,10 @@ int	get_paths(char ***paths, char **env)
 {
 	env = get_path_env_var(env);
 	if (!env)
+	{
+		*paths = NULL;
 		return (0);
+	}
 	*paths = ft_split(&env[0][5], ':');
 	if (!*paths)
 		return (-1);
@@ -88,6 +94,13 @@ int	get_binary(char *command_name, char **result)
 		return (0);
 	if (get_paths(&paths, environ) < 0)
 		return (-1);
+	if (!paths)
+	{
+		*result = ft_strdup(command_name);
+		if (!*result)
+			return (-1);
+		return (0);
+	}
 	if (find_command(paths, command_name, result) < 0)
 	{
 		ft_clear_ds(paths);

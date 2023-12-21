@@ -36,7 +36,7 @@ run_test_case() {
     timeout_seconds="$2"
 
 	echo "----------------------------------------------------------"
-    your_output=$(echo $test_command | ./minishell)
+    your_output=$(echo $test_command | ../minishell)
     your_status=$(echo $?)
     bash_output=$(echo $test_command | bash)
 	bash_status=$(echo $?)
@@ -107,6 +107,7 @@ run_test_case "((cat -e | cat -e) | (cat -e << yo | cat -e )) << stop" 5
 run_test_case "echo hello > a how > b are > c you" 5
 
 run_test_case "ls fail" 5
+run_test_case "" 5
 
 # make sure the right command is executed on fail.
 run_test_case "cat -e fail || echo hello" 5
