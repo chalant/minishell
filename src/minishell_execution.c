@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/21 11:24:45 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/21 13:39:32 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	launch_heredocs(t_command *command, int *id)
 	if (command->redirections && command->command_flags & MS_OPERATOR)
 	{
 		*id += 1;
-		ms_heredoc(command, *id);
+		return (ms_heredoc(command, *id));
 	}
 	return (1);
 }

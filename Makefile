@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/20 18:07:14 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/12/21 13:43:35 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -89,7 +89,7 @@ NAME = minishell
 LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-C_FLAGS = -Wall -Wextra -Werror -g -O3 -Wno-unused-result -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
+C_FLAGS = -Wall -Wextra -Werror -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 #C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 READLINE = -lreadline -lhistory -L/Users/$(USER)/homebrew/opt/readline/lib
 IREADLINE = -I/Users/$(USER)/homebrew/opt/readline/include

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/21 11:45:18 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/21 13:39:02 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,5 +110,5 @@ int	ms_heredoc(t_command *command, int id)
 			close(fd);
 		}
 	}
-	return (1);
+	return (g_global_state.status != 130);
 }
