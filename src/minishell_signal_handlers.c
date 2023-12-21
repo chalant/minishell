@@ -24,7 +24,10 @@ static void	ms_new_prompt(int sig)
 	if (check == -1)
 		write(STDOUT_FILENO, "^C", 2);
 	if (check > -1)
+	{
+		write(STDOUT_FILENO, "\n", 1);
 		return ;
+	}
 	if (g_global_state.prompt)
 	{
 		rl_replace_line("", 1);

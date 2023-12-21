@@ -79,7 +79,11 @@ run_test_case "export USER=hello && echo \"'\$USER'\" && echo '\"\$USER\"'" 5
 run_test_case "((cat -e | cat -e) | (cat -e | cat -e )) << stop" "" 5
 
 # Test for valid output and redirectons with parenthesis.
-run_test_case "((cat -e | cat -e) | (cat -e | cat -e )) < Makefile"  5
+run_test_case "((cat -e | cat -e) | (cat -e | cat -e )) < Makefile" 5
+
+run_test_case "(cat -e | cat -e && cat -e | cat -e ) < Makefile" 5
+run_test_case "(cat -e && cat -e && cat -e && cat -e ) < Makefile" 5
+run_test_case "(cat -e || cat -e && cat -e | cat -e && cat -e) < Makefile"  5
 
 run_test_case "((cat -e && cat -e) | (cat -e && cat -e )) < Makefile" 5
 run_test_case "((cat -e && cat -e) && (cat -e && cat -e )) < Makefile" 5
@@ -101,6 +105,8 @@ run_test_case "((cat -e | cat -e) | (cat -e << yo | cat -e )) << stop" 5
 
 # test alternating redirections and arguments
 run_test_case "echo hello > a how > b are > c you" 5
+
+run_test_case "ls fail" 5
 
 # make sure the right command is executed on fail.
 run_test_case "cat -e fail || echo hello" 5

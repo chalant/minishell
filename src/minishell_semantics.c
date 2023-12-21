@@ -35,7 +35,6 @@ int	handle_operator(t_parse_tree *node, t_stack *commands)
 	return (1);
 }
 
-//todo: free all on failure
 int	create_redirections(t_command *new, t_parse_tree *node)
 {
 	init_command(new);
