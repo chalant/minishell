@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:44:01 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/19 13:36:10 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/21 20:05:04 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // takes both [name]=[value] and just [name]
 int	ms_check_varname(char *var)
 {
-	if (('0' <= *var && *var <= '9') || *var == '=')
+	if (!*var || ('0' <= *var && *var <= '9') || *var == '=')
 		return (1);
 	while (*var && *var != '=')
 	{

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 19:14:49 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 20:00:47 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/21 19:29:59 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static char	**ms_normal_getenv(char *str, int *qt)
 		return (ret);
 	}
 	if (!*qt)
-		return (ft_setsplit(value, " \n"));
+		return (ft_setsplit(value, RESERVED_SKIP));
 	ret = malloc(sizeof(char *) * 2);
 	if (!ret)
 		return (NULL);

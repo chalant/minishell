@@ -6,16 +6,17 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 18:47:45 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/21 19:30:26 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_TOKENS_H
 # define MINISHELL_TOKENS_H
 
-# define RESERVED_SINGLE "|<>() \n"
+# define RESERVED_SINGLE "|<>() \n\t\v\f\r"
 # define RESERVED_DOUBLE "<>&|"
-# define RESERVED_SKIP " \n"
+// used in the tokeniser and var expansion:
+# define RESERVED_SKIP " \n\t\v\f\r"
 
 # define SPECIAL_VAR "?"
 
