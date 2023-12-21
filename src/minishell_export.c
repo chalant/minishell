@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/21 20:13:08 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/21 23:37:54 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static void	ms_sort_env(char **envp, int size)
 
 // prints env but in order of ascending ascii value
 // error: nomem, prints msg
-static int	ms_env_alpha(char **env, int i)
+static int	ms_env_alpha(char **env, int i, int fd)
 {
 	char	**temp_envp;
 	char	*equal_sign;
@@ -55,6 +55,7 @@ static int	ms_env_alpha(char **env, int i)
 	i = -1;
 	while (temp_envp[++i])
 	{
+(void)fd;
 		equal_sign = ft_strchr(temp_envp[i], '=');
 		*equal_sign = 0;
 		printf("declare -x %s=", temp_envp[i]);
@@ -117,7 +118,7 @@ int	ms_export_var(t_ms_context *data, char *var)
 
 // no args: prints env in ascii order
 // error: 1 or nomem, prints msg
-int	ms_export(t_ms_context *data, char **arg)
+int	ms_export(t_ms_context *data, char **arg, int fd)
 {
 	char	*var;
 	int		i;
@@ -126,7 +127,7 @@ int	ms_export(t_ms_context *data, char **arg)
 	ret = 0;
 	i = 1;
 	if (!arg || !arg[1])
-		return (ms_env_alpha(data->env, i));
+		return (ms_env_alpha(data->env, i, fd));
 	while (arg[i])
 	{
 		if (!ms_check_varname(arg[i]))
