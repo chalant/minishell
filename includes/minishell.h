@@ -59,7 +59,7 @@ int		ms_exit(t_ms_context *data, char **arg);
 int		ms_echo(char **arg, int fd);
 int		ms_cd(t_ms_context *data, char **arg, int fd);
 int		ms_pwd(char **arg, int fd);
-int		ms_env(void);
+int		ms_env(int fd);
 int		ms_export(t_ms_context *data, char **arg);
 int		ms_export_var(t_ms_context *data, char *var);
 int		ms_unset(t_ms_context *data, char **arg);

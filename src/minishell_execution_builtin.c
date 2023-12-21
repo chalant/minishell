@@ -31,7 +31,7 @@ int	dispatch_builtin(t_command *command, int in_fd, int out_fd)
 	else if (ft_strcmp(command->command_name, "export") == 0)
 		status = ms_export(command->context, arguments);
 	else if (ft_strcmp(command->command_name, "env") == 0)
-		status = ms_env();
+		status = ms_env(out_fd);
 	else if (ft_strcmp(command->command_name, "unset") == 0)
 		status = ms_unset(command->context, arguments);
 	else if (ft_strcmp(command->command_name, "exit") == 0)

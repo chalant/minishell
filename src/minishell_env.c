@@ -13,7 +13,7 @@
 #include "minishell.h"
 
 // prints out env on std_out and returns 0
-int	ms_env(void)
+int	ms_env(int fd)
 {
 	extern char	**environ;
 	int			i;
@@ -21,8 +21,8 @@ int	ms_env(void)
 	i = 0;
 	while (environ[i])
 	{
-		write(1, environ[i], ft_strlen(environ[i]));
-		write(1, "\n", 1);
+		write(fd, environ[i], ft_strlen(environ[i]));
+		write(fd, "\n", 1);
 		i++;
 	}
 	return (0);
