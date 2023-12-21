@@ -31,25 +31,16 @@ int	get_executable(t_command *command, char **binary, struct stat *statbuf)
 {
 	if (ft_strchr(command->command_name, '/'))
 	{
-		stat(command->command_name, statbuf);
-		if (access(command->command_name, F_OK) != 0)
-		{
-			ms_perror(command->command_name, NULL, NULL, errno);
-			exit(127);
-		}
+		if (stat(command->command_name, statbuf) == -1)
+			exit(ms_perror(command->command_name, NULL, NULL, errno) * 127);
+		if (S_ISDIR(statbuf->st_mode))
+			exit(ms_perror(command->command_name, NULL,
+					"Is a directory", 0) * 126);
 		else if (access(command->command_name, X_OK) != 0)
-		{
-			ms_perror(command->command_name, NULL, NULL, errno);
-			exit(126);
-		}
-		else if (S_ISDIR(statbuf->st_mode))
-		{
-			ms_perror(command->command_name, NULL, "Is a directory", 0);
-			exit(126);
-		}
+			exit(ms_perror(command->command_name, NULL, NULL, errno) * 126);
 		*binary = ft_strdup(command->command_name);
 		if (!*binary)
-			exit(1);
+			exit(ms_perror(command->command_name, NULL, NULL, errno));
 	}
 	return (get_binary(command->command_name, binary));
 }
@@ -65,16 +56,13 @@ int	launch_execve(t_command *command)
 	if (get_executable(command, &binary, &statbuf) < 0)
 		exit(1);
 	else if (!binary)
-	{
-		ms_perror(command->command_name, NULL, "command not found", 0);
-		exit(127);
-	}
+		exit(ms_perror(command->command_name, NULL,
+				"command not found", 0) * 127);
 	arguments = make_arguments(command, binary);
 	if (!arguments)
 	{
 		free(binary);
-		ms_perror(command->command_name, NULL, NULL, ENOMEM);
-		exit(1);
+		exit(ms_perror(command->command_name, NULL, NULL, ENOMEM));
 	}
 	execve(binary, arguments, command->context->env);
 	free(binary);

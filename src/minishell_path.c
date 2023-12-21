@@ -59,7 +59,12 @@ int	find_command(char **paths, char *command, char **result)
 		path = ft_strjoin(paths[i], command);
 		if (!path)
 			return (-1);
-		stat(path, &statbuf);
+		if (stat(path, &statbuf) == -1)
+		{
+			free(path);
+			i++;
+			continue ;
+		}
 		if (S_ISREG(statbuf.st_mode) && access(path, X_OK) == 0)
 		{
 			*result = path;
