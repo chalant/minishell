@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/20 16:56:17 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/21 11:33:32 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	set_command_fields(t_parse_tree *node, t_command *command)
 	return (0);
 }
 
-//todo: free stuff here in case of failed mallocs?
 int	init_command_fields(t_command *command)
 {
 	if (!command->redirections)

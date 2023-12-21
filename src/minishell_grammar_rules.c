@@ -6,13 +6,12 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:03:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 16:14:21 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/21 11:33:38 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//todo: check for leaks
 int	init_rule(char ***result, t_ms_grammar *grammar, char **rules, int i)
 {
 	char		**rule;

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:17:05 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/19 18:34:54 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/21 10:50:39 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	launch_execve(t_command *command)
 		exit(1);
 	else if (!binary)
 	{
-		ms_perror(binary, NULL, "command not found", 0);
+		ms_perror(command->command_name, NULL, "command not found", 0);
 		exit(127);
 	}
 	arguments = make_arguments(command, binary);

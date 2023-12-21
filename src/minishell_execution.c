@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 15:02:24 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/19 14:27:42 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/21 11:24:45 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 int	launch_heredocs(t_command *command, int *id)
 {
-	if (!access(MS_HEREDOC_PATH, F_OK))
-		if (unlink(MS_HEREDOC_PATH))
-			return (ms_perror("unlink", MS_HEREDOC_PATH, NULL, errno) * (-1));
 	if (command->redirections && (command->command_flags & MS_OPERAND
 			|| command->command_flags & MS_REDIR))
 	{
@@ -25,6 +22,8 @@ int	launch_heredocs(t_command *command, int *id)
 	}
 	if (command->left)
 		launch_heredocs(command->left, id);
+	if (g_global_state.status == 130)
+		return (0);
 	if (command->right)
 		launch_heredocs(command->right, id);
 	if (command->redirections && command->command_flags & MS_OPERATOR)
@@ -106,7 +105,11 @@ int	start_execution(t_command *command)
 	out_pipe[1] = -1;
 	in_pipe[0] = -1;
 	in_pipe[1] = -1;
-	launch_heredocs(command, &hd_id);
+	if (!access(MS_HEREDOC_PATH, F_OK))
+		if (unlink(MS_HEREDOC_PATH))
+			return (ms_perror("unlink", MS_HEREDOC_PATH, NULL, errno) * (-1));
+	if (!launch_heredocs(command, &hd_id))
+		return (0);
 	if (handle_redirections(command) < 0)
 		return (1);
 	status = execute_command(NULL, command, in_pipe, out_pipe);

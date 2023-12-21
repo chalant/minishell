@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_commands.h                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/20 18:52:26 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/21 11:33:16 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@
 # define MS_WRITE 1 << 2
 # define MS_QUOTED 1 << 3
 
-//todo: this might not work on mac.
 # define MS_HEREDOC_PATH "/tmp/ms_heredoc"
 
 typedef struct s_ms_context
