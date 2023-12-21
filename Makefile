@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
+#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/21 14:56:26 by ychalant         ###   ########.fr        #
+#    Updated: 2023/12/21 15:12:32 by bvercaem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -93,7 +93,6 @@ C_FLAGS = -Wall -Wextra -Werror -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR
 #C_FLAGS = -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 READLINE = -lreadline -lhistory -L/Users/$(USER)/homebrew/opt/readline/lib
 IREADLINE = -I/Users/$(USER)/homebrew/opt/readline/include
-#READLINE = -lreadline -lhistory
 
 all:
 	mkdir -p $(OBJ_DIR)
