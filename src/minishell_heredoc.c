@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/16 14:27:42 by yves              #+#    #+#             */
-/*   Updated: 2023/12/20 17:02:26 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/21 11:45:18 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int	ms_heredoc(t_command *command, int id)
 	t_redirection	*red;
 
 	i = -1;
-	while (++i < command->redirections->size)
+	while (++i < command->redirections->size && g_global_state.status != 130)
 	{
 		red = ft_darray_get(command->redirections, i);
 		if (red->redirection_flags & MS_HEREDOC)
