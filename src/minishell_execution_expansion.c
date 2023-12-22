@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 12:09:39 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 17:11:17 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/22 17:15:08 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 // 'into' will either contain the result of an expansion or a copy of 'token'
 //IMPORTANT NOTE: this should not free this token, also don't add this token in the array
-//other-wise it might get double freed. this token is freed later.
+//otherwise it might get double freed. this token is freed later.
 int	expand_token(t_token *token, t_darray *into)
 {
 	t_token	copy;
@@ -34,10 +34,10 @@ int	expand_token(t_token *token, t_darray *into)
 		if (ms_expand_wildcard(into, &copy))
 			return (ERR_NOMEM);
 	else if (ft_darray_append(into, &copy))
-		{
-			ms_clear_token(&copy);
-			return (ERR_NOMEM);
-		}
+	{
+		ms_clear_token(&copy);
+		return (ERR_NOMEM);
+	}
 	ms_quote_expansion(into, 0);
 	return (1);
 }
@@ -69,6 +69,7 @@ int expand_arguments(t_darray *arguments, t_darray *tmp)
 		expand_token(token, tmp);
 		ft_darray_insert(arguments, &tmp, &remainder, i);
 		ft_darray_reset(&tmp, NULL);
+		ft_darray_delete(&remainder, ms_clear_token);
 	}
 }
 

@@ -38,6 +38,7 @@ SRC_FILES = ft_atoi.c \
 			ft_toupper.c \
 			ft_darray.c \
 			ft_darray_interface.c \
+			ft_darray_operations.c \
 			ft_stack.c \
 			ft_count.c
 

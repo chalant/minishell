@@ -6,11 +6,11 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 10:32:54 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 12:58:23 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/22 15:38:49 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
 int	ft_darray_reverse(t_darray *darray)
 {
@@ -18,15 +18,20 @@ int	ft_darray_reverse(t_darray *darray)
 	int		j;
 	void	*tmp;
 
-	i = -1;
+	i = 0;
 	j = darray->size - 1;
-	while (++i < j)
+	tmp = malloc(darray->type_size);
+	if (!tmp)
+		return (-1);
+	while (i < j)
 	{
-		tmp = ft_darray_get(darray, j);
-		ft_darray_set(darray, ft_darray_get(darray, i), j);
-		ft_darray_set(darray, tmp, i);
+		ft_memcpy(tmp, ft_darray_get(darray, i), darray->type_size);
+		ft_darray_set(darray, ft_darray_get(darray, j), i);
+		ft_darray_set(darray, tmp, j);
+		i++;
 		j--;
 	}
+	free(tmp);
 	return (1);
 }
 
@@ -58,13 +63,12 @@ int	ft_darray_slice(t_darray *darray, t_darray *result, int start, int end)
 
 int	ft_darray_insert(t_darray *darray, t_darray *with, t_darray *tmp, int at)
 {
-	int				n;
-
-	if (ft_darray_slice(darray, tmp, at, darray->actual_size) < 0)
+	if (ft_darray_slice(darray, tmp, at, darray->size) < 0)
 		return (-1);
-	darray->size = at + 1;
+	darray->size = at;
 	if (ft_darray_join(darray, with) < 0)
 		return (-1);
 	if (ft_darray_join(darray, tmp) < 0)
 		return (-1);
+	return (1);
 }
