@@ -6,65 +6,11 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/18 16:30:19 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/21 23:37:54 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/22 15:29:07 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static void	ms_sort_env(char **envp, int size)
-{
-	int		i;
-	char	*temp;
-
-	while (size > 1)
-	{
-		i = 0;
-		while (i + 1 < size)
-		{
-			if (ft_strncmp(envp[i], envp[i + 1], ft_strlen(envp[i])) > 0)
-			{
-				temp = envp[i];
-				envp[i] = envp[i + 1];
-				envp[i + 1] = temp;
-			}
-			i++;
-		}
-		size--;
-	}
-}
-
-// prints env but in order of ascending ascii value
-// error: nomem, prints msg
-static int	ms_env_alpha(char **env, int i, int fd)
-{
-	char	**temp_envp;
-	char	*equal_sign;
-
-	i = 0;
-	while (env[i])
-		i++;
-	temp_envp = malloc(sizeof(char *) * (i + 1));
-	if (!temp_envp)
-		return (ms_perror("export", NULL, NULL, errno));
-	i = -1;
-	while (env[++i])
-		temp_envp[i] = env[i];
-	temp_envp[i] = NULL;
-	ms_sort_env(temp_envp, i);
-	i = -1;
-	while (temp_envp[++i])
-	{
-(void)fd;
-		equal_sign = ft_strchr(temp_envp[i], '=');
-		*equal_sign = 0;
-		printf("declare -x %s=", temp_envp[i]);
-		*equal_sign = '=';
-		printf("\"%s\"\n", equal_sign + 1);
-	}
-	free(temp_envp);
-	return (0);
-}
 
 // error: ERR_MALLOC
 static int	ms_add_var_env(t_ms_context *data, char *var)
@@ -127,7 +73,7 @@ int	ms_export(t_ms_context *data, char **arg, int fd)
 	ret = 0;
 	i = 1;
 	if (!arg || !arg[1])
-		return (ms_env_alpha(data->env, i, fd));
+		return (ms_env_alpha(data->env, fd));
 	while (arg[i])
 	{
 		if (!ms_check_varname(arg[i]))

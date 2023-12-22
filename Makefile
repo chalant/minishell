@@ -6,7 +6,7 @@
 #    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/21 19:05:29 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/12/22 15:36:12 by bvercaem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,7 @@ SRC_FILES =	minishell_main.c \
 			minishell_cd.c \
 			minishell_pwd.c \
 			minishell_export.c \
+			minishell_export_print.c \
 			minishell_unset.c \
 			minishell_variable_util.c \
 			minishell_env.c \

@@ -1,4 +1,4 @@
-C_FLAGS = -O3 -Wall -Wextra -WerrorZ
+C_FLAGS = -O3 -Wall -Wextra -Werror
 SRC_FILES = ft_atoi.c \
 			ft_bzero.c \
 			ft_calloc.c \
