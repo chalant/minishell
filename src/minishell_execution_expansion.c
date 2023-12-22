@@ -3,20 +3,42 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution_expansion.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 12:09:39 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 13:55:30 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/22 17:11:17 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//(bvercaem) insert expansion code here please :)
+// 'into' will either contain the result of an expansion or a copy of 'token'
 //IMPORTANT NOTE: this should not free this token, also don't add this token in the array
 //other-wise it might get double freed. this token is freed later.
-int expand_token(t_token *token, t_darray *into)
+int	expand_token(t_token *token, t_darray *into)
 {
+	t_token	copy;
+
+	copy.flags = token->flags;
+	copy.string = ft_strdup(token->string);
+	copy.mask_exp = ft_strdup(token->mask_exp);
+	if (!copy.string || !copy.mask_exp)
+	{
+		ms_clear_token(&copy);
+		return (ERR_NOMEM);
+	}
+	if (!(token->flags & IS_DELIMITER) && token->flags & IS_VAR)
+		if (ms_expand_var(into, &copy))
+			return (ERR_NOMEM);
+	else if (!(token->flags & IS_DELIMITER) && token->flags & IS_WILDCARD)
+		if (ms_expand_wildcard(into, &copy))
+			return (ERR_NOMEM);
+	else if (ft_darray_append(into, &copy))
+		{
+			ms_clear_token(&copy);
+			return (ERR_NOMEM);
+		}
+	ms_quote_expansion(into, 0);
 	return (1);
 }
 

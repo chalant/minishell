@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 19:30:07 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/22 16:27:58 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,10 @@ static int	ms_add_token(char *start, char *end, t_darray *tkns, t_token *token)
 	if (tkns->size
 		&& (((t_token *)tkns->contents) + tkns->size - 1)->flags & IS_HEREDOC)
 		token->flags |= IS_DELIMITER;
-	else if (token->flags & IS_VAR)
-		return (ms_expand_var(tkns, token));
-	else if (token->flags & IS_WILDCARD)
-		return (ms_expand_wildcard(tkns, token));
+	// else if (token->flags & IS_VAR)
+	// 	return (ms_expand_var(tkns, token));
+	// else if (token->flags & IS_WILDCARD)
+	// 	return (ms_expand_wildcard(tkns, token));
 	if (ft_darray_append(tkns, token) == -1)
 	{
 		ms_clear_token(token);
@@ -98,7 +98,7 @@ int	ms_tokeniser(char **input, t_darray *tokens, t_tkn_info *info)
 		if (!start_end[1])
 			return (ms_tokeniser_error(*input, 0));
 	}
-	ms_token_expansion(tokens, start_size);
+	// ms_quote_expansion(tokens, start_size);
 	if (ft_darray_append(tokens, ms_init_token(&token)))
 		return (ms_tokeniser_error(*input, 1));
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/20 18:47:45 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/22 16:08:25 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ static int	ms_add_str(t_token *new, char **str, int *qt)
 }
 
 // always clears 'token', never 'tokens'
+// error: ERR_MALLOC
 int	ms_expand_var(t_darray *tokens, t_token *token)
 {
 	char	*str;

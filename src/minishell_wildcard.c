@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 14:34:25 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/18 17:31:19 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/22 16:13:16 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,14 @@ static int	ms_open_dir(DIR **dirp, t_dirent **entryp, t_token *token)
 	if (!*dirp)
 	{
 		ms_clear_token(token);
-		return (ms_perror("filename expansion", ".", NULL, errno));
+		return (1);
 	}
 	*entryp = readdir(*dirp);
 	return (0);
 }
 
-// returns 0 if succes, clears 'token' or adds it to tokens
-// on error, doesn't clear 'tokens', prints message
+// either clears 'token' or adds it to tokens
+// error: ERR_MALLOC: clear 'token', doesn't clear 'tokens', prints message
 int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 {
 	DIR			*dirp;
@@ -65,7 +65,7 @@ int	ms_expand_wildcard(t_darray *tokens, t_token *token)
 	int			start_size;
 
 	if (ms_open_dir(&dirp, &entryp, token))
-		return (1);
+		return (ms_perror("filename expansion", ".", NULL, errno));
 	start_size = tokens->size;
 	while (entryp)
 	{

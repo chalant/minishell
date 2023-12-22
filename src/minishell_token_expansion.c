@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 14:56:22 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/13 17:08:34 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/22 16:18:12 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ void	ms_remove_quotes(char *str, char *mask_exp)
 	}
 }
 
-// removes quotes
-void	ms_token_expansion(t_darray *tokens, int start_index)
+// removes quotes innit
+void	ms_quote_expansion(t_darray *tokens, int start_index)
 {
 	int		i;
 	t_token	*token;
