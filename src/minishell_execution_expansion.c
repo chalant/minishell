@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 12:09:39 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 13:55:30 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/22 14:44:43 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 //(bvercaem) insert expansion code here please :)
 //IMPORTANT NOTE: this should not free this token, also don't add this token in the array
-//other-wise it might get double freed. this token is freed later.
+//otherwise it might get double freed. this token is freed later.
 int expand_token(t_token *token, t_darray *into)
 {
 	return (1);
@@ -47,6 +47,7 @@ int expand_arguments(t_darray *arguments, t_darray *tmp)
 		expand_token(token, tmp);
 		ft_darray_insert(arguments, &tmp, &remainder, i);
 		ft_darray_reset(&tmp, NULL);
+		ft_darray_delete(&remainder, ms_clear_token);
 	}
 }
 
