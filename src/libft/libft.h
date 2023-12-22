@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:08:36 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 17:38:22 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/22 11:57:39 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,12 @@ int					ft_darray_append(t_darray *darray, void *element);
 int					ft_darray_reset(t_darray *darray, void del_content(void *));
 int					ft_darray_delete(t_darray *darray,
 						void del_content(void *));
+int					ft_darray_reverse(t_darray *darray);
+int					ft_darray_join(t_darray *darray, t_darray *with);
+int					ft_darray_slice(t_darray *darray, t_darray *result,
+						int start, int end);
+int					ft_darray_insert(t_darray *darray, t_darray *with,
+						t_darray *tmp, int at);
 
 void				*ft_stack_peek(t_stack *stack);
 void				*ft_stack_pop(t_stack *stack);
