@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/21 14:38:16 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/22 13:26:53 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ int	create_files(t_command *command, t_darray *redirections)
 	while (++i < redirections->size)
 	{
 		redirection = ft_darray_get(redirections, i);
+		//check for expansion first
 		if (!(redirection->redirection_flags & MS_HEREDOC))
 			fd = open(redirection->file_path,
 					redirection->file_flags, redirection->mode);

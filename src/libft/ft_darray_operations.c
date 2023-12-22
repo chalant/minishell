@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 10:32:54 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 11:56:59 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/22 12:58:23 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ int	ft_darray_slice(t_darray *darray, t_darray *result, int start, int end)
 {
 	int		i;
 
-	if (ft_darray_init(result, darray->type_size, end - start) < 0)
-		return (-1);
 	i = -1;
 	while (++i < end - start)
 	{
