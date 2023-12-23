@@ -3,61 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution_args.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:01:03 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 13:40:51 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/23 17:33:01 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	fill_in_status(char *status, t_token *token, int *j)
-{
-	if (!token->string[*j])
-		return ;
-	token->string[*j] = *status;
-	(*j)++;
-	status++;
-	if (*status)
-	{
-		token->string[*j] = *status;
-		(*j)++;
-		status++;
-	}
-	else
-		ms_shift_strings(token->string, token->mask_exp, *j);
-	if (*status)
-	{
-		token->string[*j] = *status;
-		(*j)++;
-		status++;
-	}
-	else
-		ms_shift_strings(token->string, token->mask_exp, *j);
-}
-
+// there used to be a lot more in this ft lol (? expansion)
 static char	*make_argi(t_command *command, int i)
 {
 	t_token	*token;
-	int		j;
-	char	*status;
 
 	token = ft_darray_get(command->arguments, i - 1);
-	if (token->flags & IS_SPECIAL)
-	{
-		status = ft_itoa((unsigned char) command->context->status);
-		if (!status)
-			return (NULL);
-		j = 0;
-		while (token->string[j])
-		{
-			while (token->string[j] && token->mask_exp[j] != '3')
-				j++;
-			fill_in_status(status, token, &j);
-		}
-		free(status);
-	}
 	return (token->string);
 }
 

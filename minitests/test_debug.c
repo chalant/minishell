@@ -187,7 +187,6 @@ void	test_print_tokens(t_ms_context *data)
 	int i = 0;
 	while (i < data->parse_data.tokens->size)
 	{
-		// printf("%2i|", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->flags & IS_SPECIAL);
 		printf("%6s, ", ((t_token *)ft_darray_get(data->parse_data.tokens, i))->string);
 		i++;
 	}

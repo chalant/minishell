@@ -6,30 +6,29 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 19:14:49 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/21 19:29:59 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/23 17:38:57 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	**ms_special_getenv(char *str, int *qt, char *mask_f, t_token *new)
+// 'str' and 'qt' is not needed for a ? expansion
+static char	**ms_special_getenv(char *str, int *qt)
 {
 	char	**ret;
 
 	(void) str;
 	(void) qt;
-	new->flags |= IS_SPECIAL;
 	ret = malloc(sizeof(char *) * 2);
 	if (!ret)
 		return (NULL);
-	ret[0] = ft_strdup("$$?");
+	ret[0] = ft_itoa((unsigned char) g_global_state.status);
 	if (!ret[0])
 	{
 		free(ret);
 		return (NULL);
 	}
 	ret[1] = NULL;
-	*mask_f = '3';
 	return (ret);
 }
 
@@ -61,9 +60,10 @@ static char	**ms_normal_getenv(char *str, int *qt)
 	return (ret);
 }
 
-char	**ms_malloc_getenv(char *str, int *qt, char *mask_f, t_token *new)
+// returns NULL on malloc error, no print
+char	**ms_malloc_getenv(char *str, int *qt)
 {
 	if (ft_strchr(SPECIAL_VAR, *str))
-		return (ms_special_getenv(str, qt, mask_f, new));
+		return (ms_special_getenv(str, qt));
 	return (ms_normal_getenv(str, qt));
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_tokens.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/23 10:09:33 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/23 17:05:04 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,6 @@ static int	ms_add_token(char *start, char *end, t_darray *tkns, t_token *token)
 	if (tkns->size
 		&& (((t_token *)tkns->contents) + tkns->size - 1)->flags & IS_HEREDOC)
 		token->flags |= IS_DELIMITER;
-	// else if (token->flags & IS_VAR)
-	// 	return (ms_expand_var(tkns, token));
-	// else if (token->flags & IS_WILDCARD)
-	// 	return (ms_expand_wildcard(tkns, token));
 	if (ft_darray_append(tkns, token) == -1)
 	{
 		ms_clear_token(token);

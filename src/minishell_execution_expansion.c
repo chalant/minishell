@@ -3,34 +3,60 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution_expansion.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 12:09:39 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/23 14:26:11 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/23 17:37:15 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// static void	test_print_tokens(t_ms_context *data, t_darray *tokens)
+// {
+// // DEBUG FUNCTION
+// 	if (data)
+// 		tokens = data->parse_data.tokens;
+// 	printf("## tokens: ");
+// 	int i = 0;
+// 	while (i < tokens->size)
+// 	{
+// 		printf("%6s, ", ((t_token *)ft_darray_get(tokens, i))->string);
+// 		i++;
+// 	}
+// 	printf("\n## masks : ");
+// 	i = 0;
+// 	while (i < tokens->size)
+// 	{
+// 		printf("%6s, ", ((t_token *)ft_darray_get(tokens, i))->mask_exp);
+// 		i++;
+// 	}
+// 	printf("\n");
+// // REMOVE WHEN DONE
+// }
+
 // 'into' will either contain the result of an expansion or a copy of 'token'
 //IMPORTANT NOTE: this should not free this token, also don't add this token in the array
 //otherwise it might get double freed. this token is freed later.
-int	expand_token(t_token *token, t_darray *into)
+static int	expand_token(t_token *token, t_darray *into/*, t_ms_context *data*/)
 {
 	t_token	copy;
 
 	copy.flags = token->flags;
 	copy.string = ft_strdup(token->string);
-	copy.mask_exp = NULL;
-	if (!copy.string)
+	copy.mask_exp = ft_strdup(token->mask_exp);
+	if (!copy.string || (token->mask_exp && !copy.mask_exp))
 	{
 		ms_clear_token(&copy);
 		return (ERR_NOMEM);
 	}
 	if (!(token->flags & IS_DELIMITER) && token->flags & IS_VAR)
 	{
+		/*if (!g_global_state.status)
+			g_global_state.status = data->status;*/
 		if (ms_expand_var(into, &copy))
 			return (ERR_NOMEM);
+		/*g_global_state.status = 0;*/
 	}
 	else if (!(token->flags & IS_DELIMITER) && token->flags & IS_WILDCARD)
 	{
@@ -42,8 +68,23 @@ int	expand_token(t_token *token, t_darray *into)
 		ms_clear_token(&copy);
 		return (ERR_NOMEM);
 	}
+// test_print_tokens(NULL, into);
 	ms_quote_expansion(into, 0);
 	return (1);
+}
+
+// returns 0 if not expanded, 1 if it was, or ERR_NOMEM
+// always removes quotes
+int	expand_or_rmv_qts(t_token *token, t_darray *into/*, t_ms_context *data*/)
+{
+	if (token->flags & IS_DELIMITER
+		|| (!(token->flags & IS_VAR) && !(token->flags & IS_WILDCARD)))
+	{
+		if (token->flags & IS_QUOTED)
+			ms_remove_quotes(token->string, token->mask_exp);
+		return (0);
+	}
+	return (expand_token(token, into/*, data*/));
 }
 
 //adds elements at the begging of the array.
@@ -60,6 +101,7 @@ int prepend_arguments(t_darray *arguments, t_darray *into)
 int expand_arguments(t_darray *arguments, t_darray *tmp)
 {
 	int			i;
+	int			check;
 	t_token		*token;
 	t_darray	remainder;
 
@@ -70,9 +112,10 @@ int expand_arguments(t_darray *arguments, t_darray *tmp)
 	while (++i < arguments->size)
 	{
 		token = ft_darray_get(arguments, i);
-		if (!ft_strchr(token->string, '$'))
-			continue;
-		expand_token(token, tmp);
+		check = expand_or_rmv_qts(token, tmp);
+		if (!check)
+			continue ;
+		// handle check == ERR_MALLOC
 		ft_darray_onsert(arguments, tmp, &remainder, i);
 		ft_darray_reset(tmp, NULL);
 		ft_darray_reset(&remainder, NULL);
@@ -82,13 +125,14 @@ int expand_arguments(t_darray *arguments, t_darray *tmp)
 
 int expand_redirection(t_redirection *redirection)
 {
-	t_darray		tmp;
+	t_darray	tmp;
+	int			check;
 
-	if (!ft_strchr(redirection->token->string, '$'))
-		return (0);
 	//todo: return if there is no expansion needed.
-	if (expand_token(redirection->token, &tmp) < 0)
-		return (-1);
+	//	-> should be good now
+	check = expand_or_rmv_qts(redirection->token, &tmp);
+	if (!check || check == ERR_MALLOC)
+		return (check);
 	//not sure about this condition
 	if (tmp.size != 1)
 	{
@@ -105,14 +149,15 @@ int expand_redirection(t_redirection *redirection)
 int expand_command_fields(t_command *command)
 {
 	t_darray	tmp;
+	int			check;
 
 	//todo: check if it should be expanded... return outherwise.
 	if (ft_darray_init(&tmp, sizeof(t_token), 10) < 0)
 		return (-1);
-	if (ft_strchr(command->token->string, '$'))
+	check = expand_or_rmv_qts(command->token, &tmp);
+	if (check == 1)
 	{
 		//todo: set command to null if the expansion is empty.
-		expand_token(command->token, &tmp);
 		//this will be freed when clearing the arguments.
 		command->command_name = ((t_token *)ft_darray_get(&tmp, 0))->string;
 		prepend_arguments(&tmp, command->arguments);

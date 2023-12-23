@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/22 16:17:48 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/23 17:15:27 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@
 # define IS_WILDCARD 1 << 3
 # define IS_HEREDOC 1 << 4
 # define IS_DELIMITER 1 << 5
-# define IS_SPECIAL 1 << 6
 # define IS_EOF 1 << 7
 
 // # define RESERVED_SYMBOLS "+-*/() "
@@ -73,7 +72,7 @@ int			ms_add_tkn_var(t_darray *tokens, t_token *new, char **value, int i);
 int			ms_join_str(t_token *token, char *str, char mask);
 int			ms_join_mask(t_token *token, int add_len, char fill);
 char		*ms_end_of_name(const char *str);
-char		**ms_malloc_getenv(char *str, int *qt, char *mask_f, t_token *new);
+char		**ms_malloc_getenv(char *str, int *qt);
 int			ms_expand_wildcard(t_darray *tokens, t_token *token);
 int			ms_pre_check(t_token *token, t_dirent *entryp);
 int			ms_wildcard_cmp(t_dirent *entryp, t_token *token, t_token *new);
