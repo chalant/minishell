@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/22 15:28:51 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/23 10:11:31 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,8 @@ int		ms_echo(char **arg, int fd);
 int		ms_cd(t_ms_context *data, char **arg, int fd);
 int		ms_pwd(char **arg, int fd);
 int		ms_env(int fd);
-int		ms_export(t_ms_context *data, char **arg, int fd);
 int		ms_env_alpha(char **env, int fd);
+int		ms_export(t_ms_context *data, char **arg, int fd);
 int		ms_export_var(t_ms_context *data, char *var);
 int		ms_unset(t_ms_context *data, char **arg);
 int		ms_envcpy(t_ms_context *data);

@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:01:23 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/18 12:01:24 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/23 10:33:34 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int	init_command(t_command *command)
 	command->redirections = NULL;
 	command->context = NULL;
 	command->error = 0;
+	command->token = NULL;
 	return (1);
 }
 

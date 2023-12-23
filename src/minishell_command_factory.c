@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:22:30 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/21 11:33:32 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/23 10:34:53 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,13 @@ int	set_command_elements(t_command *command, t_parse_tree *tree)
 
 int	set_command_fields(t_parse_tree *node, t_command *command)
 {
+	t_token	*token;
+
 	if (!node->rule_name)
 		return (0);
-	command->command_name = get_leaf(node)->token->string;
+	token = get_leaf(node)->token;
+	command->command_name = token->string;
+	command->token = token;
 	if (is_builtin(command->command_name))
 		command->command_flags |= MS_BUILTIN;
 	node = ft_darray_get(node->children, 1);

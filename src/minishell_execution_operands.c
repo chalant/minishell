@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:17:05 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/21 14:49:03 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/23 10:19:41 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,7 @@ int	execute_operand(t_command *parent, t_command *command,
 		parent->pid = pid;
 		return (0);
 	}
+	expand_command_fields(command);
 	if (handle_redirections(command) < 0)
 		return (1);
 	return (execute_simple_command(command, in_pipe, out_pipe));

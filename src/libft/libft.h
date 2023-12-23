@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 12:08:36 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 11:57:39 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/23 11:37:20 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,8 @@ int					ft_darray_slice(t_darray *darray, t_darray *result,
 						int start, int end);
 int					ft_darray_insert(t_darray *darray, t_darray *with,
 						t_darray *tmp, int at);
-
+int					ft_darray_onsert(t_darray *darray, t_darray *with,
+						t_darray *tmp, int at);
 void				*ft_stack_peek(t_stack *stack);
 void				*ft_stack_pop(t_stack *stack);
 int					ft_stack_init(t_stack *stack, t_darray *darray);

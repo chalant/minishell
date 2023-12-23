@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 10:32:54 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 15:38:49 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/23 11:09:09 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,18 @@ int	ft_darray_slice(t_darray *darray, t_darray *result, int start, int end)
 int	ft_darray_insert(t_darray *darray, t_darray *with, t_darray *tmp, int at)
 {
 	if (ft_darray_slice(darray, tmp, at, darray->size) < 0)
+		return (-1);
+	darray->size = at;
+	if (ft_darray_join(darray, with) < 0)
+		return (-1);
+	if (ft_darray_join(darray, tmp) < 0)
+		return (-1);
+	return (1);
+}
+
+int	ft_darray_onsert(t_darray *darray, t_darray *with, t_darray *tmp, int at)
+{
+	if (ft_darray_slice(darray, tmp, at + 1, darray->size) < 0)
 		return (-1);
 	darray->size = at;
 	if (ft_darray_join(darray, with) < 0)

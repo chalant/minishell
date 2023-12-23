@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/16 17:36:04 by bvercaem          #+#    #+#              #
-#    Updated: 2023/12/22 17:13:31 by bvercaem         ###   ########.fr        #
+#    Updated: 2023/12/23 10:25:54 by ychalant         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,6 +64,7 @@ SRC_FILES =	minishell_main.c \
 			minishell_grammar_utils.c \
 			minishell_semantics.c \
 			minishell_pipe_utils.c \
+			minishell_execution_expansion.c \
 			minishell_execution_operators.c \
 			minishell_execution_pipe.c \
 			minishell_execution_io.c \
@@ -91,7 +92,7 @@ LIBFT_DIR = ./src/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 #C_FLAGS = -Wall -Wextra -Werror -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
-C_FLAGS = -Wall -Wextra -Werror -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
+C_FLAGS = -Wno-unused-result -Wall -Wextra -Werror -g -O3 -I$(INCLUDES_DIR) -I$(LIBFT_DIR) -I$(SRC_DIR)
 READLINE = -lreadline -lhistory -L/Users/$(USER)/homebrew/opt/readline/lib
 IREADLINE = -I/Users/$(USER)/homebrew/opt/readline/include
 
