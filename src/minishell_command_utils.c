@@ -29,16 +29,30 @@ int	init_command(t_command *command)
 	return (1);
 }
 
+void	clear_expanded(void *address)
+{
+	t_token	*token;
+
+	token = (t_token *)address;
+	if (!(token->flags & IS_EXPANDED))
+		return ;
+	free(token->string);
+	free(token->mask_exp);
+	token->string = NULL;
+	token->mask_exp = NULL;
+}
+
 int	clear_command(t_command *command)
 {
 	ft_darray_delete(command->redirections, clear_redirection);
-	ft_darray_delete(command->arguments, NULL);
+	ft_darray_delete(command->arguments, clear_expanded);
 	free(command->redirections);
 	free(command->arguments);
+	if (command->command_flags & MS_OPERAND)
+		free(command->command_name);
 	command->command_name = NULL;
 	command->left = NULL;
 	command->right = NULL;
-	command->command_name = NULL;
 	command->command_flags = 0;
 	if (command->input > 0)
 		close(command->input);

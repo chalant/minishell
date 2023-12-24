@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_execution_expansion.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 12:09:39 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/23 17:37:15 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/24 10:39:33 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 // 'into' will either contain the result of an expansion or a copy of 'token'
 //IMPORTANT NOTE: this should not free this token, also don't add this token in the array
 //otherwise it might get double freed. this token is freed later.
-static int	expand_token(t_token *token, t_darray *into/*, t_ms_context *data*/)
+static int	expand_token(t_token *token, t_darray *into, t_ms_context *data)
 {
 	t_token	copy;
 
@@ -52,11 +52,11 @@ static int	expand_token(t_token *token, t_darray *into/*, t_ms_context *data*/)
 	}
 	if (!(token->flags & IS_DELIMITER) && token->flags & IS_VAR)
 	{
-		/*if (!g_global_state.status)
-			g_global_state.status = data->status;*/
+		if (!g_global_state.status)
+			g_global_state.status = data->status;
 		if (ms_expand_var(into, &copy))
 			return (ERR_NOMEM);
-		/*g_global_state.status = 0;*/
+		g_global_state.status = 0;
 	}
 	else if (!(token->flags & IS_DELIMITER) && token->flags & IS_WILDCARD)
 	{
@@ -73,9 +73,7 @@ static int	expand_token(t_token *token, t_darray *into/*, t_ms_context *data*/)
 	return (1);
 }
 
-// returns 0 if not expanded, 1 if it was, or ERR_NOMEM
-// always removes quotes
-int	expand_or_rmv_qts(t_token *token, t_darray *into/*, t_ms_context *data*/)
+int	should_expand(t_token *token)
 {
 	if (token->flags & IS_DELIMITER
 		|| (!(token->flags & IS_VAR) && !(token->flags & IS_WILDCARD)))
@@ -84,12 +82,21 @@ int	expand_or_rmv_qts(t_token *token, t_darray *into/*, t_ms_context *data*/)
 			ms_remove_quotes(token->string, token->mask_exp);
 		return (0);
 	}
-	return (expand_token(token, into/*, data*/));
+	return (1);
 }
 
 //adds elements at the begging of the array.
 int prepend_arguments(t_darray *arguments, t_darray *into)
 {
+	t_token	*token;
+	int		i;
+
+	token = ft_darray_get(arguments, 0);
+	free(token->mask_exp);
+	free(token->string);
+	i = -1;
+	while (++i < arguments->size)
+		((t_token *)ft_darray_get(arguments, i))->flags |= IS_EXPANDED;
 	ft_darray_reverse(into);
 	ft_darray_reverse(arguments);
 	arguments->size = arguments->size - 1;
@@ -98,10 +105,10 @@ int prepend_arguments(t_darray *arguments, t_darray *into)
 	return (0);
 }
 
-int expand_arguments(t_darray *arguments, t_darray *tmp)
+int expand_arguments(t_darray *arguments, t_darray *tmp, t_ms_context *data)
 {
 	int			i;
-	int			check;
+	int			j;
 	t_token		*token;
 	t_darray	remainder;
 
@@ -112,56 +119,77 @@ int expand_arguments(t_darray *arguments, t_darray *tmp)
 	while (++i < arguments->size)
 	{
 		token = ft_darray_get(arguments, i);
-		check = expand_or_rmv_qts(token, tmp);
-		if (!check)
+		if (!should_expand(token))
 			continue ;
-		// handle check == ERR_MALLOC
+		//todo: handle errors.
+		expand_token(token, tmp, data);
+		//todo:mark each token as epxanded.
+		j = -1;
+		while (++j < tmp->size)
+			((t_token *)ft_darray_get(tmp, j))->flags |= IS_EXPANDED;
 		ft_darray_onsert(arguments, tmp, &remainder, i);
 		ft_darray_reset(tmp, NULL);
 		ft_darray_reset(&remainder, NULL);
 	}
+	ft_darray_delete(&remainder, NULL);
 	return (0);
 }
 
-int expand_redirection(t_redirection *redirection)
+int expand_redirection(t_redirection *redirection, t_ms_context *context)
 {
 	t_darray	tmp;
-	int			check;
 
-	//todo: return if there is no expansion needed.
-	//	-> should be good now
-	check = expand_or_rmv_qts(redirection->token, &tmp);
-	if (!check || check == ERR_MALLOC)
-		return (check);
-	//not sure about this condition
+	if (!should_expand(redirection->token))
+		return (0);
+	if (ft_darray_init(&tmp, sizeof(t_token), 10) < 0)
+		return (-1);
+	if (expand_token(redirection->token, &tmp, context) < 0)
+	{
+		ft_darray_delete(&tmp, ms_clear_token);
+		return (ERR_NOMEM);
+	}
 	if (tmp.size != 1)
 	{
 		ft_darray_delete(&tmp, ms_clear_token);
 		return (ms_perror(redirection->token->string, 
 			NULL, "ambiguous redirect", 0) * -1);
 	}
-	//todo: might need to free this, but avoid double frees!
-	redirection->file_path = ft_darray_get(&tmp, 0);
+	redirection->file_path = ft_strdup(((t_token *)ft_darray_get(&tmp, 0))->string);
+	if (!redirection->file_path)
+	{
+		ft_darray_delete(&tmp, ms_clear_token);
+		return (ERR_NOMEM);
+	}
 	redirection->redirection_flags |= MS_FREE;
+	ft_darray_delete(&tmp, ms_clear_token);
 	return (0);
 }
 
 int expand_command_fields(t_command *command)
 {
 	t_darray	tmp;
-	int			check;
+	int			status;
 
 	//todo: check if it should be expanded... return outherwise.
 	if (ft_darray_init(&tmp, sizeof(t_token), 10) < 0)
 		return (-1);
-	check = expand_or_rmv_qts(command->token, &tmp);
-	if (check == 1)
+	if (should_expand(command->token))
 	{
-		//todo: set command to null if the expansion is empty.
-		//this will be freed when clearing the arguments.
-		command->command_name = ((t_token *)ft_darray_get(&tmp, 0))->string;
+		expand_token(command->token, &tmp, command->context);
+		free(command->command_name);
+		if (!tmp.size)
+		{
+			ft_darray_delete(&tmp, NULL);
+			command->command_name = NULL;
+			return (0);
+		}
+		command->command_name = ft_strdup(((t_token *)ft_darray_get(&tmp, 0))->string);
+		if (!command->command_name)
+			return (ft_darray_delete(&tmp, ms_clear_token) - 1);
 		prepend_arguments(&tmp, command->arguments);
 		ft_darray_reset(&tmp, NULL);
 	}
-	return (expand_arguments(command->arguments, &tmp));
+	status = expand_arguments(command->arguments, &tmp, command->context);
+	ft_darray_delete(&tmp, NULL);
+	return (status);
 }

@@ -100,6 +100,10 @@ int	execute_operand(t_command *parent, t_command *command,
 {
 	pid_t	pid;
 
+	if (expand_command_fields(command) < 0)
+		return (ERR_NOMEM);
+	if (!command->command_name)
+		return (close_fd(&out_pipe[1]) * 0);
 	if (parent && parent->command_flags & MS_PIPE)
 	{
 		if (command->command_flags & MS_LAST)
@@ -113,7 +117,6 @@ int	execute_operand(t_command *parent, t_command *command,
 		parent->pid = pid;
 		return (0);
 	}
-	expand_command_fields(command);
 	if (handle_redirections(command) < 0)
 		return (1);
 	return (execute_simple_command(command, in_pipe, out_pipe));

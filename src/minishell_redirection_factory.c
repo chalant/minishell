@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/23 12:14:52 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/24 01:28:17 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,14 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	node = ft_darray_get(tree->children, 0);
 	set_redirection_flags(redirection, node->rule_name);
 	leaf = get_leaf(ft_darray_get(tree->children, 1));
+	//todo: remove quotes from file_path here
 	if (leaf->token->flags & IS_QUOTED)
+	{
+		ms_remove_quotes(leaf->token->string, leaf->token->mask_exp);
 		redirection->redirection_flags |= MS_QUOTED;
+	}
 	redirection->file_path = leaf->rule_name;
+	redirection->token = leaf->token;
 	return (0);
 }
 
@@ -105,6 +110,8 @@ int	create_files(t_command *command, t_darray *redirections)
 	while (++i < redirections->size)
 	{
 		redirection = ft_darray_get(redirections, i);
+		if (expand_redirection(redirection, command->context) < 0)
+			return (-1);
 		//todo: check for expansion first
 		if (!(redirection->redirection_flags & MS_HEREDOC))
 			fd = open(redirection->file_path,

@@ -27,6 +27,7 @@
 # define IS_HEREDOC 1 << 4
 # define IS_DELIMITER 1 << 5
 # define IS_EOF 1 << 7
+# define IS_EXPANDED 1 << 8
 
 // # define RESERVED_SYMBOLS "+-*/() "
 // # define SKIP_SYMBOLS " "

@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static void	ms_heredoc_write(int fd, char *line, int delim_quoted)
+void	ms_heredoc_write(int fd, char *line, int delim_quoted)
 {
 	char	*end;
 	char	temp;
@@ -110,7 +110,7 @@ int	ms_heredoc(t_command *command, int id)
 				return (ms_perror(path, NULL, NULL, errno) * -1);
 			red->tmp_file = path;
 			if (ms_heredoc_prompt(command, red, fd) < 0)
-				return (-1);
+				return (close(fd) - 1);
 			close(fd);
 		}
 	}

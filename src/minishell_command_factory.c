@@ -41,7 +41,9 @@ int	set_command_fields(t_parse_tree *node, t_command *command)
 	if (!node->rule_name)
 		return (0);
 	token = get_leaf(node)->token;
-	command->command_name = token->string;
+	command->command_name = ft_strdup(token->string);
+	if (!command->command_name)
+		return (-1);
 	command->token = token;
 	if (is_builtin(command->command_name))
 		command->command_flags |= MS_BUILTIN;

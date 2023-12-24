@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 16:28:54 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 14:32:33 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/24 10:25:55 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	clear_redirection(void *address)
 	redirection = (t_redirection *)address;
 	free(redirection->tmp_file);
 	redirection->tmp_file = NULL;
-	if (redirection->file_flags & MS_FREE)
+	if (redirection->redirection_flags & MS_FREE)
 		free(redirection->file_path);
 	redirection->file_path = NULL;
 }

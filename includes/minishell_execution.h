@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 15:28:16 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/23 10:20:12 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/24 01:33:11 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int		get_exit_status(pid_t pid);
 int		close_fd(int *fd);
 int		create_files(t_command *command, t_darray *redirections);
 int		expand_command_fields(t_command *command);
-int		expand_redirection(t_redirection *redirection);
+int		expand_redirection(t_redirection *redirection, t_ms_context *context);
 int		handle_redirections(t_command *command);
 int		redirect_in(t_command *command);
 int		redirect_out(t_command *command);

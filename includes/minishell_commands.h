@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/14 16:36:47 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/22 13:51:38 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/24 10:22:08 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # define MS_READ 1 << 1
 # define MS_WRITE 1 << 2
 # define MS_QUOTED 1 << 3
-# define MS_FREE 1 << 3
+# define MS_FREE 1 << 4
 
 # define MS_HEREDOC_PATH "/tmp/ms_heredoc"
 
