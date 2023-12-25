@@ -64,7 +64,7 @@ SRC_FILES =	minishell_main.c \
 			minishell_grammar_utils.c \
 			minishell_semantics.c \
 			minishell_pipe_utils.c \
-			minishell_execution_expansion.c \
+			minishell_expansion.c \
 			minishell_execution_operators.c \
 			minishell_execution_pipe.c \
 			minishell_execution_io.c \
@@ -74,6 +74,7 @@ SRC_FILES =	minishell_main.c \
 			minishell_execution.c \
 			minishell_path.c \
 			minishell_command_utils.c \
+			minishell_command_expansion.c \
 			minishell_command_factory.c \
 			minishell_redirection_utils.c \
 			minishell_redirection_factory.c \
