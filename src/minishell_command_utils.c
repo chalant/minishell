@@ -86,22 +86,3 @@ int	delete_commands(t_darray *commands)
 	ft_darray_delete(commands, NULL);
 	return (0);
 }
-
-int	is_builtin(char *command_name)
-{
-	if (ft_strcmp(command_name, "cd") == 0)
-		return (1);
-	else if (ft_strcmp(command_name, "echo") == 0)
-		return (1);
-	else if (ft_strcmp(command_name, "pwd") == 0)
-		return (1);
-	else if (ft_strcmp(command_name, "export") == 0)
-		return (1);
-	else if (ft_strcmp(command_name, "env") == 0)
-		return (1);
-	else if (ft_strcmp(command_name, "unset") == 0)
-		return (1);
-	else if (ft_strcmp(command_name, "exit") == 0)
-		return (1);
-	return (0);
-}

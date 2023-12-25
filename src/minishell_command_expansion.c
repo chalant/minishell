@@ -67,6 +67,26 @@ int	prepend_arguments(t_darray *arguments, t_darray *into)
 	return (0);
 }
 
+int	expand_command_name(t_command *command, t_darray *tmp)
+{
+	if (should_expand(command->token))
+	{
+		free(command->command_name);
+		command->command_name = NULL;
+		expand_token(command->token, tmp, command->context);
+		if (!tmp->size)
+			return (0);
+		command->command_name = ft_strdup(((t_token *)ft_darray_get(
+						tmp, 0))->string);
+		if (!command->command_name)
+			return (-1);
+		if (prepend_arguments(tmp, command->arguments) < 0)
+			return (-1);
+		ft_darray_reset(tmp, NULL);
+	}
+	return (1);
+}
+
 int	expand_command_fields(t_command *command)
 {
 	t_darray	tmp;
@@ -74,22 +94,19 @@ int	expand_command_fields(t_command *command)
 
 	if (ft_darray_init(&tmp, sizeof(t_token), 10) < 0)
 		return (ERR_NOMEM);
-	if (should_expand(command->token))
+	if (expand_command_name(command, &tmp) < 0)
+		return (flush_expansion(&tmp, ERR_NOMEM));
+	status = expand_arguments(command->arguments, &tmp, command->context);
+	if (!command->command_name && command->arguments->size)
 	{
-		expand_token(command->token, &tmp, command->context);
-		free(command->command_name);
-		command->command_name = NULL;
-		if (!tmp.size)
-			return (flush_expansion(&tmp, 0));
 		command->command_name = ft_strdup(((t_token *)ft_darray_get(
-						&tmp, 0))->string);
+						command->arguments, 0))->string);
 		if (!command->command_name)
 			return (flush_expansion(&tmp, ERR_NOMEM));
-		if (prepend_arguments(&tmp, command->arguments) < 0)
-			return (flush_expansion(&tmp, ERR_NOMEM));
-		ft_darray_reset(&tmp, NULL);
+		ft_darray_reverse(command->arguments);
+		command->arguments->size = command->arguments->size - 1;
+		ft_darray_reverse(command->arguments);
 	}
-	status = expand_arguments(command->arguments, &tmp, command->context);
 	ft_darray_delete(&tmp, NULL);
 	return (status);
 }

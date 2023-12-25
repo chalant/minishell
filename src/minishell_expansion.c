@@ -41,9 +41,6 @@ static int	flush_token(t_token *token, int status)
 	return (status);
 }
 
-// 'into' will either contain the result of an expansion or a copy of 'token'
-//IMPORTANT NOTE: this should not free this token, also don't add this token in the array
-//otherwise it might get double freed. this token is freed later.
 int	expand_token(t_token *token, t_darray *into, t_ms_context *data)
 {
 	t_token	copy;
