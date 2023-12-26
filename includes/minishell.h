@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 16:53:20 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/23 10:11:31 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/26 19:26:32 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,5 +74,6 @@ int		ms_add_separator(t_ms_context *context, char *line, const char *delim);
 int		ms_join_line(t_ms_context *context, char *line, const char *delim);
 
 int		clear_command(t_command *command);
+int		ms_expand_var(t_darray *tokens, t_token *token, t_ms_context *data);
 
 #endif

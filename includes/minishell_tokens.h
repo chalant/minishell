@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/26 17:15:45 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/26 19:26:10 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,6 @@
 # define IS_DELIMITER 1 << 5
 # define IS_EOF 1 << 7
 # define IS_EXPANDED 1 << 8
-
-// # define RESERVED_SYMBOLS "+-*/() "
-// # define SKIP_SYMBOLS " "
-// # define DOUBLE_SYMBOLS "<>&|"
 
 typedef struct s_token
 {
@@ -67,13 +63,12 @@ void		ms_clear_token(void *token);
 
 void		ms_add_flags_char(t_token *token, char c);
 void		ms_add_flags_str(t_token *new);
-int			ms_expand_var(t_darray *tokens, t_token *token);
 int			ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt);
 int			ms_add_tkn_var(t_darray *tokens, t_token *new, char **value, int i);
 int			ms_join_str(t_token *token, char *str, char mask);
 int			ms_join_mask(t_token *token, int add_len, char fill);
 char		*ms_end_of_name(const char *str);
-char		**ms_malloc_getenv(char *str, int *qt);
+char		**ms_malloc_getenv(char *str, int *qt_or_special);
 int			ms_expand_wildcard(t_darray *tokens, t_token *token);
 int			ms_pre_check(t_token *token, t_dirent *entryp);
 int			ms_wildcard_cmp(t_dirent *entryp, t_token *token, t_token *new);

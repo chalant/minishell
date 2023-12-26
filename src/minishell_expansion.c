@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 12:09:39 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/26 17:16:05 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/26 18:57:43 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,8 @@ int	expand_token(t_token *token, t_darray *into, t_ms_context *data)
 		return (flush_token(&copy, ERR_NOMEM));
 	if (!(token->flags & IS_DELIMITER) && token->flags & IS_VAR)
 	{
-		if (!g_global_state.status)
-			g_global_state.status = data->status;
-		if (ms_expand_var(into, &copy))
+		if (ms_expand_var(into, &copy, data))
 			return (ERR_NOMEM);
-		g_global_state.status = 0;
 	}
 	else if (!(token->flags & IS_DELIMITER) && token->flags & IS_WILDCARD)
 	{

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/13 19:43:52 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/23 17:15:56 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/26 18:55:05 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static int	ms_append_value_tokens(t_darray *tokens, t_token *new, char **value)
 	return (0);
 }
 
-int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
+int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt_or_special)
 {
 	char	*end;
 	char	temp;
@@ -83,7 +83,7 @@ int	ms_add_var(t_darray *tokens, t_token *new, char **str, int *qt)
 		return (0);
 	temp = *end;
 	*end = 0;
-	value = ms_malloc_getenv(*str + 1, qt);
+	value = ms_malloc_getenv(*str + 1, qt_or_special);
 	if (!value)
 		return (ms_add_var_return(NULL, ERR_MALLOC, 1));
 	*end = temp;
