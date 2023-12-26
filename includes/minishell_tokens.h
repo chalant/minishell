@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:38:16 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/23 17:15:27 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/26 17:15:45 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int			ms_cmp_until_wc(t_wildcard_data *d, int *qts, t_token *token);
 int			ms_cpy_mask(int n, char **mask, char *card, t_token *token);
 int			ms_wildcard_add(t_darray *tokens, t_dirent *entryp, t_token *new);
 void		ms_quote_expansion(t_darray *tokens, int start_index);
-void		ms_remove_quotes(char *str, char *mask_exp);
+void		ms_remove_quotes(t_token *token);
 void		ms_shift_strings(char *a, char *b, int i);
 
 #endif

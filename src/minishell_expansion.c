@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_expansion.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 12:09:39 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/26 13:56:14 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/26 17:16:05 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	should_expand(t_token *token)
 		|| (!(token->flags & IS_VAR) && !(token->flags & IS_WILDCARD)))
 	{
 		if (token->flags & IS_QUOTED)
-			ms_remove_quotes(token->string, token->mask_exp);
+			ms_remove_quotes(token);
 		return (0);
 	}
 	return (1);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_tokens.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/26 14:04:00 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/26 17:03:37 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ static char	*ms_handle_symbol(char *end,
 }
 
 // NULL terminates tokens with a fresh initialised token.
+// DOESN'T remove quotes
 // error: ERR_NOMEM/ERR_EOF_QUOTED/ERR_SIGINT, free '*input', print error msg
 int	ms_tokeniser(char **input, t_darray *tokens, t_tkn_info *info)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_redirection_factory.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
+/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 13:40:52 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/25 11:54:42 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/26 17:21:58 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	set_redirection(t_redirection *redirection, t_parse_tree *tree)
 	leaf = get_leaf(ft_darray_get(tree->children, 1));
 	if (leaf->token->flags & IS_QUOTED)
 	{
-		ms_remove_quotes(leaf->token->string, leaf->token->mask_exp);
+		ms_remove_quotes(leaf->token);
 		redirection->redirection_flags |= MS_QUOTED;
 	}
 	redirection->file_path = leaf->rule_name;
