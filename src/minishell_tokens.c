@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell_tokens.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/15 14:32:40 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/23 17:05:04 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/26 14:04:00 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,10 @@ int	ms_tokeniser(char **input, t_darray *tokens, t_tkn_info *info)
 {
 	char	*start_end[2];
 	t_token	token;
-	//int		start_size;
 	int		check;
 
 	if (tokens->size)
 		tokens->size--;
-	//start_size = tokens->size;
 	start_end[1] = *input;
 	while (start_end[1] && *(start_end[1]))
 	{
@@ -94,7 +92,6 @@ int	ms_tokeniser(char **input, t_darray *tokens, t_tkn_info *info)
 		if (!start_end[1])
 			return (ms_tokeniser_error(*input, 0));
 	}
-	// ms_quote_expansion(tokens, start_size);
 	if (ft_darray_append(tokens, ms_init_token(&token)))
 		return (ms_tokeniser_error(*input, 1));
 	return (0);
