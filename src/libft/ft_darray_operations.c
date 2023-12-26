@@ -65,9 +65,13 @@ int	ft_darray_insert(t_darray *darray, t_darray *with, t_darray *tmp, int at)
 {
 	if (ft_darray_slice(darray, tmp, at, darray->size) < 0)
 		return (-1);
-	darray->size = at;
 	if (at >= darray->size)
-		at = darray->size - 1;
+	{
+		if (darray->size > 0)
+			at = darray->size - 1;
+		else
+			at = 0;
+	}
 	if (ft_darray_join(darray, with) < 0)
 		return (-1);
 	if (ft_darray_join(darray, tmp) < 0)
@@ -80,7 +84,12 @@ int	ft_darray_onsert(t_darray *darray, t_darray *with, t_darray *tmp, int at)
 	if (ft_darray_slice(darray, tmp, at + 1, darray->size) < 0)
 		return (-1);
 	if (at >= darray->size)
-		at = darray->size - 1;
+	{
+		if (darray->size > 0)
+			at = darray->size - 1;
+		else
+			at = 0;
+	}
 	darray->size = at;
 	if (ft_darray_join(darray, with) < 0)
 		return (-1);
