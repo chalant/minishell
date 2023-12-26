@@ -28,11 +28,13 @@ static int	expand_arguments(t_darray *arguments,
 	int			i;
 	t_token		*token;
 	t_darray	remainder;
+	int			size;
 
 	if (ft_darray_init(&remainder, arguments->type_size, 10) < 0)
 		return (ERR_NOMEM);
 	i = -1;
-	while (++i < arguments->size)
+	size = arguments->size;
+	while (++i < size)
 	{
 		token = ft_darray_get(arguments, i);
 		if (!should_expand(token))
@@ -97,6 +99,8 @@ int	expand_command_fields(t_command *command)
 	if (expand_command_name(command, &tmp) < 0)
 		return (flush_expansion(&tmp, ERR_NOMEM));
 	status = expand_arguments(command->arguments, &tmp, command->context);
+	if (status < 0)
+		return (flush_expansion(&tmp, ERR_NOMEM));
 	if (!command->command_name && command->arguments->size)
 	{
 		command->command_name = ft_strdup(((t_token *)ft_darray_get(
