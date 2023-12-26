@@ -6,34 +6,11 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 12:09:39 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/25 11:43:13 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/26 13:56:14 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-// static void	test_print_tokens(t_ms_context *data, t_darray *tokens)
-// {
-// // DEBUG FUNCTION
-// 	if (data)
-// 		tokens = data->parse_data.tokens;
-// 	printf("## tokens: ");
-// 	int i = 0;
-// 	while (i < tokens->size)
-// 	{
-// 		printf("%6s, ", ((t_token *)ft_darray_get(tokens, i))->string);
-// 		i++;
-// 	}
-// 	printf("\n## masks : ");
-// 	i = 0;
-// 	while (i < tokens->size)
-// 	{
-// 		printf("%6s, ", ((t_token *)ft_darray_get(tokens, i))->mask_exp);
-// 		i++;
-// 	}
-// 	printf("\n");
-// // REMOVE WHEN DONE
-// }
 
 static int	flush_token(t_token *token, int status)
 {
@@ -65,7 +42,6 @@ int	expand_token(t_token *token, t_darray *into, t_ms_context *data)
 	}
 	else if (ft_darray_append(into, &copy))
 		return (flush_token(&copy, ERR_NOMEM));
-// test_print_tokens(NULL, into);
 	ms_quote_expansion(into, 0);
 	return (1);
 }
