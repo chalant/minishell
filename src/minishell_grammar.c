@@ -22,9 +22,6 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"redirection_list:redirection\n"\
 	"redirection_list:redirection redirection_list\n"\
 
-	"command_argument:word command_argument\n"\
-	"command_argument:word\n"\
-
 	"command_element:redirection\n"\
 	"command_element:word\n"\
 	"command_element:word command_element\n"\
@@ -39,19 +36,12 @@ static const char	*g_minishell_grammar = "word:$'3'\n"\
 	"command_factor:parenthesis\n"\
 	"command_factor:simple_command\n"\
 	"command_factor:redirection_list\n"\
+	"command_factor:redirection_list simple_command\n"\
 
 	"command_operand:command_factor\n"\
 	"command_operand:command_operand ='|' $'4'\n"\
 	"command_operand:command_operand ='|' command_factor\n"\
 
-	"red_command:simple_command\n"\
-	"red_command:red_command ='|' $'4'\n"\
-	"red_command:red_command ='|' command_factor\n"\
-
-	"redirection_command:redirection_list\n"\
-	"redirection_command:redirection_list red_command\n"\
-
-	"command:redirection_command\n"\
 	"command:command_operand\n"\
 	"command:command ='&&' $'4'\n"\
 	"command:command ='||' $'4'\n"\

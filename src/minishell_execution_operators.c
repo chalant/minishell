@@ -59,7 +59,7 @@ int	execute_or(t_command *parent, t_command *command,
 	if (!parent || !(command->command_flags & MS_OR))
 		close_fd(&out_pipe[1]);
 	status = execute_command(command, command->left, in_pipe, out_pipe);
-	if (status > 0)
+	if (status > 0 && status != 130)
 	{
 		distribute_fds(command, command->right);
 		return (execute_command(command, command->right, in_pipe, out_pipe));
