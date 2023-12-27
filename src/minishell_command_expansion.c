@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 11:35:49 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/27 15:45:40 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/27 16:11:52 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ int	prepend_arguments(t_darray *arguments, t_darray *into)
 	token = ft_darray_get(arguments, 0);
 	free(token->mask_exp);
 	free(token->string);
+	token->string = NULL;
+	token->mask_exp = NULL;
 	mark_expanded(arguments);
 	ft_darray_reverse(into);
 	ft_darray_reverse(arguments);
