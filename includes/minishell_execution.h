@@ -46,6 +46,6 @@ int		execute_and(t_command *parent, t_command *command, int in_pipe[2],
 int		execute_pipe(t_command *parent, t_command *command, int in_pipe[2],
 			int out_pipe[2]);
 
-pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2]);
+pid_t	execute_process(t_command *parent, t_command *command, int in_pipe[2], int out_pipe[2]);
 
 #endif

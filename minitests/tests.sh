@@ -48,7 +48,7 @@ run_test_case() {
 	echo
 }
 
-make
+../make
 
 #check for proper status
 run_test_case "< a < b" 5

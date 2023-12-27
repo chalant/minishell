@@ -108,7 +108,7 @@ int	execute_operand(t_command *parent, t_command *command,
 	{
 		if (command->command_flags & MS_LAST)
 			close_fd(&out_pipe[1]);
-		pid = execute_process(command, in_pipe, out_pipe);
+		pid = execute_process(parent, command, in_pipe, out_pipe);
 		if (pid < 0)
 		{
 			parent->error = errno;

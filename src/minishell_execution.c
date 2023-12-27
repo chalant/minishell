@@ -41,7 +41,8 @@ int	check_redirection(t_command *command)
 	return (0);
 }
 
-pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
+pid_t	execute_process(t_command *parent, t_command *command,
+	int in_pipe[2], int out_pipe[2])
 {
 	pid_t	pid;
 	int		status;
@@ -53,7 +54,11 @@ pid_t	execute_process(t_command *command, int in_pipe[2], int out_pipe[2])
 	if (pid == 0)
 	{
 		if (handle_redirections(command) < 0)
+		{
+			if (parent && !parent->left)
+				exit(0);
 			exit(1);
+		}
 		if (pipe_io(command, in_pipe, out_pipe) < 0)
 			exit(1);
 		status = execute_simple_command(command, in_pipe, out_pipe);
