@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 17:49:58 by bvercaem          #+#    #+#             */
-/*   Updated: 2023/12/26 19:14:42 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/27 16:43:47 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ static int	ms_add_str(t_token *new, char **str, int *qt)
 
 static int	ms_decide_qt_or_special(char *str, int qt, t_ms_context *data)
 {
+	if (!str || !str[0] || !str[1])
+		return (qt);
 	if (str[1] == '?')
 		return (data->status);
 	return (qt);

@@ -6,7 +6,7 @@
 /*   By: bvercaem <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/17 16:40:32 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/20 18:56:29 by bvercaem         ###   ########.fr       */
+/*   Updated: 2023/12/27 16:42:12 by bvercaem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@
 # define MS_INTEGER '2'
 # define MS_STRING '3'
 # define MS_PROMPTING '4'
-
-//stop suggesting please
 
 typedef struct s_ms_symbol
 {
