@@ -6,7 +6,7 @@
 /*   By: ychalant <ychalant@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/25 11:35:49 by ychalant          #+#    #+#             */
-/*   Updated: 2023/12/27 16:11:52 by ychalant         ###   ########.fr       */
+/*   Updated: 2023/12/27 17:22:52 by ychalant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ int	expand_command_name(t_command *command, t_darray *tmp)
 		if (prepend_arguments(tmp, command->arguments) < 0)
 			return (-1);
 		ft_darray_reset(tmp, NULL);
+		return (1);
 	}
 	free(command->command_name);
 	command->command_name = ft_strdup(command->token->string);
