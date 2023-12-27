@@ -59,7 +59,7 @@ int	execute_pipe(t_command *parent, t_command *command,
 
 	if (init_pipe(out_pipe) < 0)
 		return (-1);
-	if (handle_redirections(command) < 0)
+	if (handle_redirections(command, open_all) < 0)
 		return (close_fd(&out_pipe[1]));
 	transfer_fds(command);
 	if (execute_maybe_wait(command, command->left, in_pipe, out_pipe) < 0)

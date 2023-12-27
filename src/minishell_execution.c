@@ -53,7 +53,7 @@ pid_t	execute_process(t_command *parent, t_command *command,
 	command->command_flags |= MS_FORKED;
 	if (pid == 0)
 	{
-		if (handle_redirections(command) < 0)
+		if (handle_redirections(command, open_all) < 0)
 		{
 			if (parent && !parent->left)
 				exit(0);
@@ -115,7 +115,7 @@ int	start_execution(t_command *command)
 			return (ms_perror("unlink", MS_HEREDOC_PATH, NULL, errno) * (-1));
 	if (!launch_heredocs(command, &hd_id))
 		return (0);
-	if (handle_redirections(command) < 0)
+	if (handle_redirections(command, open_all) < 0)
 		return (1);
 	status = execute_command(NULL, command, in_pipe, out_pipe);
 	close_fd(&in_pipe[0]);

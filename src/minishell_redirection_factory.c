@@ -96,10 +96,12 @@ int	set_file_descriptor(t_command *command, t_redirection *redirection, int fd)
 			close(command->output);
 		command->output = fd;
 	}
+	redirection->redirection_flags |= MS_OPENED;
 	return (1);
 }
 
-int	create_files(t_command *command, t_darray *redirections)
+int	create_files(t_command *command, t_darray *redirections,
+	int (*filter)(t_redirection *))
 {
 	int				i;
 	int				fd;
@@ -109,6 +111,8 @@ int	create_files(t_command *command, t_darray *redirections)
 	while (++i < redirections->size)
 	{
 		redirection = ft_darray_get(redirections, i);
+		if (redirection->redirection_flags & MS_OPENED || !filter(redirection))
+			continue ;
 		if (!(redirection->redirection_flags & MS_HEREDOC))
 		{
 			if (expand_redirection(redirection, command->context) < 0)

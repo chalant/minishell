@@ -77,8 +77,17 @@ int	init_command_fields(t_command *command)
 
 int	overwite_command(t_parse_tree *node, t_command *command)
 {
+	int	i;
+
 	if (init_command_fields(command) < 0)
 		return (-1);
+	if (command->redirections)
+	{
+		i = -1;
+		while (++i < command->redirections->size)
+			((t_redirection *)ft_darray_get(command->redirections,
+					i))->redirection_flags |= MS_PREPEND;
+	}
 	if (set_command_fields(node, command) < 0)
 		return (-1);
 	if (command->command_flags & MS_OPERATOR)

@@ -32,7 +32,7 @@ int	execute_and(t_command *parent, t_command *command,
 {
 	int	status;
 
-	status = handle_redirections(command) < 0;
+	status = handle_redirections(command, open_all) < 0;
 	if (status)
 		return (close_fd(&out_pipe[1]) * status);
 	distribute_fds(command, command->left);
@@ -52,16 +52,18 @@ int	execute_or(t_command *parent, t_command *command,
 {
 	int	status;
 
-	status = handle_redirections(command) < 0;
+	status = handle_redirections(command, open_all) < 0;
 	if (status)
 		return (close_fd(&out_pipe[1]) * status);
 	distribute_fds(command, command->left);
 	if (!parent || !(command->command_flags & MS_OR))
 		close_fd(&out_pipe[1]);
 	status = execute_command(command, command->left, in_pipe, out_pipe);
-	if (status > 0 && status != 130)
+	if ((status > 0 && status != 130) || !command->left)
 	{
 		distribute_fds(command, command->right);
+		if (command->command_flags & MS_OPERATOR && !command->left)
+			handle_redirections(command->right, open_prepend);
 		return (execute_command(command, command->right, in_pipe, out_pipe));
 	}
 	return (status);

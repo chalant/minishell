@@ -117,7 +117,7 @@ int	execute_operand(t_command *parent, t_command *command,
 		parent->pid = pid;
 		return (0);
 	}
-	if (handle_redirections(command) < 0)
+	if (handle_redirections(command, open_all) < 0)
 		return (1);
 	return (execute_simple_command(command, in_pipe, out_pipe));
 }

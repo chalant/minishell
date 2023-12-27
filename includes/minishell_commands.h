@@ -35,6 +35,9 @@
 # define MS_WRITE 1 << 2
 # define MS_QUOTED 1 << 3
 # define MS_FREE 1 << 4
+# define MS_PREPEND 1 << 5
+# define MS_OPENED 1 << 6
+# define MS_ALL 1 << 7
 
 # define MS_HEREDOC_PATH "/tmp/ms_heredoc"
 
@@ -88,5 +91,7 @@ int		delete_commands(t_darray *commands);
 int		set_command_fields(t_parse_tree *node, t_command *command);
 int		init_pipe(int pipe_[2]);
 int		swap_pipe(int *src_pipe, int *dest_pipe);
+int		open_all(t_redirection *redirection);
+int		open_prepend(t_redirection *redirection);
 
 #endif

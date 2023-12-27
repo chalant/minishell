@@ -50,11 +50,11 @@ int	redirect_io(t_command *command)
 	return (status);
 }
 
-int	handle_redirections(t_command *command)
+int	handle_redirections(t_command *command, int (*filter)(t_redirection *))
 {
 	if (command->redirections && command->redirections->size)
 	{
-		if (create_files(command, command->redirections) < 0)
+		if (create_files(command, command->redirections, filter) < 0)
 			return (-1);
 	}
 	if (command->command_flags & MS_NOREDIR)

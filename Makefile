@@ -79,6 +79,7 @@ SRC_FILES =	minishell_main.c \
 			minishell_command_factory.c \
 			minishell_redirection_utils.c \
 			minishell_redirection_factory.c \
+			minishell_redirection_filters.c \
 			minishell_semantic_operators.c \
 			minishell_semantic_utils.c \
 			minishell_earley_set.c \
