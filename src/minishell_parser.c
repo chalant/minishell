@@ -62,7 +62,7 @@ int	is_completed(t_darray *items)
 	while (++i < items->size)
 	{
 		item = ft_darray_get(items, i);
-		if (item->completed)
+		if (item->completed && item->start == 0)
 			return (1);
 	}
 	return (0);
