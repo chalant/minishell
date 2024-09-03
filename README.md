@@ -30,7 +30,9 @@ make
 git clone https://github.com/chalant/fdf.git
 ```
 2. **Install dependencies**
-    brew install readline
+   ```
+   brew install readline
+   ```
 4. **Build project:**
 ```
 make
