@@ -32,9 +32,5 @@ make
 ```
 ## Usage
 ```
-./fdf [file-path]
-```
-## Example
-```
-./fdf test_maps/mars.fdf
+./minishell
 ```
