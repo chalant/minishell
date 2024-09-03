@@ -63,7 +63,10 @@ int	execute_or(t_command *parent, t_command *command,
 	{
 		distribute_fds(command, command->right);
 		if (command->command_flags & MS_OPERATOR && !command->left)
-			handle_redirections(command->right, open_prepend);
+		{
+			if (handle_redirections(command->right, open_prepend))
+				return (0);
+		}
 		return (execute_command(command, command->right, in_pipe, out_pipe));
 	}
 	return (status);
