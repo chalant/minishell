@@ -1,7 +1,7 @@
 # MINISHELL
-A simple rendering application for displaying height maps using wireframes.
-Supports isometric projection and perspective projection.
+A bash clone
 ## Description
+This project aims to reproduce a subset of bashes capabilities for education purposes.
 ## Table of Contents
 1. [Requirements](#installation)
 2. [Installation](#requirements)
