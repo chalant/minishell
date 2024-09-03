@@ -12,7 +12,8 @@ This project aims to reproduce a subset of bash's capabilities for education pur
 3. [Usage](#usage)
 
 ## Requirements
-- **readline**: Required for running the project on MacOS
+### On MacOS
+  - **readline**: Required for running the project on MacOS
 ## Installation
 ### On Ubuntu
 1. **Clone repository:**
@@ -23,7 +24,7 @@ git clone https://github.com/chalant/minishell.git
 ```
 make
 ```
-### On Mac OS
+### On MacOS
 
 1. **Clone repository:**
 ```
