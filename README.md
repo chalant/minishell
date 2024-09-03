@@ -3,7 +3,7 @@ A bash clone
 ## Description
 This project aims to reproduce a subset of bash's capabilities for education purposes.
   - ### Key features:
-  - 
+    - Implement the Earley Parser
 One key aspect of this project it implements the Earley Parser, making it capable of
 parsing all context-free grammars.
 ## Table of Contents
