@@ -1,7 +1,7 @@
 # MINISHELL
 A bash clone
 ## Description
-This project aims to reproduce a subset of bashes capabilities for education purposes.
+This project aims to reproduce a subset of bash's capabilities for education purposes.
 ## Table of Contents
 1. [Requirements](#installation)
 2. [Installation](#requirements)
