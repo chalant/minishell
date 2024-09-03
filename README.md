@@ -3,9 +3,9 @@ A bash clone
 ## Description
 This project aims to reproduce a subset of bash's capabilities for education purposes.
   - ### Key features:
-    - Implement the Earley Parser
-One key aspect of this project it implements the Earley Parser, making it capable of
-parsing all context-free grammars.
+    - Implements the Earley Parser making it capable of parsing all context-free grammars.
+    - supports pipe "|", logical AND "&&", logical OR "||" and parenthesis "()"
+    - supports redirections ">, <, >>, <<" and wildcards "*"
 ## Table of Contents
 1. [Requirements](#installation)
 2. [Installation](#requirements)
@@ -29,7 +29,9 @@ make
 ```
 git clone https://github.com/chalant/fdf.git
 ```
-2. **Build project:**
+2. **Install dependencies**
+    brew install readline
+4. **Build project:**
 ```
 make
 ```
