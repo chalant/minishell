@@ -1,4 +1,4 @@
-# FDF
+# MINISHELL
 A simple rendering application for displaying height maps using wireframes.
 Supports isometric projection and perspective projection.
 ## Description
