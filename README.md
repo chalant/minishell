@@ -41,3 +41,8 @@ make
 ```
 ./minishell
 ```
+## Example
+```
+./minishell
+((echo "Starting process" && mkdir project) || echo "Failed to create directory") && (cd project && touch file.txt)
+```
