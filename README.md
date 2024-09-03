@@ -2,8 +2,8 @@
 A bash clone
 ## Description
 This project aims to reproduce a subset of bash's capabilities for education purposes.
-  ## Key Features
-    This project we implements the Earley Parser, which is capable of parsing all context-free languages
+  ### Key Features
+  This project we implements the Earley Parser, which is capable of parsing all context-free languages
 ## Table of Contents
 1. [Requirements](#installation)
 2. [Installation](#requirements)
