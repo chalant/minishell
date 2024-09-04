@@ -28,7 +28,7 @@ make
 
 1. **Clone repository:**
 ```
-git clone https://github.com/chalant/fdf.git
+git clone https://github.com/chalant/minishell.git
 ```
 2. **Install dependencies**
 ```
